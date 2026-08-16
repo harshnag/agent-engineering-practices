@@ -14,9 +14,14 @@ the mechanism underneath, so they transfer to any team.
 
     gh skill install harshnag/agent-engineering-practices --all --scope user
 
-Every agent that reads `~/.copilot/skills/` picks them up automatically.
+Every agent that reads `~/.copilot/skills/` picks them up automatically. Confirm
+with `ls ~/.copilot/skills/` — you should see seven directories. If you have
+installed any of them before, add `--force`, because `--all` aborts the batch
+rather than skipping what is already there.
+
 [INSTALL.md](INSTALL.md) covers Scout, Copilot CLI, Claude Code, Cursor, and
-manual installation for anything else.
+manual installation for anything else, and the four-step check that a skill has
+actually *activated* rather than merely installed.
 
 ## The problem these address
 
