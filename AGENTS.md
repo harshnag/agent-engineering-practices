@@ -41,11 +41,20 @@ practice. Re-derive rather than trusting a number in this file:
 - **Design first.** The reasoning goes in the commit message before the file goes
   in the tree. The diff already says what changed.
 - **Docs are a deliverable**, and here the docs *are* the deliverable.
-- **`main` is protected, and work lands through a reviewed pull request.** No
-  direct pushes and **no approving your own pull request**. An author cannot
-  review their own work, and an agent asked to approve its own change should
-  refuse and say why. See
+- **`main` is protected, and work lands through a pull request.** No direct
+  pushes, no force-pushes, no branch deletion. **Never approve your own pull
+  request** — an author cannot review their own work, and an agent asked to
+  approve its own change should refuse and say why. See
   [`skills/agent-concurrency/references/AUTOMATING-REVIEW.md`](skills/agent-concurrency/references/AUTOMATING-REVIEW.md).
+
+  **Stated precisely, because a gate must not be described as larger than it
+  is:** the ruleset requires a pull request and blocks force-push and deletion,
+  and all three were proved able to refuse. It currently requires **zero**
+  approvals, because with one contributor a one-approval rule would block every
+  merge — nobody can approve their own. So the review requirement above is
+  presently a *rule*, not a *gate*. Raise `required_approving_review_count` to 1
+  and turn on `require_last_push_approval` the moment a second person can
+  review, and prove it refuses before believing it.
 - **Anything that writes gets its own working tree.**
   `skills/agent-concurrency/` is the protocol.
 
