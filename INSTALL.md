@@ -33,6 +33,18 @@ Add more by name at any time: `agent-concurrency`, `agent-handover`,
 `measured-changes`, `external-data-claims`, `verify-in-the-real-thing`,
 `project-agent-instructions`.
 
+> **If you later want all of them, add `--force`.** Verified behaviour of
+> `gh` 2.96: `--all` **aborts the whole batch with exit 1** if *any* one skill is
+> already installed — it does not install the remaining six, and it says
+> `skills already installed: <name> (use --force to overwrite)`. So the natural
+> path of trying one and then taking the rest silently leaves you short:
+>
+>     gh skill install harshnag/agent-engineering-practices --all --scope user --force
+>
+> Check what you actually have rather than trusting the exit code:
+>
+>     ls ~/.copilot/skills/
+
 ### Per-project instead of per-user
 
 Drop `--scope user` to install into the current repository, so the rules travel
@@ -105,6 +117,9 @@ Installation is not activation, and this is the step most people skip.
 1. **Confirm the files are where you think.**
 
        ls ~/.copilot/skills/
+
+   Seven directories, each containing a `SKILL.md`. Fewer means an install was
+   refused — see the `--force` note above.
 
 2. **Start a fresh agent session** — skills are read at startup.
 
