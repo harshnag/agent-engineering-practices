@@ -1,0 +1,142 @@
+#!/bin/sh
+#
+# One agent, one working tree — enforced rather than asked for.
+#
+# The constraint: two agents in one checkout share a git index, so `git add -A`
+# produces a commit whose message describes one change and whose diff contains
+# two. That is not a conflict and not an error. It is a commit that lies.
+#
+# In the project this came from it stopped being a prediction: one commit
+# carries eighty-one lines of a second agent's work, swept in while that agent
+# was three minutes into a verification run the project requires it to make.
+# Neither agent did anything wrong and neither could have seen it. The content
+# survived; the explanation did not, and it was unrecoverable, because repairing
+# it means force-pushing a branch others have already fetched.
+#
+# No amount of care closes that window, because the losing agent is not present
+# at the moment it loses. A rule cannot help either — both agents were following
+# one. What closes it is the tree refusing the second committer.
+#
+# So: the first session to commit in a working tree owns it, and another
+# session's commit is refused with somewhere else to go. A person is never
+# refused, because a person is not the hazard this is about — and a guard that
+# blocks the human is a guard that gets uninstalled.
+#
+# The lock lives in $GIT_DIR, which means each worktree gets its own for free
+# and none of this ever appears in `git status`. A lock file in the tree would
+# be one more thing for the next `git add -A` to sweep, which would be a joke at
+# its own expense.
+#
+# Bypass is `git commit --no-verify`, and it is the wrong move: it does not make
+# the tree safe, it makes you the second agent in it.
+#
+# Install:
+#     cp scripts/pre-commit .githooks/pre-commit
+#     chmod +x .githooks/pre-commit
+#     git config core.hooksPath .githooks
+#
+# `core.hooksPath` is per-clone, so have your verify command run that last line
+# and say that it did. A hook nobody has told git about is a file that looks
+# like a safeguard.
+
+set -e
+
+# ---------------------------------------------------------------------------
+# Configuration.
+#
+# SESSION_VAR   The environment variable your agent runtime sets to a unique
+#               session id. A person's interactive shell does not have it,
+#               which is exactly how a person is exempted. Adjust to match
+#               whatever runtime you use; if it is unset, this hook does
+#               nothing at all.
+# STALE         How long a lock is honoured, in seconds. Keep it equal to the
+#               stale-claim window used by your open-items protocol: long
+#               enough that a working session is never robbed, short enough
+#               that a dead one does not hold a checkout overnight.
+# TREE_PREFIX   Where the message tells a refused agent to put its worktree.
+# ---------------------------------------------------------------------------
+
+SESSION_VAR=${AGENT_TREE_LOCK_SESSION_VAR:-COPILOT_AGENT_SESSION_ID}
+STALE=${AGENT_TREE_LOCK_STALE:-14400}
+TREE_PREFIX=${AGENT_TREE_LOCK_PREFIX:-../$(basename "$(git rev-parse --show-toplevel)")}
+
+# Indirect lookup, so SESSION_VAR can name any variable. POSIX sh has no ${!x},
+# so this uses eval — and the *name* is interpolated into the evaluated string,
+# which means an attacker-controlled name would be an attacker-controlled
+# command. Anyone who can set this variable can already run commands, so this is
+# not a privilege boundary; it is validated anyway, because a safety property
+# that is stated has to be the one that actually holds.
+case $SESSION_VAR in
+  [A-Za-z_]*)
+    # Reject anything that is not a plain identifier.
+    if [ -n "$(printf '%s' "$SESSION_VAR" | tr -d 'A-Za-z0-9_')" ]; then
+      echo "pre-commit: refusing to use \$$SESSION_VAR as a variable name" >&2
+      exit 1
+    fi
+    ;;
+  *)
+    echo "pre-commit: refusing to use \$$SESSION_VAR as a variable name" >&2
+    exit 1
+    ;;
+esac
+SESSION_ID=$(eval "printf '%s' \"\${$SESSION_VAR:-}\"")
+
+# No session id means a person is committing. Nothing below applies to them.
+[ -n "$SESSION_ID" ] || exit 0
+
+GIT_DIR_PATH=$(git rev-parse --git-dir)
+LOCK="$GIT_DIR_PATH/agent-tree-lock"
+NOW=$(date +%s)
+
+if [ -f "$LOCK" ]; then
+  OWNER=$(sed -n '1p' "$LOCK")
+  SINCE=$(sed -n '2p' "$LOCK")
+
+  # A corrupt timestamp must not block everybody. `dash` aborts on non-numeric
+  # arithmetic under `set -e`, so an unparseable lock would fail closed for the
+  # holder too — and the refusal below tells readers not to delete the lock, so
+  # the documented recovery would be the one thing that could not be done.
+  # Unparseable means stale.
+  case $SINCE in
+    ''|*[!0-9]*) SINCE=0 ;;
+  esac
+  AGE=$((NOW - SINCE))
+
+  if [ "$OWNER" != "$SESSION_ID" ] && [ "$AGE" -lt "$STALE" ]; then
+    cat >&2 <<EOF
+
+  Refusing this commit: another agent is using this working tree.
+
+    this session   $SESSION_ID
+    holder         $OWNER
+    held for       $((AGE / 60)) minutes (expires at $((STALE / 60)))
+
+  Two agents in one checkout share a git index, so whichever of you commits
+  first sweeps whatever the other has half-written into a commit describing
+  something else. That has happened before and could not be undone, because
+  repairing it means force-pushing a branch other agents have already fetched.
+
+  Your work is still staged in THIS tree, which is the dangerous place for it —
+  it is now in front of the holder's next \`git add -A\`. Take it with you:
+
+    git stash push -u -m "moving to my own tree"
+    git worktree add $TREE_PREFIX-<name> -b <branch>
+    cd $TREE_PREFIX-<name> && git stash pop
+
+  The stash is shared across worktrees, so it survives the move. Do not simply
+  create the new tree and start again: that leaves your changes behind here,
+  uncommitted and invisible, which is the exact failure this hook exists to
+  prevent.
+
+  If the holder is dead, this expires on its own. Do not delete the lock to get
+  past it, and do not reach for --no-verify: neither makes the tree safe, they
+  make you the second agent in it.
+
+EOF
+    exit 1
+  fi
+fi
+
+# Ours, or nobody's, or long abandoned. Take it and record when.
+printf '%s\n%s\n' "$SESSION_ID" "$NOW" > "$LOCK"
+exit 0
