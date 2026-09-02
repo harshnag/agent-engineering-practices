@@ -108,8 +108,8 @@ is why this section is this long:
 
 `SKILL.md` carries what an agent must know to *follow* the rule. `references/`
 carries what it needs to *argue about* the rule — derivations, histories of
-reversal, checklists for one operation. Three skills have no reference file
-because they have no such material.
+reversal, checklists for one operation. A skill needs no reference file when it
+has no such material.
 
 Frontmatter must carry `name` (matching the directory), `description` (what it
 does *and* when to use it — the only part loaded at startup, so it is what
@@ -131,9 +131,14 @@ stripped. All five were confirmed able to fail, by mutation.
 > **byte-identical output and exit 0** — same checksum — because nothing on a
 > passing run names a skill or counts them.
 
-So count them yourself, and treat a disagreement as a failure:
+So compare the tree with an independently maintained expected inventory:
 
-    test "$(ls -d skills/*/ | wc -l)" -eq "$(ls skills/*/SKILL.md | wc -l)"
+    scripts/check-skill-inventory.sh
+
+Unlike comparing the number of directories with the number of `SKILL.md` files,
+this can detect deletion of a whole skill because the expected list does not
+shrink with the tree. If a skill is intentionally added or removed, update the
+script in the same change.
 
 A second silent-skip case: a name containing a character outside the discovery
 pattern is not reported at all — the skill simply drops out.

@@ -1,6 +1,6 @@
 ---
 name: agent-concurrency
-description: Protocol for multiple AI agents working on the same repository without destroying each other's work — claiming tasks, isolating working trees, landing changes through reviewed pull requests, and distinguishing tasks from refusals. Use when running agents in parallel, delegating to sub-agents, enabling scheduled or heartbeat runs, creating a successor or background session, picking up work from a shared backlog, opening or merging a pull request, being asked to approve or review a change, setting up branch protection or required checks, or when asked to "finish whatever is pending".
+description: Protocol for multiple AI agents working on one repository without destroying each other's work — isolated trees, visible claims, reviewed pull requests, safe landing, and session retirement. Use when running agents in parallel, delegating or creating a successor, claiming shared work, inspecting another ref, archiving a session or worktree, opening or merging a pull request, reviewing or approving work, setting branch protection, enabling scheduled agents, or being asked to finish pending work.
 license: MIT
 compatibility: The claim protocol needs git. The tree lock is a POSIX sh pre-commit hook. The listing script needs Node 20+ with TypeScript execution (node >= 22.6 or tsx).
 metadata:
@@ -98,6 +98,9 @@ structurally cannot review the work**:
 5. **A review that has never rejected anything is decoration.** The same rule as
    any gate: if it cannot fail, it is not a check. Watch it reject something, or
    assume it approves by default.
+6. **Pin landing to the head that was reviewed and verified.** Reading the head
+   and merging are two operations over a value another agent can change. A
+   head-mismatch refusal is the guard working; re-check rather than dropping it.
 
 ### An agent asked to approve its own work should refuse and say why
 
@@ -114,6 +117,9 @@ present when the decision was made.
 `references/AUTOMATING-REVIEW.md` covers how to enforce all of this — branch
 protection, required checks, automated reviewers, and the ways each of them can
 be made decorative.
+
+`shipping-changes` continues the protocol through the exact post-merge run,
+migrations, deployment, and running-artifact identity.
 
 ## Why sharing a tree is not survivable
 
@@ -138,24 +144,32 @@ wrong and neither could have seen it.
 because fixing it means rewriting a pushed branch others have already fetched. A
 sweeping commit cannot be undone, only annotated.
 
-## Work is claimed, and a claim is a commit
+## Work is claimed, and exclusivity needs one contended object
 
 A prose list of what is open is an **invitation**, not an assignment. Two agents
 reading "doing X is recommended next" both do X, and neither is doing anything
 wrong.
 
-There is already a mutual-exclusion primitive and it needs no infrastructure:
-**a push is a compare-and-swap.** A non-fast-forward rejection means somebody
-else moved first.
+Git can provide compare-and-swap only when every claimant moves **the same ref**.
+If each agent pushes its own work branch, two claims touch two refs and nothing
+is mutually exclusive; the mechanism can keep working perfectly while excluding
+nobody.
 
 1. Open work lives as **one file per item**, in a directory such as `docs/open/`.
-2. Claiming is editing that file's status and pushing it, **as its own commit,
+2. Claiming is editing that file's status and publishing it, **as its own commit,
    before starting**.
-3. If the push is rejected, somebody claimed something meanwhile. Re-read and
-   pick again.
+3. If the project uses one coordination ref, a rejected push means the lock
+   worked: fetch, re-read, and choose again.
+4. If claims live only on work branches, the protocol is detection rather than
+   exclusion. The listing must inspect every relevant branch and print collisions
+   before work begins.
 
-> **The rejection is the lock working.** `--force` is how an agent destroys
-> another's work while believing it is unblocking itself. Never force.
+> **A claim is only as visible as the reader that enumerates its refs.** An item
+> existing only on another branch produces no local row at all, not a row saying
+> it is free.
+
+Never force a coordination ref. That replaces a compare-and-swap refusal with
+the loser's claim.
 
 **One file per item is the load-bearing half.** Two agents claiming different
 items touch disjoint paths, so git merges them with nobody arbitrating. A single
@@ -164,17 +178,16 @@ artefact in the project also its most contended.
 
 See `assets/item-template.md` for the item format the listing script parses.
 
-### A claim expires, because agents die
+### A claim has a retirement rule, because agents die
 
 An agent that stops mid-item leaves a claim nobody can take, and an item nobody
-may touch is indistinguishable from an item nobody wants.
+may touch is indistinguishable from an item nobody wants. A claim therefore
+carries its time and a project-defined retirement policy.
 
-A claim carries **the time it was made**, and a claim older than **four hours**
-is stale and may be taken by writing a new one over it.
-
-Taking a stale claim is **ordinary, not rude** — stated here so nobody has to
-decide whether it is allowed. Check the log for the claim's branch first: work
-that reached a commit is worth continuing rather than restarting.
+Age alone is not proof of death; a long uninterrupted operation is exactly when
+activity goes quiet. Print the age rather than hiding a claim the tool judges
+stale. Reclaim only after the policy's liveness checks or explicit expiry hold,
+and check the branch first: work that reached a commit is worth continuing.
 
 ## Four states, and only one of them is a task
 
@@ -223,6 +236,10 @@ file again, with the added property of looking authoritative while stale. A
 derived view **cannot disagree with what it describes**, which is the second
 payoff and the reason to reach for this shape generally.
 
+The shipped script reads one directory in one checkout. That is sufficient only
+for a shared coordination ref. A branch-backed claim protocol must extend the
+reader across refs; absence from this local listing is not evidence of freedom.
+
 If you gate anything, invert it: the index file may no longer *name* any item,
 and the listing must show all of them.
 
@@ -241,8 +258,9 @@ are not awake for.
 > against the mistakes of whoever is reading it.
 
 `scripts/pre-commit` gives a working tree to the first agent that commits in it
-and refuses the next one, for the same four hours a claim takes to go stale,
-printing the `git worktree add` line it should have run instead. Install it:
+and refuses the next one, printing how to carry staged and untracked work into a
+separate tree. It runs **no tests**; it reads one small lock and writes one small
+lock. Install it:
 
     cp scripts/pre-commit .githooks/pre-commit
     chmod +x .githooks/pre-commit
@@ -265,6 +283,57 @@ Four details are deliberate, and each was a bug avoided:
   line and say that it did.
 - **`--no-verify` is the wrong move**, and the refusal says so. It does not make
   the tree safe; it makes you the second agent in it.
+
+Three limits matter just as much:
+
+- **It refuses the second committer, not the second editor.** A verification run
+  can still span another agent's uncommitted edits.
+- **Ordinary merge, rebase, cherry-pick, and revert paths may not invoke the
+  commit hook.** Do not describe it as a general landing guard.
+- **Bypass is disclosed rather than made impossible.** A quieter bypass cannot
+  be detected reliably; making this one harder merely teaches the next agent to
+  find another.
+
+A lock never expires from age. Silence and time do not prove its holder is dead.
+Remove it only after the retirement protocol proves the session is gone and its
+work has another carrier. When moving refused work, include untracked files and
+restore staged state in the new worktree; otherwise the move leaves exactly the
+material the holder's next sweep can commit. Prefer a named recovery branch over
+the repository's shared stash stack.
+
+## Retire sessions without destroying work
+
+Never archive or delete a worktree while its session is still running, including
+your own. The live session loses its working directory and project instructions,
+while processes it started may continue.
+
+Before destruction, ask separately:
+
+1. What is uncommitted?
+2. What commits are reachable here and nowhere else?
+3. What is stashed?
+4. What local branches have no worktree or remote carrier?
+5. What processes or environments are still running?
+
+Status and one branch range answer only the first two, and even the range can
+confuse squash-rewritten work with unlanded work. Confirm by content and by the
+forge record.
+
+Prefer committing recoverable work to a named branch over parking it in the
+shared stash stack. Never drop a stash you did not create.
+
+See `references/ARCHIVING-AND-LIVENESS.md`.
+
+## Inspection can write
+
+Reading another ref into the current path can modify the working tree or index
+with exit zero. Use a read-only object display when inspecting. Also remember
+that discarding "your edit" discards every uncommitted change in that file,
+including another agent's.
+
+The same rule governs instruments that deliberately mutate a tree for coverage
+or mutation testing: announce the paths before making them temporarily
+untrustworthy, and run in a disposable worktree nobody else is reading.
 
 ## What is deliberately still shared
 
@@ -299,3 +368,9 @@ because it arrives without anybody deciding it should.
 - **A blocked or sandboxed agent will conclude the suite was enough.** State
   which checks need network, a browser, or credentials, and require an agent
   that cannot run them to say so and hand them back.
+- **A recurring cost is not decided once.** Put the budget beside the schedule
+  and report accumulated spend where somebody will see it.
+
+For fleet census, dispatch, holds, direct corrections, and worker/coordinator
+position, use `coordinating-agents`. For shared-machine and process safety, use
+`resource-safe-tooling`.

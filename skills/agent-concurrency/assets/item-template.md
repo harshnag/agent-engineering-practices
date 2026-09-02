@@ -11,9 +11,9 @@
 
        **Status:**      open | claimed | blocked | refused
        **Claimed:**     an em dash when nobody holds it, otherwise a session
-                        identifier AND A TIMESTAMP — a claim with no time
-                        cannot go stale, and an item nobody may touch is
-                        indistinguishable from an item nobody wants
+                        identifier AND A TIMESTAMP — age is diagnostic input
+                        to the project's liveness policy, not permission to
+                        steal a quiet claim
        **Blocked on:**  only when status is `blocked`; name the thing, not the
                         feeling. It is what the next agent should check.
 

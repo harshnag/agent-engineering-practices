@@ -12,7 +12,7 @@ case, two scripts you run deliberately.
 
     gh skill install harshnag/agent-engineering-practices --all --scope user
 
-That places the seven skills in `~/.copilot/skills/`, which **GitHub Copilot CLI
+That places the eleven skills in `~/.copilot/skills/`, which **GitHub Copilot CLI
 and Microsoft Scout both read**. Confirm:
 
     gh skill list
@@ -22,7 +22,7 @@ found, update the CLI first:
 
     gh --version && gh extension upgrade --all
 
-### Install one skill rather than all seven
+### Install one skill rather than all eleven
 
 Recommended for a first look. Start with the shortest and most broadly
 applicable:
@@ -31,11 +31,12 @@ applicable:
 
 Add more by name at any time: `agent-concurrency`, `agent-handover`,
 `measured-changes`, `external-data-claims`, `verify-in-the-real-thing`,
-`project-agent-instructions`.
+`project-agent-instructions`, `durable-project-memory`,
+`resource-safe-tooling`, `coordinating-agents`, `shipping-changes`.
 
 > **If you later want all of them, add `--force`.** Verified behaviour of
 > `gh` 2.96: `--all` **aborts the whole batch with exit 1** if *any* one skill is
-> already installed — it does not install the remaining six, and it says
+> already installed — it does not install the remaining skills, and it says
 > `skills already installed: <name> (use --force to overwrite)`. So the natural
 > path of trying one and then taking the rest silently leaves you short:
 >
@@ -118,7 +119,7 @@ Installation is not activation, and this is the step most people skip.
 
        ls ~/.copilot/skills/
 
-   Seven directories, each containing a `SKILL.md`. Fewer means an install was
+   Eleven directories, each containing a `SKILL.md`. Fewer means an install was
    refused — see the `--force` note above.
 
 2. **Start a fresh agent session** — skills are read at startup.

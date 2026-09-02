@@ -103,10 +103,33 @@ the ones you skipped:
 | A desktop browser at a narrow width | touch targets, system chrome, real device pixel ratio |
 | A real device | almost nothing, which is why it is worth the trouble |
 
+The real client is part of the boundary too. Request headers, navigation mode,
+credentials, and platform routing can make two requests to the same URL reach
+different behavior. Before filing a server defect from a synthetic probe, repeat
+it with the client shape users actually send and state which client the
+conclusion covers.
+
 > **A measurement is scoped to the conditions it was taken at.** In one origin
 > project a perfect performance score was recorded and then re-read as a general
 > fact; it was true of one viewport, on one run. Record the conditions with the
 > result, or you have written down a different quantity from the one you measured.
+
+### A faster route must prove it reaches the same state
+
+Benchmark setup is part of the subject. A shortcut may still use real input and
+be faster precisely because it skipped scrolling, loading, authorization, or a
+content family.
+
+Take an independent state counter beside every candidate setup path. A stopwatch
+can be honest about every duration and say nothing about whether the rows arrived
+at the same artifact.
+
+Reverse condition order before trusting an A/B difference. The first drive may
+leave storage, cache, generated data, or a process that changes the second.
+
+Browser waits also include polling delay. Measure the event directly when
+possible; the reported wait can substantially exceed the event's latency even
+with the application removed.
 
 ## Re-confirm after a change; do not inherit the earlier tick
 

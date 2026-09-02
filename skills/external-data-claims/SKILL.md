@@ -192,10 +192,8 @@ accountability practice. Two change character entirely:
   right label.
 
 The enforceable form is necessarily domain-specific and belongs in the project
-holding the data. The origin project's version — a numbered list of design rules,
-each carrying the exposure that motivates it — is linked in the frontmatter and
-is worth reading as a model of what *enforceable* looks like, rather than for its
-subject.
+holding the data. The origin project's version remains with its private evidence
+rather than being linked or restated here.
 
 ## One rule about how you will discover these
 

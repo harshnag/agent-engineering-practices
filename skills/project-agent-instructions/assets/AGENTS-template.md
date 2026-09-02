@@ -25,16 +25,16 @@ So, when the rules you were given and the file on disk disagree:
 3. **Say so in the session**, so whoever is driving knows their tooling is
    serving stale rules — it is invisible from their side too.
 
-## Read yourself in, in this order
+This file wins between copies. It can still be wrong about the repository, so
+claims about gates, workflows, and deployment must name the file or command that
+decides them.
+
+## Read yourself in, by routing
 
 **[HANDOVER.md](HANDOVER.md) first** — where the last session stopped, what is
 open, and what it did not verify. It is a pointer rather than a substitute, and
 it is the one document here allowed to be wrong: read it for the open decisions,
 then believe the docs over it.
-
-Then <!-- the design anchor: what this is and the constraints that decide
-priorities -->, then <!-- docs/decisions/ — the questions that are settled, so
-nobody reopens one by reasoning from scratch -->.
 
 Then <!-- the concurrency document --> **because you may not be alone in here.**
 Work is *claimed* before it is started, anything decided against is marked
@@ -46,6 +46,16 @@ Then <!-- the short document about believing claims -->, which is the one to rea
 before believing anything about the tooling — including your own claims about it.
 
 Then `git log --oneline -20`.
+
+Everything else is routed by task:
+
+| Working on | Read |
+|---|---|
+| <!-- subsystem or operation --> | <!-- the document that owns its reasoning --> |
+
+<!-- For long documents, name the generated contents or heading-search command.
+Say if the index omits deeper headings when it reaches a size budget. An index is
+addressing, not a summary: once routed, read the neighboring sections too. -->
 
 **The docs are the context this project runs on.** They record *reasoning* rather
 than behaviour, and a session reads itself in from them before writing anything.
@@ -72,6 +82,9 @@ A mechanic described as though it exists is a plan built on a fiction.
   *about* an artefact; the decisions are *in* it.
 - **Docs are a deliverable.** A change that is not written down did not fully
   happen.
+- **Research is a deliverable.** Anything learned outside the repository is
+  committed before it is acted on, with a date, sources beside their claims,
+  what was verified from primary material, and what was not found.
 - **Commit messages are prose explaining *why***, often several paragraphs. Read
   `git log` before writing one.
 

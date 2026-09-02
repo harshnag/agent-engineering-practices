@@ -1,6 +1,6 @@
 ---
 name: project-agent-instructions
-description: Writing and maintaining the AGENTS.md that governs a repository — what belongs in it, what belongs in a linked document instead, how to record which rules are inherited rather than demonstrated, and why the file on disk outranks the copy injected into your session. Use when setting up agent instructions in a new repository, editing or reviewing an AGENTS.md or CLAUDE.md, deciding whether a rule belongs in the instructions or in a doc, noticing your instructions disagree with the repository, or onboarding agents onto a project for the first time.
+description: Writing and maintaining the AGENTS.md that governs a repository — what belongs in it, what belongs in a linked document instead, how to route a large reasoning corpus, how to record inherited rules, and how to detect stale or missing injected instructions. Use when setting up agent instructions, editing or reviewing an AGENTS.md or CLAUDE.md, designing an agent read-in order, noticing instructions disagree with the repository or vanished after a workspace change, deciding whether a rule belongs in instructions or a doc, or onboarding agents onto a project.
 license: MIT
 metadata:
   provenance: Extracted from two private production codebases, 2026
@@ -42,6 +42,30 @@ So state the precedence explicitly, in the file:
 And write the file so this is checkable: **explain every reversal in a commit
 message**, so step 2 returns something.
 
+The file on disk wins **between copies**. It can still be false about the
+repository. A freshness check comparing injected text with disk proves agreement,
+not truth; pipeline, deploy, and tooling claims still need their own instruments.
+
+### Missing is worse than stale
+
+A stale injected copy can be compared with the file on disk. A session whose
+working tree was removed while it was still running may receive **no project
+instructions at all**, and it has lost the repository containing the checker
+that could say so.
+
+> **Never archive or remove a working tree while its session is still live,
+> including your own.**
+
+If the current directory is no longer a checkout, stop. Read the instructions
+from a healthy checkout and use the session manager's live identity rather than
+a creation-time metadata file. Session ids and branch names often exist in more
+than one namespace, and a stored value can be correct when written but stale
+after a rename or restore.
+
+Where the agent runtime exposes a session-start hook, run an instruction
+freshness check there. A check that runs only when somebody already suspects
+staleness protects the sessions least likely to need it.
+
 ## Say which rules are inherited and which were demonstrated here
 
 The provenance convention, and it is the most transferable thing in this skill.
@@ -60,35 +84,46 @@ arriving, and the file was edited to say which two and where the evidence lives.
 That edit is what keeps the convention honest — without it, everything stays
 marked "inherited" forever and the marking stops meaning anything.
 
-## Prescribe a read-in order, and put the handover first
+## Prescribe a routed read-in, and put the handover first
 
 Not a list of documents. An **order**, with one sentence per entry saying what
 question that document answers, so a session can stop early when it has what it
 needs.
 
-The order that both origin projects converged on:
+The compulsory order that both origin projects converged on:
 
 1. **The handover** — where the last session stopped, what is open, what it did
    not verify. Say in the instructions that it is the one document allowed to be
    wrong, and that the docs win over it. See the `agent-handover` skill.
 2. **The README or design anchor** — what this is, and the constraints that
    decide priorities.
-3. **Settled decisions** — the questions that are closed, so nobody reopens one
-   by reasoning from scratch.
-4. **The concurrency document** — *because you may not be alone in here.* This
+3. **The concurrency document** — *because you may not be alone in here.* This
    belongs early, not late; it governs whether the session may write at all.
-5. **The short one about believing things** — before trusting any claim about the
+4. **The short one about believing things** — before trusting any claim about the
    tooling, including your own.
-6. **`git log --oneline -20`.**
+5. **`git log --oneline -20`.**
 
 Two things to state alongside the order:
 
-- **The read-in is not free.** If it prescribes thousands of lines, a session has
-  spent part of its budget before doing anything. Say so, and say whether anybody
-  has measured it.
+- **Everything else is routed by task.** Give each document one sentence saying
+  what question it answers. A list of every document in sequence is not strict;
+  once it exceeds a session's budget it is impossible, and every reader routes
+  informally anyway.
+- **The read-in is not free.** Measure the compulsory prompt boundary and the
+  corpus separately. The total corpus is a routing warning, not a claim about one
+  request's token usage.
 - **What the docs are *for*.** They record reasoning rather than behaviour. That
   is why re-deriving an answer already in them is how a second, divergent copy
   starts.
+
+Long documents need addressing: a generated contents block with an explicit
+size budget, plus a heading or symbol search that reports line numbers. The
+index routes; it does not summarize. Say when a size ceiling drops subsections,
+or the largest document presents the shallowest map without admitting it.
+
+See `durable-project-memory` for the full workflow: task routing, bounded
+compression, research notes, and the distinction between project memory and a
+portable skill.
 
 ## The rules, and what makes one belong here
 
@@ -106,6 +141,9 @@ The durable core, each of which has its own skill here:
   (`verify-in-the-real-thing`)
 - **Docs are a deliverable.** A change that is not written down did not fully
   happen.
+- **Research is a deliverable.** A finding acquired outside the repository is
+  committed with its date, sources, verification boundary, and negative findings
+  before the project acts on it. (`durable-project-memory`)
 - **Commit messages are prose explaining *why*.** Read `git log` before writing
   one.
 - **You are not alone in here** — claim work, own your working tree.
@@ -145,6 +183,21 @@ budget as the work. Move anything that is:
 - **Load-bearing enough to be argued about.** An argument needs room, and the
   instructions file is the wrong place to have one.
 
+### A current-state layer for a long reasoning document
+
+A long document may open with a short "how it works now" block when the historical
+reasoning below has reversed several times. To keep that layer from becoming a
+second stale handover:
+
+- each fact names the file or command that decides it;
+- it carries no dates, measurements, or perishable counts;
+- it names only real, checkable artifacts;
+- it has a size cap, so adding means replacing;
+- it appears before the history.
+
+This makes drift loud and cheap to check. It does not prove the block is true.
+Comparing it with another copy of itself cannot do that.
+
 Two properties are worth gating in a check, because they are what a file like
 this quietly loses:
 
@@ -152,6 +205,11 @@ this quietly loses:
   drift.
 - **Reachable.** A document nothing links to is gone in practice whatever it
   contains — so the instructions file must point at it.
+
+Generated agreement is not completeness. An index derived from current headings
+stays green if a heading and its index entry disappear together. Any check for
+required material needs an independent inventory or a mutation that removes a
+known required subject.
 
 ## Setup belongs in the file, and must install itself
 
