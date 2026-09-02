@@ -23,6 +23,17 @@ session — are what turn the precedence rule into something an agent can execut
 **Without it:** a session spends its whole budget correctly implementing a rule
 the project abandoned, and nothing at any point fails.
 
+There is a harsher case than staleness: the checkout disappears while its
+session is still alive. The next turn then has no repository and no instruction
+file, so the session has also lost the mechanism that could diagnose the
+absence. A healthy checkout must inspect it from outside.
+
+This is why workspace lifecycle belongs beside instruction freshness rather than
+only in a cleanup guide: **do not archive a worktree while its session is still
+live**. Stored session ids and branch names are not sufficient substitutes.
+Creation-time metadata survives renames and restores while continuing to look
+current; use the session manager's live identity and refuse ambiguity.
+
 ## Why provenance is worth a clause on every rule
 
 Two failure modes, in opposite directions.
@@ -42,10 +53,10 @@ There is also a maintenance property. Marking provenance forces a decision each
 time a rule is edited: has this been demonstrated here yet? A file where
 everything is marked inherited forever is a file nobody has re-read.
 
-## Why the read-in is an order and not a list
+## Why the read-in is routed rather than listed
 
 A list gets read top to bottom, or not at all, and a session that runs out of
-patience stops somewhere arbitrary. An order with a reason per entry lets it stop
+budget stops somewhere arbitrary. An order with a reason per entry lets it stop
 somewhere *chosen*.
 
 The two entries that are always misplaced:
@@ -59,8 +70,19 @@ all, and in which tree. An agent that reads it after starting work has already
 taken the action it would have prevented. Both origin projects moved it earlier
 after exactly that.
 
-**Without a stated order:** every session invents one, and the ones that matter
-get read last or not at all.
+Only the short entry set is an order. Everything else needs a task-to-document
+route. One origin project measured that its prescribed reading list no longer
+fit inside the handover threshold; every session had already been routing
+informally, and the instruction was impossible to obey literally.
+
+Long documents then need an address. A generated contents block is useful, but
+it is not identity or completeness: size budgets may force it to omit deeper
+headings, and it becomes shallowest in exactly the largest document. State that
+degradation and put a heading or symbol search with line numbers beside it.
+
+**Without a route:** every session invents one, the important documents get read
+last or not at all, and the largest document presents the least detailed map
+while looking complete.
 
 ## Why the gate must describe its own boundary
 

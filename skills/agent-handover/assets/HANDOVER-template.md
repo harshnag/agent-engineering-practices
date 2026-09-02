@@ -54,6 +54,13 @@ Stated plainly, because a successor assumes anything unmentioned was done.
      rebuilds, real rendering, migrations. Anything you were sandboxed or
      firewalled out of goes here, handed back explicitly. -->
 
+## Delivery identity
+
+<!-- If delivery was in scope, record the pull request and intended base,
+     reviewed/gated head revision, merged revision, exact deployment run, and
+     observed runtime build identity. Write "not observed" for an unknown
+     boundary. A green branch does not prove the merged tree or deployment. -->
+
 ## Where the reasoning lives
 
 Not here. <!-- Links only. If something is explained only in this file, it is in

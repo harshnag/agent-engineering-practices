@@ -6,7 +6,7 @@
 # produces a commit whose message describes one change and whose diff contains
 # two. That is not a conflict and not an error. It is a commit that lies.
 #
-# In the project this came from it stopped being a prediction: one commit
+# In the origin project it stopped being a prediction: one commit
 # carries eighty-one lines of a second agent's work, swept in while that agent
 # was three minutes into a verification run the project requires it to make.
 # Neither agent did anything wrong and neither could have seen it. The content
@@ -16,6 +16,11 @@
 # No amount of care closes that window, because the losing agent is not present
 # at the moment it loses. A rule cannot help either — both agents were following
 # one. What closes it is the tree refusing the second committer.
+#
+# Mechanism: this runs no tests. It reads one lock in this worktree's git
+# directory, writes that lock for the first agent session, and refuses a
+# different agent session. It does not stop a second editor, and ordinary merge,
+# rebase, cherry-pick and revert paths may not invoke it.
 #
 # So: the first session to commit in a working tree owns it, and another
 # session's commit is refused with somewhere else to go. A person is never
@@ -49,23 +54,15 @@ set -e
 #               which is exactly how a person is exempted. Adjust to match
 #               whatever runtime you use; if it is unset, this hook does
 #               nothing at all.
-# STALE         How long a lock is honoured, in seconds. Keep it equal to the
-#               stale-claim window used by your open-items protocol: long
-#               enough that a working session is never robbed, short enough
-#               that a dead one does not hold a checkout overnight.
 # TREE_PREFIX   Where the message tells a refused agent to put its worktree.
 # ---------------------------------------------------------------------------
 
 SESSION_VAR=${AGENT_TREE_LOCK_SESSION_VAR:-COPILOT_AGENT_SESSION_ID}
-STALE=${AGENT_TREE_LOCK_STALE:-14400}
 TREE_PREFIX=${AGENT_TREE_LOCK_PREFIX:-../$(basename "$(git rev-parse --show-toplevel)")}
 
-# Indirect lookup, so SESSION_VAR can name any variable. POSIX sh has no ${!x},
-# so this uses eval — and the *name* is interpolated into the evaluated string,
-# which means an attacker-controlled name would be an attacker-controlled
-# command. Anyone who can set this variable can already run commands, so this is
-# not a privilege boundary; it is validated anyway, because a safety property
-# that is stated has to be the one that actually holds.
+# Indirect lookup, so SESSION_VAR can name any variable. Validate the name even
+# though this is not a privilege boundary; safety code should reject malformed
+# configuration rather than reinterpret it.
 case $SESSION_VAR in
   [A-Za-z_]*)
     # Reject anything that is not a plain identifier.
@@ -79,7 +76,7 @@ case $SESSION_VAR in
     exit 1
     ;;
 esac
-SESSION_ID=$(eval "printf '%s' \"\${$SESSION_VAR:-}\"")
+SESSION_ID=$(printenv "$SESSION_VAR" 2>/dev/null || :)
 
 # No session id means a person is committing. Nothing below applies to them.
 [ -n "$SESSION_ID" ] || exit 0
@@ -92,24 +89,23 @@ if [ -f "$LOCK" ]; then
   OWNER=$(sed -n '1p' "$LOCK")
   SINCE=$(sed -n '2p' "$LOCK")
 
-  # A corrupt timestamp must not block everybody. `dash` aborts on non-numeric
-  # arithmetic under `set -e`, so an unparseable lock would fail closed for the
-  # holder too — and the refusal below tells readers not to delete the lock, so
-  # the documented recovery would be the one thing that could not be done.
-  # Unparseable means stale.
   case $SINCE in
-    ''|*[!0-9]*) SINCE=0 ;;
+    ''|*[!0-9]*)
+      echo "pre-commit: refusing because $LOCK has an invalid timestamp; lock ownership is unreadable" >&2
+      echo "verify the holder session and its work before repairing the lock" >&2
+      exit 1
+      ;;
   esac
   AGE=$((NOW - SINCE))
 
-  if [ "$OWNER" != "$SESSION_ID" ] && [ "$AGE" -lt "$STALE" ]; then
+  if [ "$OWNER" != "$SESSION_ID" ]; then
     cat >&2 <<EOF
 
   Refusing this commit: another agent is using this working tree.
 
     this session   $SESSION_ID
     holder         $OWNER
-    held for       $((AGE / 60)) minutes (expires at $((STALE / 60)))
+    held for       $((AGE / 60)) minutes
 
   Two agents in one checkout share a git index, so whichever of you commits
   first sweeps whatever the other has half-written into a commit describing
@@ -121,22 +117,22 @@ if [ -f "$LOCK" ]; then
 
     git stash push -u -m "moving to my own tree"
     git worktree add $TREE_PREFIX-<name> -b <branch>
-    cd $TREE_PREFIX-<name> && git stash pop
+    cd $TREE_PREFIX-<name> && git stash pop --index
 
   The stash is shared across worktrees, so it survives the move. Do not simply
   create the new tree and start again: that leaves your changes behind here,
   uncommitted and invisible, which is the exact failure this hook exists to
   prevent.
 
-  If the holder is dead, this expires on its own. Do not delete the lock to get
-  past it, and do not reach for --no-verify: neither makes the tree safe, they
-  make you the second agent in it.
+  Age is not proof the holder is dead. Use the project's liveness protocol. Do
+  not delete the lock to get past it, and do not reach for --no-verify: neither
+  makes the tree safe, they make you the second agent in it.
 
 EOF
     exit 1
   fi
 fi
 
-# Ours, or nobody's, or long abandoned. Take it and record when.
+# Ours, or nobody's. Take it and record when.
 printf '%s\n%s\n' "$SESSION_ID" "$NOW" > "$LOCK"
 exit 0

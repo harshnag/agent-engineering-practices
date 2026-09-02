@@ -15,7 +15,7 @@ the mechanism underneath, so they transfer to any team.
     gh skill install harshnag/agent-engineering-practices --all --scope user
 
 Every agent that reads `~/.copilot/skills/` picks them up automatically. Confirm
-with `ls ~/.copilot/skills/` — you should see seven directories. If you have
+with `ls ~/.copilot/skills/` — you should see eleven directories. If you have
 installed any of them before, add `--force`, because `--all` aborts the batch
 rather than skipping what is already there.
 
@@ -42,7 +42,7 @@ The pattern repeats across every rule here:
 None of these are caught by working harder or reviewing more carefully. They are
 caught by specific, checkable practices, which is what this repository is.
 
-## The seven skills
+## The eleven skills
 
 | Skill | What it governs |
 |---|---|
@@ -53,6 +53,10 @@ caught by specific, checkable practices, which is what this repository is.
 | [`agent-concurrency`](skills/agent-concurrency/) | Multiple agents on one repository: isolation, claiming work, and landing through review |
 | [`agent-handover`](skills/agent-handover/) | Ending a session so the next one does not start from nothing |
 | [`project-agent-instructions`](skills/project-agent-instructions/) | Writing the `AGENTS.md` that governs a repository |
+| [`durable-project-memory`](skills/durable-project-memory/) | Deciding what project reasoning must outlive a session and how to keep it current |
+| [`resource-safe-tooling`](skills/resource-safe-tooling/) | Designing process-heavy tooling that remains safe on shared or constrained machines |
+| [`coordinating-agents`](skills/coordinating-agents/) | Dispatching and steering a fleet when listings are stale and completion is asynchronous |
+| [`shipping-changes`](skills/shipping-changes/) | Landing and deploying the exact reviewed revision, including migrations and runtime identity |
 
 ## Three ideas that carry most of the value
 
@@ -88,7 +92,7 @@ Three properties that a document does not have:
 
 ## Adoption
 
-Start with one skill, not seven. `checking-claims` is the shortest and has the
+Start with one skill, not eleven. `checking-claims` is the shortest and has the
 widest application; `agent-concurrency` is the one to take first if more than one
 agent or engineer touches a repository.
 
@@ -98,8 +102,8 @@ enforcement:
 
 - `scripts/pre-commit` — refuses a second agent committing in a working tree
   another agent holds, and tells it how to move its work safely.
-- `scripts/open.ts` — derives what work is open from the files themselves, so
-  there is no shared index for parallel agents to contend over.
+- `scripts/open.ts` — derives this checkout's item states from the files
+  themselves, so there is no shared index for parallel agents to contend over.
 - `references/AUTOMATING-REVIEW.md` — branch protection, required checks,
   CODEOWNERS and automated reviewers, each with how to prove it can refuse.
 

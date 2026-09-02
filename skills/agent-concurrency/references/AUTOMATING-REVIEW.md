@@ -45,6 +45,11 @@ least protected by the rule — check `bypass_actors` and empty it. And on some
 plans, protection of private repositories is limited; verify on the actual
 repository rather than assuming.
 
+Before claiming protection is unavailable, probe both the repository's legacy
+branch-protection surface and its current ruleset surface, and record the
+response. Before claiming it is enabled, state the exact operations it refuses.
+Plan and repository visibility can affect the two surfaces differently.
+
 **Make it fail:** from a clean clone, commit to the trunk and push. You must be
 rejected. If you are not, you have configured nothing.
 
@@ -69,6 +74,38 @@ frequently reports as success.
 **Make it fail:** push a commit that breaks the thing the check guards, and watch
 the merge refuse. Then confirm the *name* in the ruleset still matches the job's
 name after any workflow rename.
+
+### Green branch, unverified merge
+
+Two branches can each pass and produce a broken tree together without a text
+conflict — one removes a path while another adds a reference to it.
+
+Rebase onto the current trunk, inspect the result, and run the gate on that exact
+tree. A clean rebase means only that no conflict marker was needed. Confirm:
+
+- the intended edit remains in its intended section;
+- material on either side survived;
+- structural invariants such as expected headings still hold;
+- the diff contains your files and only your files.
+
+Under high landing contention, rebase/re-run/wait can livelock because every wait
+allows another merge. A merge queue is the structural answer. If none exists,
+evidence from a local run can transfer only when the exact merged tree is
+byte-identical to the tree that passed. Do not take that shortcut when the queue
+or remote environment is itself what the change is testing.
+
+### Pin the head
+
+Immediately before merging, resolve the pull request head again and use the
+forge's expected-head guard. A push between "read green" and "merge" otherwise
+lands an unreviewed head.
+
+A head-mismatch refusal is not a red build. Fetch the new head and repeat review
+and verification. Do not remove the guard.
+
+After opening a pull request, also assert its base is the intended trunk.
+Session-creation defaults can silently target an already-landed feature branch,
+and the worker's local diff will still look correct.
 
 ## 3. CODEOWNERS, for routing rather than for rigour
 
@@ -142,6 +179,10 @@ is not a review mechanism** and does not substitute for one.
 - **A bypass path for "urgent" changes** should be a person's explicit, recorded
   decision. An automated exception is used far more than anybody intends, and
   hardest at the moment care matters most.
+- **A convenience wrapper around merge** is not enforcement if the underlying
+  command remains available. It shortens the most consequential action and hides
+  the head pin and predicates the visible form teaches. Automate the checks;
+  keep the merge explicit.
 
 ## A one-page setup, for a small repository
 

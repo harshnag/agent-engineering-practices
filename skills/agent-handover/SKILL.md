@@ -102,6 +102,11 @@ Give this a heading of its own so it cannot be quietly omitted, and state the
 With several agents reading the file at once, an unstated omission is assumed
 done in parallel.
 
+If delivery is in scope, separate the boundaries rather than writing "shipped":
+reviewed head, gated head, merged revision, deployment run, and observed runtime
+identity. Record an expected refusal, such as an exact-head mismatch, as a safety
+outcome rather than collapsing it into "failed."
+
 ## Settle what is open before you go
 
 > **Ask every open design question while you still have the context to argue
@@ -153,8 +158,12 @@ edits it next reads them:
    nobody was created, say so and why: silence reads as a successor that exists,
    and the project waits for an agent nobody made.
 5. **What was not verified.**
-6. **Where the reasoning lives** — links only.
-7. **Keeping this file honest.**
+6. **Delivery identity**, when the work was meant to land or deploy — pull
+   request and base, reviewed/gated head, merged revision, exact deployment run,
+   and observed build identity. Write "not observed" rather than inferring one
+   boundary from another.
+7. **Where the reasoning lives** — links only.
+8. **Keeping this file honest.**
 
 ## What a handover is not
 

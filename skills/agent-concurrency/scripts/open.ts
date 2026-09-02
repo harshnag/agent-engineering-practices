@@ -7,7 +7,7 @@
  *
  * Open work is split into one file per item so that two agents claiming two
  * different items touch disjoint paths, and git merges them with nobody
- * arbitrating. That is right, and in the project this came from it was undone
+ * arbitrating. That is right, and in the origin project it was undone
  * by the index that shipped alongside it: a table naming every item and its
  * state, which every claim had to edit.
  *
@@ -53,19 +53,42 @@ interface Item {
   blockedOn: string | null;
 }
 
-/** Read one item, tolerating anything malformed rather than throwing. */
+const VALID_STATUSES = new Set(['open', 'claimed', 'blocked', 'refused']);
+
+/** Read one item; malformed coordination data is not an empty/default state. */
 function parse(file: string): Item {
   const body = readFileSync(join(dir, file), 'utf8');
   const line = (label: string) =>
     new RegExp(`^\\*\\*${label}:\\*\\*[ \\t]*(.*)$`, 'm').exec(body)?.[1]?.trim() ??
     null;
+  const title = /^#\s+(.+)$/m.exec(body)?.[1]?.trim();
+  const status = line('Status')?.toLowerCase();
+  const claimed = line('Claimed');
+  const blockedOn = line('Blocked on');
+
+  if (!title) throw new Error(`${file}: missing '# ' title`);
+  if (!status || !VALID_STATUSES.has(status)) {
+    throw new Error(
+      `${file}: Status must be open, claimed, blocked, or refused`,
+    );
+  }
+  if (!claimed) throw new Error(`${file}: missing Claimed field`);
+  if (status === 'claimed' && claimed === '—') {
+    throw new Error(`${file}: claimed item has no owner and timestamp`);
+  }
+  if (status !== 'claimed' && claimed !== '—') {
+    throw new Error(`${file}: only a claimed item may name a claimant`);
+  }
+  if (status === 'blocked' && !blockedOn) {
+    throw new Error(`${file}: blocked item has no Blocked on field`);
+  }
 
   return {
     file,
-    title: /^#\s+(.+)$/m.exec(body)?.[1]?.trim() ?? file,
-    status: (line('Status') ?? '(none)').toLowerCase(),
-    claimed: line('Claimed'),
-    blockedOn: line('Blocked on'),
+    title,
+    status,
+    claimed,
+    blockedOn,
   };
 }
 
@@ -101,7 +124,9 @@ function main(): void {
   );
 
   if (all.length === 0) {
-    console.log(`\n  No items in ${dir}.\n`);
+    console.log(
+      `LOCAL OPEN-WORK VERDICT: no items in ${dir}; this checkout only.`,
+    );
     return;
   }
 
@@ -124,13 +149,15 @@ function main(): void {
 
   console.log();
   console.log(
-    `  ${open.length} of ${all.length} are open. Only \`open\` is a task —`,
+    `LOCAL OPEN-WORK VERDICT: ${open.length} of ${all.length} items in ${dir} ` +
+      'are open; this checkout only, and only open is actionable.',
   );
-  console.log(
-    '  `blocked` waits on something that is not effort, and `refused` was',
-  );
-  console.log('  decided against and never becomes work.');
-  console.log();
 }
 
-main();
+try {
+  main();
+} catch (error) {
+  const detail = error instanceof Error ? error.message : String(error);
+  console.error(`LOCAL OPEN-WORK VERDICT: UNREADABLE in ${dir}; ${detail}`);
+  process.exitCode = 1;
+}
