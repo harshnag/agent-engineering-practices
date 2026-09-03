@@ -9,6 +9,7 @@ expected='agent-concurrency
 agent-handover
 checking-claims
 coordinating-agents
+cross-model-review
 durable-project-memory
 external-data-claims
 measured-changes

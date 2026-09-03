@@ -2,11 +2,17 @@
 
 The working agreement for anybody — person or agent — who writes anything here.
 
-**Almost nothing in this repository was learned here.** Every rule was extracted
-from two private production codebases. That makes the provenance rule from
-`project-agent-instructions` load-bearing: where a rule is inherited rather than
-demonstrated here, this file says so. Do not let that soften it — **an inherited
-rule is a rule somebody else already broke.**
+**Almost nothing in this repository was learned here.** Every skill except
+`cross-model-review` was extracted from two private production codebases; that
+one is an adopted protocol and its frontmatter says so. That makes the provenance
+rule from `project-agent-instructions` load-bearing: where a rule is inherited
+rather than demonstrated here, this file says so. Do not let that soften it —
+**an inherited rule is a rule somebody else already broke.**
+
+**Each skill's `metadata.provenance` is the authority on where it came from.** If
+you add one that was neither extracted nor demonstrated here, say which it is
+there and correct this paragraph and the README in the same change, rather than
+letting one sentence keep speaking for the whole tree.
 
 ## Read yourself in, in this order
 
@@ -57,6 +63,9 @@ practice. Re-derive rather than trusting a number in this file:
   review, and prove it refuses before believing it.
 - **Anything that writes gets its own working tree.**
   `skills/agent-concurrency/` is the protocol.
+- **Plans and diffs are critiqued by the other model in the pair.** Below, under
+  *The review pair*. `skills/cross-model-review/` is the protocol; this file is
+  where the pair is actually bound.
 
 ## Ship the rules; link the evidence
 
@@ -114,6 +123,64 @@ has no such material.
 Frontmatter must carry `name` (matching the directory), `description` (what it
 does *and* when to use it — the only part loaded at startup, so it is what
 decides whether the skill is ever activated), `license`, and `metadata`.
+
+## The review pair
+
+Every implementation plan is critiqued before implementation starts, and every
+diff is critiqued before it is committed or handed off, by the **other** model in
+this fixed pair:
+
+| Author | Reviewer |
+|---|---|
+| GPT-5.6 Sol, high effort | Claude Opus 5, high effort |
+| Claude Opus 5, high effort | GPT-5.6 Sol, high effort |
+
+`skills/cross-model-review/SKILL.md` is the protocol — substantive findings only,
+an explicit disposition on every finding, no review-of-review, and materiality
+judged by semantic effect. The bindings it requires a project to make are these:
+
+- **Record location:** the pull request body — one authoritative location — using
+  `skills/cross-model-review/assets/review-record-template.md`. Record the
+  reviewer model and effort **as requested and as confirmed by the runtime**;
+  they are different facts, a silent fallback to the author's own model is
+  otherwise invisible, and the reviewer's own account of which model it is does
+  not settle it.
+- **Cycle bound:** two review cycles per artifact lineage — the plan is one
+  lineage, the diff that implements it is another, and revising an artifact does
+  not start a fresh count. **The second cycle is terminal for the pair:** a
+  material change made in it, or a disagreement that survives it, goes to a
+  human, not to a third model cycle and not out unreviewed.
+- **Unavailable reviewer:** the review is `blocked`, and `blocked` is not
+  permission to proceed. Wait, escalate, or record an attributed decision to ship
+  unreviewed. **Never substitute the author's own model.**
+- **A human author** is reviewed by Claude Opus 5, as is **a model outside the
+  pair** — named rather than left to the author, because a reviewer chosen per
+  change is a choice the author makes about their own work. **Mixed authorship**
+  is reviewed by whichever member wrote none of it, and by a human if both
+  contributed.
+- **Absence of a record means unverified, not clean.**
+
+**This is instruction-enforced. It is not a gate, and nothing in the repository
+refuses when it is skipped** — which is exactly why the record is the only
+evidence it happened. Do not describe it as a gate; the rule above about not
+describing a gate as larger than it is applies hardest to the mechanism that has
+no enforcement at all.
+
+**Demonstrated here, not inherited.** The change that added
+`skills/cross-model-review/` was itself authored by Claude Opus 5 and reviewed by
+GPT-5.6 Sol at both checkpoints. **The full record — every finding and its
+disposition — is in the body of the pull request that added it**, per the binding
+above; the commit message carries the design reasoning, not the record, because
+one authoritative location is the point. Two findings are worth naming here
+because neither was in the diff: one caught this repository calling an unenforced
+checkpoint a *gate*, and one caught the opening sentence of this file claiming
+every rule here was extracted — a claim the change itself would have falsified.
+**Both were in the framing rather than the code**, which is the class of defect a
+second reader exists for.
+
+**Neither direction of the pair has been calibrated with a planted defect**, so
+its coverage is unmeasured. `skills/cross-model-review/references/RUNNING-THE-REVIEW.md`
+has the procedure.
 
 ## The gate
 

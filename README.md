@@ -5,17 +5,19 @@ Portable working rules for AI coding agents, packaged as
 format that GitHub Copilot, Microsoft Scout, Claude Code, Cursor and ~45 other
 agents load on demand.
 
-**These were not written as guidance. Each rule was paid for by a specific
-production failure**, in two codebases that ran multiple agents against real
-work for months. This repository is the extraction: the rules, generalised to
-the mechanism underneath, so they transfer to any team.
+**These were not written as guidance. Eleven of the twelve were paid for by a
+specific production failure**, in two codebases that ran multiple agents against
+real work for months. This repository is the extraction: the rules, generalised to
+the mechanism underneath, so they transfer to any team. The twelfth,
+`cross-model-review`, is an adopted protocol rather than an extracted one, and its
+frontmatter and its own text say so.
 
 ## Install
 
     gh skill install harshnag/agent-engineering-practices --all --scope user
 
 Every agent that reads `~/.copilot/skills/` picks them up automatically. Confirm
-with `ls ~/.copilot/skills/` — you should see eleven directories. If you have
+with `ls ~/.copilot/skills/` — you should see twelve directories. If you have
 installed any of them before, add `--force`, because `--all` aborts the batch
 rather than skipping what is already there.
 
@@ -42,7 +44,7 @@ The pattern repeats across every rule here:
 None of these are caught by working harder or reviewing more carefully. They are
 caught by specific, checkable practices, which is what this repository is.
 
-## The eleven skills
+## The twelve skills
 
 | Skill | What it governs |
 |---|---|
@@ -57,6 +59,7 @@ caught by specific, checkable practices, which is what this repository is.
 | [`resource-safe-tooling`](skills/resource-safe-tooling/) | Designing process-heavy tooling that remains safe on shared or constrained machines |
 | [`coordinating-agents`](skills/coordinating-agents/) | Dispatching and steering a fleet when listings are stale and completion is asynchronous |
 | [`shipping-changes`](skills/shipping-changes/) | Landing and deploying the exact reviewed revision, including migrations and runtime identity |
+| [`cross-model-review`](skills/cross-model-review/) | Having a plan and a diff critiqued by a different model in a fixed reciprocal pair, and recording it so a skipped review is visible |
 
 ## Three ideas that carry most of the value
 
@@ -92,7 +95,7 @@ Three properties that a document does not have:
 
 ## Adoption
 
-Start with one skill, not eleven. `checking-claims` is the shortest and has the
+Start with one skill, not twelve. `checking-claims` is the shortest and has the
 widest application; `agent-concurrency` is the one to take first if more than one
 agent or engineer touches a repository.
 
@@ -109,9 +112,9 @@ enforcement:
 
 ## Provenance and evidence
 
-Each skill states its rule and records that it was extracted rather than
-invented. **The originating codebases are private and are not named**, which
-forces a discipline worth having on its own terms:
+Each skill records in its frontmatter where it came from — extracted, or, in the
+one case of `cross-model-review`, adopted. **The originating codebases are private
+and are not named**, which forces a discipline worth having on its own terms:
 
 > **Ship the rules; link the evidence.**
 
