@@ -29,10 +29,16 @@ A workable invocation carries:
 3. **The artifact**, at a stated revision.
 4. **The bar**, quoted from `SKILL.md`, including that finding nothing is a
    legitimate outcome and that filler is not wanted.
-5. **Numbered findings**, required, so each one can be dispositioned
-   individually. An essay cannot be dispositioned; a numbered list can.
+5. **Numbered findings, and a verdict**, both required. Numbering is so each
+   finding can be dispositioned individually — an essay cannot be dispositioned;
+   a list can. The verdict is `approve` or `revise`, stated explicitly, because a
+   review that cannot conclude *no* is a review the author can complete by
+   rejecting everything.
 6. **A standing instruction to treat the author's claims as claims** — and to
    re-run anything the author says was verified, rather than accepting it.
+7. **Report, do not edit.** State plainly that the reviewer must not modify the
+   artifact, including trivially. A patch inside a review is the one change
+   nothing downstream reviews.
 
 Point 6 is the highest-yield line in the prompt. The strongest use of an
 automated reviewer is adversarial rather than confirmatory: ask it to reproduce
@@ -81,32 +87,55 @@ The shape that makes the record useful later:
 > saying the protocol is not a gate and why calling it one is worse than having
 > no gate.
 
-And a rejection, which is the more valuable record:
+And a reversal, which is the most valuable record of all — because a rejection is
+not permanent, and the record is what lets it be reopened rather than
+re-litigated from nothing:
 
-> **Finding 9 (reviewer, high):** the reviewer-edit exception is exploitable; the
-> reviewer should be forbidden from editing entirely.
+> **Finding 9, cycle 1 (reviewer, high):** the reviewer-edit exception is
+> exploitable; the reviewer should be forbidden from editing entirely.
 >
 > **Disposition: rejected in part.** A hard prohibition would block the cheapest
 > useful case. The exception is instead defined by semantic effect rather than by
-> the editor's label, and read-only is stated as the preference. Recorded here
-> because the next reader will otherwise reopen it.
+> the editor's label, and read-only is stated as the preference.
+>
+> **Re-raised, cycle 3, verdict `revise`.** An exception defined by effect still
+> has to be *applied* by somebody, and the person applying it is the one who
+> wants it — so the test never fires on the case it was written for.
+>
+> **Disposition: accepted; the earlier rejection is reversed.** Review is now
+> findings-only and the reviewer is read-only. The materiality test survives as
+> the rule for what happens when a reviewer edits anyway.
 
-Both are one artifact reference, one claim, one decision, one reason. Neither
-requires the reader to reconstruct what was argued.
+That exchange is the protocol working as intended: the author rejected on the
+merits, the reviewer did not withdraw, and the disagreement stayed visible until
+it was settled rather than being closed by whoever spoke last. Note that it took
+a `revise` verdict to do it — under dispositions alone the first rejection would
+have ended the matter, with the record showing a completed review.
+
+Both shapes are one artifact reference, one claim, one decision, one reason.
+Neither requires the reader to reconstruct what was argued.
 
 ## How this becomes decoration
 
 Each of these leaves the record looking healthy.
 
 **The reviewer that never rejects.** Same rule as any check: if it cannot fail,
-it is not a check. A run of `no-findings` outcomes is either a well-run project
+it is not a check. A run of `approve` verdicts is either a well-run project
 or an unmeasured reviewer, and nothing in the record distinguishes them. This is
-what calibration is for.
+what calibration is for. **Count the `revise` verdicts** — a pair that has never
+issued one has not been shown to be able to.
+
+**The verdict that is read as advice.** `revise` blocks. An author who treats it
+as a strong suggestion has removed the checkpoint while leaving its record
+looking complete, which is worse than skipping the review outright: a skipped
+review leaves no record, and this leaves a reassuring one.
 
 **The silent downgrade.** The named model is unavailable, the tool falls back,
-and the record says a review happened. Recording the *confirmed* reviewer
-identity alongside the requested one is the only defence, and it works only if
-somebody reads the two fields as a pair.
+and the record says a review happened. Recording the *confirmed* reviewer model
+and effort alongside the requested ones is the only defence, and it works only if
+somebody reads the pairs as pairs. Effort is the half that gets forgotten: a
+fallback to the same model at a lower effort leaves the model field correct and
+the review weaker than the one the record describes.
 
 **The review that arrives after the decision.** A diff review requested while the
 commit is already being written is a formality with a timestamp. The checkpoint

@@ -1,6 +1,6 @@
 ---
 name: cross-model-review
-description: Protocol for having every implementation plan and every diff critiqued by a different model in a fixed reciprocal pair — before implementation and before landing — with substantive findings only, an explicit author disposition on each one, a bounded re-review rule, and a record that tells a clean review apart from a skipped one. Use when starting implementation from a plan, preparing to commit or hand off, invoking or acting as a reviewer, deciding whether a revision needs another cycle, deciding what a reviewer may edit, choosing which models review which, or when the named reviewer cannot be reached.
+description: Protocol for having every implementation plan and every diff critiqued by a different model in a fixed reciprocal pair — before implementation and before landing — with substantive findings only, a read-only reviewer, an explicit author disposition on each finding, an approve/revise verdict per cycle, a bounded re-review rule, and a record that tells a clean review apart from a skipped one. Use when starting implementation from a plan, preparing to commit or hand off, invoking or acting as a reviewer, recording or auditing a review, deciding whether a revision needs another cycle, resolving a disagreement between author and reviewer, choosing which models review which, or when the named reviewer cannot be reached.
 license: MIT
 metadata:
   provenance: Adopted protocol, 2026; not extracted from the origin codebases
@@ -104,14 +104,55 @@ The author answers each numbered finding with exactly one of:
   a stated follow-up. Deferred with no carrier is rejected while sounding
   otherwise.
 
-> **The author decides; the reviewer does not hold a veto.** A reviewer's claim
-> needs checking exactly as much as an author's, and deference produces the wrong
-> answer at the moment it feels most warranted — when the correction comes from
-> whoever has been right all day.
+> **The author decides what the artifact says; the reviewer decides whether the
+> review passed.** These are different powers, and collapsing them in either
+> direction breaks the protocol. A reviewer's claim needs checking exactly as much
+> as an author's, and deference produces the wrong answer at the moment it feels
+> most warranted — when the correction comes from whoever has been right all day.
 
 A recorded rejection is worth more later than a recorded acceptance. An
 acceptance is visible in the diff; a rejection is invisible everywhere else, and
 it is the thing a later reader will otherwise re-litigate from scratch.
+
+### Every cycle ends with a reviewer verdict
+
+The dispositions are the author's. The **verdict** is the reviewer's, and it is
+recorded per cycle:
+
+| Verdict | Means | Effect |
+|---|---|---|
+| `approve` | Nothing above the bar remains | The checkpoint is passed |
+| `revise` | At least one substantive finding stands unresolved | **The artifact does not proceed** |
+
+`revise` blocks implementation, commit, or handoff. It is not advisory, and an
+author who reads it as advisory has removed the checkpoint while leaving its
+record in place.
+
+Without a verdict, an author can reject every substantive finding on the merits
+and proceed, and the record shows a completed review with dispositions on
+everything — which is indistinguishable from a review that passed. **That is the
+gap a per-cycle verdict closes: a review has to be able to conclude *no*.**
+
+Two ways out of `revise`, and no third:
+
+1. **Resolve and re-review.** Address the standing findings; the next cycle
+   returns a verdict on the delta. **Available only while cycles remain** — see
+   the bound below.
+2. **Escalate the disagreement, explicitly and with attribution.** If the author
+   rejects a finding on the merits and the reviewer does not withdraw it, that is
+   an unresolved disagreement between two parties who both may be right. It goes
+   to a **human**, named in the record, who decides. It does not get closed by
+   the author because they are the author, and it does not get closed by the
+   reviewer because they hold the verdict.
+
+At the bound, only the second remains. Otherwise `revise` and "resolve and
+re-review" form a loop with no exit, which is the same unbounded protocol in a
+different costume.
+
+This is why the reviewer's power is bounded at the verdict and does not extend to
+the content. It cannot compel a change; it can refuse to say the review passed,
+which forces the disagreement into the open instead of into whoever is more
+insistent.
 
 ## Termination is a property of the protocol, not of anybody's judgement
 
@@ -138,40 +179,69 @@ Banning meta-review terminates nothing on its own; only the bound does. An
 unbounded protocol with a ban on recursion still loops, one legitimate revision
 at a time.
 
-## Materiality is semantic, not editorial
+## The review is findings-only, and the reviewer is read-only
 
-A reviewer's own edits do not start a new cycle. That exception is defined by
-**effect**, not by the label the editor puts on the edit.
+> **A reviewer reports findings. It does not edit the artifact.** Not a typo, not
+> a comment, not a rename.
+
+A reviewer that edits has become an author who also holds review authority over
+their own edit, and nothing in the protocol reviews it. The edit arrives inside
+the review, which is the one artifact everybody downstream treats as scrutiny
+rather than as material needing scrutiny.
+
+The cheap objection is that forbidding a one-word fix is bureaucracy. It is
+cheaper than the alternative: a fix reported as a finding costs the author one
+line and stays inside the mechanism, while a fix applied by the reviewer leaves
+the mechanism entirely and looks identical afterward.
+
+**This rule was reversed.** An earlier version preferred a read-only reviewer
+while permitting edits under a materiality test. The test is sound and the
+permission was not — an exception defined by effect still has to be *applied* by
+somebody, and the person applying it is the one who wants the exception.
+`references/RUNNING-THE-REVIEW.md` carries the reversal as a worked example.
+
+### If a reviewer edited anyway, materiality decides what happens next
+
+The rule above is instruction-enforced like everything here, so it will
+occasionally be broken. When it is, the edit does not get a free pass for having
+arrived inside a review, and the label the editor puts on it settles nothing.
 
 **Material — a new cycle is required:** a change to executable behaviour, to an
 interface, to a test or to what it covers, to a rule or instruction, to a claim,
 to configuration, or to what was verified.
 
-**Not material:** an edit that provably changes none of the above.
+**Not material:** an edit that provably changes none of the above. It still gets
+an author disposition, like any other finding.
 
 > "A mechanical rename" is a claim about a diff, not a category of diff. A rename
 > can break a reference, and in a documentation repository the prose *is* the
 > product — so a comment fix can be the most material change in the change.
 
-**Prefer a read-only reviewer.** A reviewer that edits is an author holding review
-authority, and this exception is precisely what they will reach for. Where the
-reviewer must edit, the author dispositions those edits like any other finding.
-
 ## The record, and what its absence means
 
 Record, at one authoritative location named in project instructions:
 
-- the artifact and its **exact revision** — a commit sha; for a diff reviewed
-  before it is committed, the staged tree id, then the sha it became, confirmed
-  to carry that same tree. A patch digest names the change rather than the
-  result. A path is not a revision and a branch name is not one either, because
-  both move;
+- the artifact and its **exact revision**:
+  - *a diff* — a commit sha; reviewed before commit, the staged tree id, then the
+    sha it became, confirmed to carry that same tree. A patch digest names the
+    change rather than the result;
+  - *a plan* — a plan that lives in the repository has a sha. **A plan that lives
+    in a chat, a session, or an issue thread still needs an identity**, or the
+    most consequential checkpoint is the one whose subject cannot be produced
+    later. Record a digest of the reviewed text, plus the session or event
+    identifier that locates it. Reconstructing "the plan we reviewed" from memory
+    is not a revision;
+  - a path is not a revision, and a branch name is not one either, because both
+    move;
 - the **author** model and effort level;
-- the **reviewer** model and effort level, both **as requested** and **as
-  confirmed by the runtime** — a model's own account of which model it is is a
-  claim, not a confirmation;
+- the **reviewer** model **and effort level**, each recorded twice — **as
+  requested** and **as confirmed by the runtime**. They are four facts, not two:
+  a fallback can change the effort without changing the model, and a review run
+  at a lower effort than requested is a different review. Where the runtime does
+  not report one, record it `unconfirmed`; a model's own account of which model
+  it is, or how hard it thought, is a claim rather than a confirmation;
 - the invocation or session identifier, so the review can be found again;
-- the outcome state;
+- the outcome state and the **reviewer's verdict** for the cycle;
 - each finding and its disposition.
 
 Three outcome states, and no others:
@@ -182,10 +252,14 @@ Three outcome states, and no others:
 | `findings-dispositioned` | The review ran; every finding has an author disposition |
 | `blocked` | The review could not run, with the reason |
 
+The outcome state says whether the review *ran*. The verdict says what it
+*concluded*. Both are needed: `findings-dispositioned` with a `revise` verdict is
+a blocked artifact, and recording only the first makes it look finished.
+
 > **Requested and confirmed are different facts.** A pairing that silently falls
-> back to the author's own model produces a record indistinguishable from a real
-> cross-model review. The pairing cannot be audited from the reviewer's *claimed*
-> identity alone.
+> back to the author's own model, or to a lower effort level, produces a record
+> indistinguishable from a real cross-model review. The pairing cannot be audited
+> from the reviewer's *claimed* identity alone.
 
 **Absence of a record means unverified — never clean.** This is the general rule
 that blindness must not render as a negative finding: nothing was observed, which

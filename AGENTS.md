@@ -136,15 +136,20 @@ this fixed pair:
 | Claude Opus 5, high effort | GPT-5.6 Sol, high effort |
 
 `skills/cross-model-review/SKILL.md` is the protocol — substantive findings only,
-an explicit disposition on every finding, no review-of-review, and materiality
-judged by semantic effect. The bindings it requires a project to make are these:
+a read-only reviewer, an explicit disposition on every finding, an explicit
+`approve`/`revise` verdict per cycle, and no review-of-review. The bindings it
+requires a project to make are these:
 
 - **Record location:** the pull request body — one authoritative location — using
   `skills/cross-model-review/assets/review-record-template.md`. Record the
-  reviewer model and effort **as requested and as confirmed by the runtime**;
-  they are different facts, a silent fallback to the author's own model is
-  otherwise invisible, and the reviewer's own account of which model it is does
-  not settle it.
+  reviewer model **and effort** as requested and as confirmed by the runtime;
+  they are four facts, a silent fallback to the author's own model or to a
+  cheaper effort level is otherwise invisible, and the reviewer's own account
+  does not settle it.
+- **A `revise` verdict blocks.** Nothing lands on a `revise`. Resolve and
+  re-review, or escalate the disagreement to a named human — the author does not
+  close it by rejecting the finding, and the reviewer does not close it by
+  insisting.
 - **Cycle bound:** two review cycles per artifact lineage — the plan is one
   lineage, the diff that implements it is another, and revising an artifact does
   not start a fresh count. **The second cycle is terminal for the pair:** a
@@ -171,12 +176,21 @@ no enforcement at all.
 GPT-5.6 Sol at both checkpoints. **The full record — every finding and its
 disposition — is in the body of the pull request that added it**, per the binding
 above; the commit message carries the design reasoning, not the record, because
-one authoritative location is the point. Two findings are worth naming here
-because neither was in the diff: one caught this repository calling an unenforced
-checkpoint a *gate*, and one caught the opening sentence of this file claiming
-every rule here was extracted — a claim the change itself would have falsified.
-**Both were in the framing rather than the code**, which is the class of defect a
-second reader exists for.
+one authoritative location is the point. Three findings are worth naming here
+because none was in the diff: one caught this repository calling an unenforced
+checkpoint a *gate*; one caught the opening sentence of this file claiming every
+rule here was extracted — a claim the change itself would have falsified; and one
+caught the protocol having no way to conclude *no*, so an author could reject
+every finding on the merits and still show a completed review. **All three were
+in the framing rather than the code**, which is the class of defect a second
+reader exists for.
+
+**The bound was reached and the escalation path was used.** The diff lineage went
+to a third cycle, past the two this file sets, because a human directed it after
+the terminal cycle — which is what the protocol says happens instead of a third
+*model* cycle deciding for itself to continue. Recorded because a bound that is
+quietly exceeded is worse than no bound, and because this is the only evidence
+the escalation path works.
 
 **Neither direction of the pair has been calibrated with a planted defect**, so
 its coverage is unmeasured. `skills/cross-model-review/references/RUNNING-THE-REVIEW.md`
