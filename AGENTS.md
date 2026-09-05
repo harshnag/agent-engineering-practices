@@ -2,17 +2,11 @@
 
 The working agreement for anybody — person or agent — who writes anything here.
 
-**Almost nothing in this repository was learned here.** Every skill except
-`cross-model-review` was extracted from two private production codebases; that
-one is an adopted protocol and its frontmatter says so. That makes the provenance
-rule from `project-agent-instructions` load-bearing: where a rule is inherited
-rather than demonstrated here, this file says so. Do not let that soften it —
-**an inherited rule is a rule somebody else already broke.**
-
-**Each skill's `metadata.provenance` is the authority on where it came from.** If
-you add one that was neither extracted nor demonstrated here, say which it is
-there and correct this paragraph and the README in the same change, rather than
-letting one sentence keep speaking for the whole tree.
+**Almost nothing in this repository was learned here.** Every rule was extracted
+from two private production codebases. That makes the provenance rule from
+`project-agent-instructions` load-bearing: where a rule is inherited rather than
+demonstrated here, this file says so. Do not let that soften it — **an inherited
+rule is a rule somebody else already broke.**
 
 ## Read yourself in, in this order
 
@@ -63,9 +57,6 @@ practice. Re-derive rather than trusting a number in this file:
   review, and prove it refuses before believing it.
 - **Anything that writes gets its own working tree.**
   `skills/agent-concurrency/` is the protocol.
-- **Plans and diffs are critiqued by the other model in the pair.** Below, under
-  *The review pair*. `skills/cross-model-review/` is the protocol; this file is
-  where the pair is actually bound.
 
 ## Ship the rules; link the evidence
 
@@ -123,102 +114,6 @@ has no such material.
 Frontmatter must carry `name` (matching the directory), `description` (what it
 does *and* when to use it — the only part loaded at startup, so it is what
 decides whether the skill is ever activated), `license`, and `metadata`.
-
-## The review pair
-
-Every implementation plan is critiqued before implementation starts, and every
-diff is critiqued before it is committed or handed off, by the **other** model in
-this fixed pair:
-
-| Author | Reviewer |
-|---|---|
-| GPT-5.6 Sol, high effort | Claude Opus 5, high effort |
-| Claude Opus 5, high effort | GPT-5.6 Sol, high effort |
-
-`skills/cross-model-review/SKILL.md` is the protocol — substantive findings only,
-a read-only reviewer, an explicit disposition on every finding, an explicit
-`approve`/`revise` verdict per cycle, and no review-of-review. The bindings it
-requires a project to make are these:
-
-- **Record location:** the pull request body — one authoritative location — using
-  `skills/cross-model-review/assets/review-record-template.md`. Record the
-  reviewer model **and effort** as requested and as confirmed by the runtime;
-  they are four facts, a silent fallback to the author's own model or to a
-  cheaper effort level is otherwise invisible, and the reviewer's own account
-  does not settle it.
-- **A `revise` verdict blocks.** Nothing lands on a `revise`. Resolve and
-  re-review, or escalate the disagreement to a named human — the author does not
-  close it by rejecting the finding, and the reviewer does not close it by
-  insisting.
-- **Cycle bound:** two review cycles per artifact lineage — the plan is one
-  lineage, the diff that implements it is another, and revising an artifact does
-  not start a fresh count. **The second cycle is terminal for the pair:** a
-  material change made in it, or a disagreement that survives it, goes to a
-  human, not to a third model cycle and not out unreviewed.
-- **Unavailable reviewer:** the review is `blocked`, and `blocked` is not
-  permission to proceed. Wait, escalate, or record an attributed decision to ship
-  unreviewed. **Never substitute the author's own model.**
-- **A human author** is reviewed by Claude Opus 5, as is **a model outside the
-  pair** — named rather than left to the author, because a reviewer chosen per
-  change is a choice the author makes about their own work. **Mixed authorship**
-  is reviewed by whichever member wrote none of it, and by a human if both
-  contributed.
-- **Absence of a record means unverified, not clean.**
-
-**This is instruction-enforced. It is not a gate, and nothing in the repository
-refuses when it is skipped** — which is exactly why the record is the only
-evidence it happened. Do not describe it as a gate; the rule above about not
-describing a gate as larger than it is applies hardest to the mechanism that has
-no enforcement at all.
-
-**Demonstrated here, not inherited.** The change that added
-`skills/cross-model-review/` was itself authored by Claude Opus 5 and reviewed by
-GPT-5.6 Sol at both checkpoints. **Every finding and its disposition is in the
-body of the pull request that added it**, per the binding above; the commit
-message carries the design reasoning, not the record, because one authoritative
-location is the point. Three findings are worth naming here because none was in
-the diff: one caught this repository calling an unenforced checkpoint a *gate*;
-one caught the opening sentence of this file claiming every rule here was
-extracted — a claim the change itself would have falsified; and one caught the
-protocol having no way to conclude *no*, so an author could reject every finding
-on the merits and still show a completed review. **All three were in the framing
-rather than the code**, which is the class of defect a second reader exists for.
-
-**That record is complete on findings and incomplete on provenance**, and it says
-so per cycle rather than being described here as compliant. The schema grew
-during the change that defined it, so its own early cycles predate fields they
-are now judged against: the plan cycle has a session identifier but no digest of
-the reviewed text; no cycle has a runtime-confirmed reviewer model or effort, all
-being `unconfirmed`; and the cycles before the verdict rule existed have no
-verdict, which has been left unrecorded rather than reconstructed. **A verdict
-inferred afterwards by the author is the author speaking for the reviewer**, and
-a digest computed now attests to nothing. This is the first thing the protocol
-demonstrates about itself: the fields it demands are exactly the ones that cannot
-be recovered once the moment has passed.
-
-**The bound was exceeded by an explicit human override, three times.** The diff
-lineage ran a third, fourth and fifth cycle past the two this file sets, each
-directed by **@harshnag** after the terminal cycle. **That is an override, not
-the protocol operating.** The rule in `skills/cross-model-review/SKILL.md` is
-that at the last allowed cycle a surviving disagreement or a material change goes
-to a human — *not to a third model cycle*. Escalation sends the question to a
-person to decide; it does not license the pair to run again. A person can
-overrule any rule here, since none of it is enforced, and one did.
-
-It is put this way because the alternative was available and worse: describing a
-human-directed extra cycle as the escalation path working reads as compliance,
-and would quietly turn the bound into something any motivated party can dissolve
-by asking. **A bound with a sanctioned way around it is not a bound.** So — the
-limit was reached at cycle two, the work continued anyway under a named person's
-direction, and every post-bound cycle in the pull request record is labelled as
-an override with that person named. **Three overrides is also evidence about the
-bound**: a limit reached and passed on every occasion it was reached is either
-set too low for this kind of work or not being treated as a limit, and the next
-change to this file should say which rather than raising it quietly.
-
-**Neither direction of the pair has been calibrated with a planted defect**, so
-its coverage is unmeasured. `skills/cross-model-review/references/RUNNING-THE-REVIEW.md`
-has the procedure.
 
 ## The gate
 
