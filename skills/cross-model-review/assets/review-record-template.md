@@ -5,14 +5,18 @@ request body — rather than in a file nobody opens.
 
 ---
 
-**Artifact:** [plan | diff]
+**Artifact:** [plan | diff] — say which; the identity fields below differ by type,
+and "reviewed the change" names nothing.
 **Exact revision:**
 - *diff:* [commit sha or PR head sha; reviewed before commit, the staged tree id
   from `git write-tree` — that is the identifier naming the whole reviewed tree.
   A patch digest identifies the change but not the tree: the same patch on a
   different base produces a different result, so record the base too if you use
   one.]
-- *plan in the repository:* [commit sha of the file]
+- *plan in the repository:* [the repo-relative path **and** the commit sha the
+  reviewed version was read at — or the blob id, which pins the content even if
+  the file is later moved. A sha alone does not say which file was reviewed, and
+  a path alone moves under you.]
 - *plan in a chat, session, or issue thread:* [digest of the exact reviewed text,
   e.g. `shasum -a 256`, **and** the session or event id that locates it. Without
   this the plan checkpoint has no auditable subject — which is the checkpoint
@@ -79,6 +83,13 @@ Rules this shape exists to enforce, each of which has been got wrong before:
 - **A rejected finding the reviewer does not withdraw is not closed.** It is an
   unresolved disagreement, and it goes to a named human.
 - **The revision is exact, including for a plan.** "Reviewed the branch" is not a
-  reviewed revision; branches move. A plan that lived only in a conversation
-  needs a digest and a session id, or the checkpoint has no subject anybody can
-  produce later.
+  reviewed revision; branches move. A plan in the repository needs its path *and*
+  a commit or blob id — a sha alone does not say which file, a path alone moves
+  under you. A plan that lived only in a conversation needs a digest and a
+  session id, or the checkpoint has no subject anybody can produce later.
+- **A record retrofitted to a schema newer than the review says so, and leaves
+  what it cannot honestly reconstruct marked as not recorded.** A verdict
+  reconstructed by the author is the author speaking for the reviewer, and a
+  digest computed after the fact attests to nothing. Not recorded is a real
+  finding about the record; back-filling it manufactures the evidence the record
+  exists to be.

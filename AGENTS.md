@@ -173,33 +173,48 @@ no enforcement at all.
 
 **Demonstrated here, not inherited.** The change that added
 `skills/cross-model-review/` was itself authored by Claude Opus 5 and reviewed by
-GPT-5.6 Sol at both checkpoints. **The full record — every finding and its
-disposition — is in the body of the pull request that added it**, per the binding
-above; the commit message carries the design reasoning, not the record, because
-one authoritative location is the point. Three findings are worth naming here
-because none was in the diff: one caught this repository calling an unenforced
-checkpoint a *gate*; one caught the opening sentence of this file claiming every
-rule here was extracted — a claim the change itself would have falsified; and one
-caught the protocol having no way to conclude *no*, so an author could reject
-every finding on the merits and still show a completed review. **All three were
-in the framing rather than the code**, which is the class of defect a second
-reader exists for.
+GPT-5.6 Sol at both checkpoints. **Every finding and its disposition is in the
+body of the pull request that added it**, per the binding above; the commit
+message carries the design reasoning, not the record, because one authoritative
+location is the point. Three findings are worth naming here because none was in
+the diff: one caught this repository calling an unenforced checkpoint a *gate*;
+one caught the opening sentence of this file claiming every rule here was
+extracted — a claim the change itself would have falsified; and one caught the
+protocol having no way to conclude *no*, so an author could reject every finding
+on the merits and still show a completed review. **All three were in the framing
+rather than the code**, which is the class of defect a second reader exists for.
 
-**The bound was exceeded by an explicit human override.** The diff lineage ran a
-third and a fourth cycle, past the two this file sets, because a human directed
-each one after the terminal cycle. **That is an override, not the protocol
-operating.** The rule in `skills/cross-model-review/SKILL.md` is that at the last
-allowed cycle a surviving disagreement or a material change goes to a human —
-*not to a third model cycle*. Escalation sends the question to a person to
-decide; it does not license the pair to run again. A person can overrule any rule
-here, since none of it is enforced, and one did.
+**That record is complete on findings and incomplete on provenance**, and it says
+so per cycle rather than being described here as compliant. The schema grew
+during the change that defined it, so its own early cycles predate fields they
+are now judged against: the plan cycle has a session identifier but no digest of
+the reviewed text; no cycle has a runtime-confirmed reviewer model or effort, all
+being `unconfirmed`; and the cycles before the verdict rule existed have no
+verdict, which has been left unrecorded rather than reconstructed. **A verdict
+inferred afterwards by the author is the author speaking for the reviewer**, and
+a digest computed now attests to nothing. This is the first thing the protocol
+demonstrates about itself: the fields it demands are exactly the ones that cannot
+be recovered once the moment has passed.
+
+**The bound was exceeded by an explicit human override, three times.** The diff
+lineage ran a third, fourth and fifth cycle past the two this file sets, each
+directed by **@harshnag** after the terminal cycle. **That is an override, not
+the protocol operating.** The rule in `skills/cross-model-review/SKILL.md` is
+that at the last allowed cycle a surviving disagreement or a material change goes
+to a human — *not to a third model cycle*. Escalation sends the question to a
+person to decide; it does not license the pair to run again. A person can
+overrule any rule here, since none of it is enforced, and one did.
 
 It is put this way because the alternative was available and worse: describing a
 human-directed extra cycle as the escalation path working reads as compliance,
 and would quietly turn the bound into something any motivated party can dissolve
 by asking. **A bound with a sanctioned way around it is not a bound.** So — the
 limit was reached at cycle two, the work continued anyway under a named person's
-direction, and both facts are in the pull request record.
+direction, and every post-bound cycle in the pull request record is labelled as
+an override with that person named. **Three overrides is also evidence about the
+bound**: a limit reached and passed on every occasion it was reached is either
+set too low for this kind of work or not being treated as a limit, and the next
+change to this file should say which rather than raising it quietly.
 
 **Neither direction of the pair has been calibrated with a planted defect**, so
 its coverage is unmeasured. `skills/cross-model-review/references/RUNNING-THE-REVIEW.md`

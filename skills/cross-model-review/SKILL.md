@@ -234,12 +234,13 @@ Record, at one authoritative location named in project instructions:
   - *a diff* — a commit sha; reviewed before commit, the staged tree id, then the
     sha it became, confirmed to carry that same tree. A patch digest names the
     change rather than the result;
-  - *a plan* — a plan that lives in the repository has a sha. **A plan that lives
-    in a chat, a session, or an issue thread still needs an identity**, or the
-    most consequential checkpoint is the one whose subject cannot be produced
-    later. Record a digest of the reviewed text, plus the session or event
-    identifier that locates it. Reconstructing "the plan we reviewed" from memory
-    is not a revision;
+  - *a plan* — a plan that lives in the repository needs **both** its path and a
+    commit or blob id: a sha alone does not say which file was read, and a path
+    alone moves. **A plan that lives in a chat, a session, or an issue thread
+    still needs an identity**, or the most consequential checkpoint is the one
+    whose subject cannot be produced later. Record a digest of the reviewed text,
+    plus the session or event identifier that locates it. Reconstructing "the
+    plan we reviewed" from memory is not a revision;
   - a path is not a revision, and a branch name is not one either, because both
     move;
 - the **author** model and effort level;

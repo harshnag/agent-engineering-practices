@@ -106,11 +106,20 @@ re-litigated from nothing:
 > findings-only and the reviewer is read-only. The materiality test survives as
 > the rule for what happens when a reviewer edits anyway.
 
-That exchange is the protocol working as intended: the author rejected on the
-merits, the reviewer did not withdraw, and the disagreement stayed visible until
-it was settled rather than being closed by whoever spoke last. Note that it took
-a `revise` verdict to do it — under dispositions alone the first rejection would
-have ended the matter, with the record showing a completed review.
+**Read the cycle number.** This is a real exchange, and cycle 3 is past the
+two-cycle bound the project set. It happened because a **named human directed
+it** after the terminal cycle — an explicit override, not a cycle the protocol
+offers. In bound, the same exchange fits: raise at cycle 1, re-raise at cycle 2
+with a `revise`, settle there. Had it not settled, the bound sends the
+disagreement to a person to decide, which is not the same thing as a person
+sending it back to the pair.
+
+What *did* work as intended is the machinery inside the cycles: the author
+rejected on the merits, the reviewer did not withdraw, and the disagreement
+stayed visible until it was settled rather than being closed by whoever spoke
+last. Note that it took a `revise` verdict to do it — under dispositions alone
+the first rejection would have ended the matter, with the record showing a
+completed review.
 
 Both shapes are one artifact reference, one claim, one decision, one reason.
 Neither requires the reader to reconstruct what was argued.
