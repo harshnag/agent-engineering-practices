@@ -179,6 +179,15 @@ Banning meta-review terminates nothing on its own; only the bound does. An
 unbounded protocol with a ban on recursion still loops, one legitimate revision
 at a time.
 
+**There is no sanctioned third cycle.** Escalation sends the disagreement to a
+human to *decide*; it does not authorise the pair to run again. A human can of
+course direct another cycle — nothing here is enforced, and every rule in this
+file yields to a person who overrules it. But that is an **override of the
+bound**, and it is recorded as one, naming who directed it. Recording it as the
+protocol working is the more damaging error: it converts the bound into a
+formality that any sufficiently motivated party can satisfy by asking, and leaves
+no evidence the limit was ever reached.
+
 ## The review is findings-only, and the reviewer is read-only
 
 > **A reviewer reports findings. It does not edit the artifact.** Not a typo, not
@@ -255,6 +264,11 @@ Three outcome states, and no others:
 The outcome state says whether the review *ran*. The verdict says what it
 *concluded*. Both are needed: `findings-dispositioned` with a `revise` verdict is
 a blocked artifact, and recording only the first makes it look finished.
+
+They are not independent. **`blocked` takes the verdict `not-run`** — a reviewer
+that never ran concluded nothing, and any other value there is invented. Every
+other outcome takes `approve` or `revise` and never `not-run`, or a review that
+did run can be recorded as though it did not.
 
 > **Requested and confirmed are different facts.** A pairing that silently falls
 > back to the author's own model, or to a lower effort level, produces a record

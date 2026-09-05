@@ -39,9 +39,11 @@ review run?
 [If `blocked`: why, and which exit was taken — waited, escalated, or proceeded
 unreviewed by an attributed decision.]
 
-**Reviewer verdict:** [`approve` | `revise`] — what did it conclude?
+**Reviewer verdict:** [`approve` | `revise` | `not-run`] — what did it conclude?
 [`revise` blocks the artifact. Record which findings stand, and either the next
-cycle or the named human the disagreement was escalated to.]
+cycle or the named human the disagreement was escalated to. `not-run` is
+permitted **only** when the outcome is `blocked`, because a reviewer that never
+ran concluded nothing; anywhere else it is a missing verdict wearing a value.]
 
 **Cycle:** [n] of [bound], counting cycles on this artifact's whole lineage
 
@@ -63,6 +65,11 @@ Rules this shape exists to enforce, each of which has been got wrong before:
 - **Outcome and verdict are different questions.** Whether the review ran, and
   what it concluded. `findings-dispositioned` with a `revise` verdict is a
   blocked artifact; recording only the outcome makes it read as finished.
+- **The two fields constrain each other.** `blocked` takes `not-run` and nothing
+  else — there is no verdict to have. Every other outcome takes `approve` or
+  `revise` and never `not-run`, or an artifact that was reviewed can be recorded
+  as though it never was. Neither combination is a formatting detail: each is a
+  way to leave the record looking complete while the checkpoint did not happen.
 - **Requested and confirmed are separate fields, for model *and* effort**,
   because a silent fallback to the author's own model — or to a cheaper effort
   level — is otherwise invisible. The reviewer's own account cannot settle it,

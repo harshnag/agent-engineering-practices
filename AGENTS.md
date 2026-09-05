@@ -185,12 +185,21 @@ every finding on the merits and still show a completed review. **All three were
 in the framing rather than the code**, which is the class of defect a second
 reader exists for.
 
-**The bound was reached and the escalation path was used.** The diff lineage went
-to a third cycle, past the two this file sets, because a human directed it after
-the terminal cycle — which is what the protocol says happens instead of a third
-*model* cycle deciding for itself to continue. Recorded because a bound that is
-quietly exceeded is worse than no bound, and because this is the only evidence
-the escalation path works.
+**The bound was exceeded by an explicit human override.** The diff lineage ran a
+third and a fourth cycle, past the two this file sets, because a human directed
+each one after the terminal cycle. **That is an override, not the protocol
+operating.** The rule in `skills/cross-model-review/SKILL.md` is that at the last
+allowed cycle a surviving disagreement or a material change goes to a human —
+*not to a third model cycle*. Escalation sends the question to a person to
+decide; it does not license the pair to run again. A person can overrule any rule
+here, since none of it is enforced, and one did.
+
+It is put this way because the alternative was available and worse: describing a
+human-directed extra cycle as the escalation path working reads as compliance,
+and would quietly turn the bound into something any motivated party can dissolve
+by asking. **A bound with a sanctioned way around it is not a bound.** So — the
+limit was reached at cycle two, the work continued anyway under a named person's
+direction, and both facts are in the pull request record.
 
 **Neither direction of the pair has been calibrated with a planted defect**, so
 its coverage is unmeasured. `skills/cross-model-review/references/RUNNING-THE-REVIEW.md`
