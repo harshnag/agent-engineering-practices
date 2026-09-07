@@ -5,9 +5,9 @@ Where this stopped, what is open, and what was not verified.
 **Read [AGENTS.md](AGENTS.md) first**, then this, then the docs it names.
 
 > **Do not trust this file over the docs.** It is one session's summary of where
-> things stood when it stopped, written by whoever had the least context left of
-> anybody who worked on it. The docs are reasoned and gated; this is a note. If
-> they disagree, the docs are right and this is stale — fix it.
+> things stood when it stopped, and can omit constraints or lag behind the
+> repository. The docs are reasoned and gated; this is a note. If they disagree,
+> the docs are right and this is stale — fix it.
 
 ## Where things stand
 
@@ -39,10 +39,15 @@ decided against and never becomes work.
 
 ## Who continues this
 
-<!-- Name the successor, what kind it is, and where its work will appear — a
-     branch, a pull request, the trunk. If no successor was created, SAY SO AND
-     WHY. Silence reads as a successor that exists, and the project waits for an
-     agent nobody made. -->
+<!-- Completed work needs no successor. For a necessary continuation, name the
+     unfinished scope, successor, ownership and where its work will appear —
+     its own branch and working tree, landing through a pull request. Follow the
+     project's admission and retirement rules; never remove a live session's
+     tree. If no successor was created, SAY SO AND WHY. Silence reads as a
+     successor that exists, and the project waits for an agent nobody made.
+     For a context-related handoff, state the observed trigger, what recovery
+     was attempted and what remains uncertain. Report occupancy with its source
+     only if available and relevant; do not infer it from lifetime usage. -->
 
 ## What was not verified
 

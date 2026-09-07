@@ -71,9 +71,13 @@ taken the action it would have prevented. Both origin projects moved it earlier
 after exactly that.
 
 Only the short entry set is an order. Everything else needs a task-to-document
-route. One origin project measured that its prescribed reading list no longer
-fit inside the handover threshold; every session had already been routing
-informally, and the instruction was impossible to obey literally.
+route. The earlier rationale compared a reading-list estimate with a handover
+threshold, but neither quantity established the actual prompt or effective
+window. Measure the compulsory prompt separately from the corpus and label
+estimates; do not turn either into a restart count. The
+[handoff evidence review](../../agent-handover/references/CONTEXT-HANDOFF-EVIDENCE.md)
+records why that threshold was withdrawn. Routing remains useful without it:
+every session should not have to load every document to find the relevant one.
 
 Long documents then need an address. A generated contents block is useful, but
 it is not identity or completeness: size budgets may force it to omit deeper

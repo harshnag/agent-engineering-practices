@@ -61,7 +61,9 @@ addressing, not a summary: once routed, read the neighboring sections too. -->
 than behaviour, and a session reads itself in from them before writing anything.
 A mechanic described as though it exists is a plan built on a fiction.
 
-<!-- Say whether anybody has measured what the read-in costs. If not, say that. -->
+<!-- Say whether anybody has measured what the read-in costs. Name the prompt
+     boundary, keep corpus size separate, and label estimates as estimates.
+     If no measurement exists, say so rather than inferring current occupancy. -->
 
 ## The rules, which are not negotiable
 
@@ -119,9 +121,22 @@ it is invisible to everyone except the tree it is sitting in.
 
 ## Hand off before you are forced to
 
-**At roughly <N> context, stop and hand off. Do not wait to be asked.** Update
-[HANDOVER.md](HANDOVER.md), commit it, and say so. The edits made late in a long
-session are exactly the small careful ones that go wrong when context is thin.
+**Checkpoint while continuity is intact; do not use a guessed token cutoff.**
+At meaningful work boundaries, preserve decisions, rejected approaches, pending
+work and verification limits in the owning docs or work items.
+[HANDOVER.md](HANDOVER.md) links to that state rather than replacing it.
+
+Capacity warnings, missing constraints, contradictory decisions or repeated
+re-discovery are reasons to pause and re-read authoritative instructions,
+decisions, working-tree state and pending actions. If relevant work remains,
+use supported compaction when appropriate, preserving durable state first and
+re-checking it afterwards. Compaction is not lossless, and a larger window does
+not guarantee quality.
+
+If sufficient room or coherent task state cannot be restored, update the
+handover, commit recoverable work and hand off with explicit unknowns. Start
+unrelated work with fresh context; resuming is not necessarily a reset.
+**Completed work needs no successor.**
 
 **Settle what is open before you go.** Ask every open design question while you
 still have the context to argue about it. What genuinely cannot be settled goes
@@ -132,13 +147,20 @@ a handover cannot be.
 **And say what you did not check.** A successor assumes anything unmentioned was
 done.
 
-<!-- Successor policy: how many, what kind, created by whom, and where their work
-     will appear. If the mechanism is known to be broken, say so here — a
-     successor you cannot create the right way is a successor you do not create.
-     State the constraint the policy serves, not just the current instruction. -->
+<!-- Necessary-successor policy: unfinished scope, ownership, how many, what kind,
+     created by whom, and where their work will appear. Follow admission rules,
+     give every writer its own tree, and never remove a live session's tree.
+     If the mechanism is known to be broken, say so here — a successor you cannot
+     create the right way is a successor you do not create. State the constraint
+     the policy serves, not just the current instruction. Link the project's
+     context-policy rationale; the agent-handover skill carries public evidence
+     and its limits. -->
 
-Report context usage after every major commit or push, so the decision to hand
-off is never made by whoever is deepest in the work.
+When context pressure affects the next step, report current occupancy, effective
+model/tier and counter source if available, with any relevant response reserve.
+If unavailable, say so. Do not substitute cumulative usage, transcript/corpus
+estimates or advertised capacity, or invent a percentage. Routine commits and
+pushes do not require a token report.
 
 ## Setup
 

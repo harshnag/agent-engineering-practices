@@ -1,6 +1,6 @@
 ---
 name: agent-handover
-description: How to end a session so the next one does not start from nothing — what a handover file contains, what it must not contain, when to write it, and why it is a file in the repository rather than a message. Use when a session is running low on context, when asked to wrap up or hand off, when creating a successor session, when finishing a piece of work, when writing or updating a HANDOVER file, or when starting a session and deciding how much of a handover to believe.
+description: How to preserve task state and end a session without losing its reasoning — checkpoints, context-pressure recovery, and durable handovers rather than arbitrary token cutoffs. Use when assessing context usage or a restart rule, when compaction or missing constraints threaten continuity, when asked to wrap up or hand off, when creating a successor, when finishing work, or when writing, updating or reading a HANDOVER file.
 license: MIT
 metadata:
   provenance: Extracted from two private production codebases, 2026
@@ -14,29 +14,57 @@ A session ends. Everything it learned that is not written down ends with it.
 
 Two things are being defended at once and they pull against each other: the
 successor needs to know where things stand, and the successor must not be
-*misled* by a note written by whoever had the least context left of anybody who
-worked on it.
+*misled* by a summary that can omit constraints or lag behind the repository.
 
 ## Write it before you are forced to
 
-> **Stop and hand off at a context threshold you set in advance. Do not wait to
-> be asked.**
+> **Checkpoint while continuity is intact. Recover from observed context
+> pressure or lost task state, not a guessed session lifetime.**
 
-The edits made late in a long session are exactly the small careful ones that go
-wrong when context is thin — and the handover itself is an editing task.
+At meaningful work boundaries, record decisions, rejected approaches, pending
+work and verification limits in the owning docs or work items. Keep the handover
+as pointers to that durable state. Do not wait for a warning to preserve the
+reasoning needed to recover; the handover itself is an editing task.
 
-Two supports make the threshold real rather than aspirational:
+Capacity warnings, missing constraints, contradictory decisions and repeated
+re-discovery are reasons to pause and re-check continuity. Re-read authoritative
+instructions, relevant decisions, working-tree state and pending actions before
+continuing. These symptoms call for recovery even without proof that context
+length caused them.
 
-- **Report context usage after every major commit or push**, so the decision to
-  hand off is never made solely by whoever is deepest in the work.
-- **Budget for the read-in.** A project whose instructions prescribe reading
-  several thousand lines has spent part of every session's budget before any work
-  happens. If nobody has measured how much, say so rather than assume it is
-  small.
+If relevant work remains and the runtime supports it, compaction can relieve
+capacity pressure. Preserve durable state first and re-check it afterwards:
+**compaction is not lossless, and a larger window does not guarantee quality.**
+If sufficient room or coherent task state cannot be restored, hand off the
+unfinished work with explicit unknowns. Use fresh context for unrelated work;
+resuming a session is not necessarily a fresh-context reset.
 
-Handing off is cheap *because* the reasoning lives elsewhere: in the docs, in the
-instructions file, in the open items. If handing off feels expensive, that is the
-symptom — something load-bearing exists only in the session.
+**Do not create a successor for completed work.** For a necessary handoff,
+identify the unfinished scope and follow `agent-concurrency`: one writer per
+working tree, explicit ownership, and the project's admission and retirement
+rules. Never remove a live session's tree, including your own.
+
+### Name the counter before acting on it
+
+When context pressure affects the next step, report the runtime's current
+occupancy, effective model/tier and counter source if available, including any
+response reserve relevant to the reading. If unavailable, say so rather than
+manufacturing a count or percentage.
+
+Do not substitute cumulative session or billed usage, transcript/corpus size
+estimates, or advertised capacity for current active context. **Routine commits
+and pushes do not require a token report.** Budget for read-in by measuring its
+actual prompt boundary separately from the corpus; label estimates as estimates.
+
+No universal restart count or percentage is established by the reviewed
+evidence. Do not replace the old cutoff with another guess. A quantitative local
+policy needs a defined counter, runtime/model/tier and comparable outcomes,
+including recovery cost. The public sources and limits are in
+[CONTEXT-HANDOFF-EVIDENCE.md](references/CONTEXT-HANDOFF-EVIDENCE.md);
+they are not measurements of a private desktop runtime.
+
+Durable reasoning makes recovery possible, not cost-free. If handing off needs
+reconstruction, preserve what is missing before leaving it to another session.
 
 ## It is a file in the repository, not a message
 

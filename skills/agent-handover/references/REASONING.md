@@ -36,10 +36,27 @@ So the disclaimer is not modesty. It is a load-bearing instruction that sets the
 precedence order, and it has to live in the file because the file is what gets
 read first.
 
-One origin project states the reason alongside the rule: the handover is written
-"by whoever had the least context left of anybody who worked on it". That is
-structurally true of every handover ever written, which is why the disclaimer is
-not a project-specific hedge.
+The earlier explanation claimed every handover was written by the person with
+the least context left. That is not a structural fact: a session can stop early,
+finish its task, or compact its history. The disclaimer needs none of those
+assumptions. A summary can omit a constraint or become stale at any context size.
+
+## Why the pre-set context cutoff was withdrawn
+
+The inherited skill required choosing a threshold in advance and reporting
+context after major commits or pushes. Neither instruction defined the counter
+or established that restarting at a chosen value improved outcomes.
+
+The [public-source review](CONTEXT-HANDOFF-EVIDENCE.md) distinguishes active
+occupancy from lifetime usage, capacity and corpus estimates. Runtime compaction
+thresholds are scheduling decisions, not evidence of a common quality cliff;
+long-context degradation does not identify an optimal coding handoff count.
+
+So checkpoint reasoning as work progresses, and recover when capacity warnings
+or missing task state make continuity doubtful. Compaction can help but loses
+detail; rebuilding context has a cost too. Re-read authoritative state and hand
+off unfinished work when safe continuation cannot be restored. This withdraws
+an unsupported threshold without asserting that unbounded sessions are safe.
 
 ## The successor question reversed three times
 
@@ -62,6 +79,10 @@ Silence reads as a successor that exists. In an origin project this was not
 hypothetical — the documented way to create one produced a session that appeared
 in the sidebar and never received its kickoff prompt, which looks exactly like a
 successor that is thinking.
+
+That is a reporting rule, not an instruction to create one. Completed work needs
+no successor. A necessary continuation still needs explicit unfinished scope,
+its own working tree and the project's admission rules.
 
 ## Why "how to check" beats "what it is"
 
