@@ -150,6 +150,12 @@ The durable core, each of which has its own skill here:
   (`agent-concurrency`)
 - **Finish by pushing.** (`agent-handover`)
 
+For context-related handoffs, prescribe durable checkpoints and recovery from
+observed pressure or lost task state, not a pre-set token cutoff or a usage
+report after every push. Completed work needs no successor. `agent-handover`
+owns the procedure and its
+[public evidence and limits](../agent-handover/references/CONTEXT-HANDOFF-EVIDENCE.md).
+
 ### Describe your gate accurately
 
 > **A gate is allowed to be small. It is not allowed to be described as larger
