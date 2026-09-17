@@ -107,6 +107,31 @@ After opening a pull request, also assert its base is the intended trunk.
 Session-creation defaults can silently target an already-landed feature branch,
 and the worker's local diff will still look correct.
 
+### Same head, different selected checks
+
+A change initially targeting its parent branch may select only documentation
+checks. Retargeting the trunk can expose inherited implementation changes
+without changing the head. The earlier green run does not establish coverage
+for that larger diff.
+
+Inspect retained event inputs and change-detection step logs: which revision
+was checked, which comparison endpoints and path predicate selected the work,
+and which jobs actually ran. A run's current PR association can show the new
+base while its old logs still name the original one. Mutable metadata is not
+proof that the earlier skip decision used today's base.
+
+If required coverage is missing or unreadable, obtain a correctly scoped new
+run or the full applicable gate. Do not assume retrying an old attempt changes
+its inputs. Conversely, a different or older base alone does not invalidate
+checks that actually exercised the required scope. `shipping-changes` owns
+this evidence rule alongside the exact-head guard.
+
+**Make a scope check fail:** hold a fixture's head fixed, with an implementation
+change in its parent and a documentation change after it. Compare first with
+the parent, then with the trunk. Require the old documentation-only verdict to
+refuse the expanded scope; retain a valid full-scope result as a positive
+control. This is a proposed local check, not one this reference installs.
+
 ## 3. CODEOWNERS, for routing rather than for rigour
 
 `.github/CODEOWNERS` assigns reviewers automatically by path:
