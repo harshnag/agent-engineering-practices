@@ -114,6 +114,10 @@ project's decision rather than making either one true by editing the other.
 The [current-contract template](assets/current-contract-template.md) and
 [existing work-item/change-packet template](../agent-concurrency/assets/item-template.md)
 provide starting shapes, not a mandatory schema.
+The item template ships with `agent-concurrency`. If that skill is not installed,
+use the project's existing item or its
+[public template source](https://github.com/harshnag/agent-engineering-practices/blob/main/skills/agent-concurrency/assets/item-template.md);
+do not create a second template authority to repair a missing sibling link.
 [CONTRACT-WORKFLOW.md](references/CONTRACT-WORKFLOW.md) carries adoption,
 a worked example, and possible structural checks with their blind spots.
 

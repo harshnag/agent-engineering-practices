@@ -175,6 +175,9 @@ no installation step, vendor requirement, or automatic enforcement. Confirm
 the skill engages on a request to plan or reconcile a behavior change, then
 inspect the resulting ownership and evidence routes rather than treating the
 template's presence as adoption.
+The work-item template ships with `agent-concurrency`; for a standalone
+`durable-project-memory` install, its skill body links the public template source
+as a fallback. A project's existing claimable item can serve the same role.
 
 Skills are per-user, so adoption does not need to be all-or-nothing, and nothing
 here changes anyone's workflow until they read a rule and choose to apply it.
