@@ -5,7 +5,7 @@ license: MIT
 metadata:
   provenance: Extracted from two private production codebases, 2026
   author: harshnag
-  version: "1.1"
+  version: "1.2"
 ---
 
 # Shipping changes
@@ -60,7 +60,7 @@ value. A push can land between them.
 
 1. Resolve the current head identifier.
 2. Find the required run for **that exact head**.
-3. Read jobs and steps, not only the run-level conclusion.
+3. Read jobs and steps, including the event and change-detection inputs.
 4. Re-check review and mergeability.
 5. Merge with an expected-head guard.
 
@@ -99,6 +99,26 @@ the step list and its annotations.
 
 Copy diagnostic artifacts before re-running a failed job when a re-run replaces
 or deletes them.
+
+### An exact head does not fix the check scope
+
+Conditional checks can depend on the comparison base as well as the head.
+Retargeting a pull request can preserve its head and an earlier green run while
+expanding the diff beyond the paths that run considered.
+
+Recover the original event, actual checked revision, effective diff endpoints,
+and selection predicate from retained event payloads or step logs. Current PR
+metadata, including a run's returned PR association, can reflect the new target
+rather than the inputs used by the old run.
+
+Compare that observed scope with the intended landing's required checks. If
+relevant work was skipped or the scope cannot be reconstructed, mark it
+unverified and obtain a new correctly scoped run or the full applicable gate.
+Retrying an old run does not by itself prove its comparison inputs changed.
+
+Do not reject a result merely because its base is older: checks that actually
+ran over the required scope remain evidence. The issue is unsupported skips,
+not the age of a base identifier.
 
 ## Follow the exact post-merge run
 
@@ -233,6 +253,9 @@ This requires:
 - a freshly fetched trunk;
 - comparison of complete trees.
 
+Only executed checks transfer. Tree identity cannot supply a skipped check or
+establish that its omission is valid for a different event or comparison scope.
+
 A real merge of diverging trees produces a tree no prior run saw. That is when
 post-merge verification is necessary, even without conflict markers.
 
@@ -241,7 +264,8 @@ post-merge verification is necessary, even without conflict markers.
 Record:
 
 - reviewed head;
-- run that gated it and the jobs that actually executed;
+- run that gated it, actual checked revision, event and comparison scope, and
+  the jobs that actually executed;
 - merge commit;
 - post-merge run and deployment result;
 - migration precondition and confirmation, if any;

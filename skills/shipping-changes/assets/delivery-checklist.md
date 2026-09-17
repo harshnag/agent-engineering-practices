@@ -6,6 +6,9 @@
 - [ ] Confirm review came from a different context.
 - [ ] Resolve the exact pull request head.
 - [ ] Read required jobs and steps for that exact head.
+- [ ] For conditional checks, recover the original event, actual checked
+      revision, diff endpoints and selection predicate from retained run
+      evidence; confirm skips remain valid after any retargeting.
 - [ ] Reconcile affected contract owners and inspect scenario evidence at that
       head; keep structural validation distinct from behavioral results.
 - [ ] Preserve decisions and verification limits in accessible history before
@@ -27,6 +30,8 @@
 ## Record
 
 - [ ] Reviewed head and gating run.
+- [ ] Actual checked revision, original event and effective comparison scope;
+      current PR metadata alone does not establish the old run's inputs.
 - [ ] Merge commit and post-merge run.
 - [ ] Migration predicate and confirmation.
 - [ ] Running identity and byte boundary.
