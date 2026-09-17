@@ -5,10 +5,11 @@ Portable working rules for AI coding agents, packaged as
 format that GitHub Copilot, Microsoft Scout, Claude Code, Cursor and ~45 other
 agents load on demand.
 
-**These were not written as guidance. Each rule was paid for by a specific
-production failure**, in two codebases that ran multiple agents against real
-work for months. This repository is the extraction: the rules, generalised to
-the mechanism underneath, so they transfer to any team.
+**The core rules were paid for by specific production failures**, in two
+codebases that ran multiple agents against real work for months. This repository
+is the extraction: the rules, generalised to the mechanism underneath, so they
+transfer to any team. Adaptable workflow shapes and dated public research are
+labelled separately; they are not claims of measured adoption benefits.
 
 ## Install
 
@@ -53,7 +54,7 @@ caught by specific, checkable practices, which is what this repository is.
 | [`agent-concurrency`](skills/agent-concurrency/) | Multiple agents on one repository: isolation, claiming work, and landing through review |
 | [`agent-handover`](skills/agent-handover/) | Ending a session so the next one does not start from nothing |
 | [`project-agent-instructions`](skills/project-agent-instructions/) | Writing the `AGENTS.md` that governs a repository |
-| [`durable-project-memory`](skills/durable-project-memory/) | Deciding what project reasoning must outlive a session and how to keep it current |
+| [`durable-project-memory`](skills/durable-project-memory/) | Maintaining current contracts, proposed changes and accessible history, with scenario-to-evidence links |
 | [`resource-safe-tooling`](skills/resource-safe-tooling/) | Designing process-heavy tooling that remains safe on shared or constrained machines |
 | [`coordinating-agents`](skills/coordinating-agents/) | Dispatching and steering a fleet when listings are stale and completion is asynchronous |
 | [`shipping-changes`](skills/shipping-changes/) | Landing and deploying the exact reviewed revision, including migrations and runtime identity |
@@ -107,6 +108,19 @@ enforcement:
 - `references/AUTOMATING-REVIEW.md` — branch protection, required checks,
   CODEOWNERS and automated reviewers, each with how to prove it can refuse.
 
+For spec-driven changes, extend the existing workflow rather than installing a
+second task system. `durable-project-memory` provides the
+[contract lifecycle](skills/durable-project-memory/SKILL.md#maintain-current-contracts-without-replacing-history)
+and [adoption example](skills/durable-project-memory/references/CONTRACT-WORKFLOW.md):
+one current owner per requirement, observable scenarios linked to evidence,
+proposals in the existing claimable items, and explicit routes to preserved
+history. Its [current-contract template](skills/durable-project-memory/assets/current-contract-template.md)
+works with the existing [work-item/change-packet template](skills/agent-concurrency/assets/item-template.md).
+Paths are project choices; no new skill, framework, checker, automatic spec
+merge, or historical compression is required. Structural validity is not
+behavioral verification. The [dated framework review](skills/durable-project-memory/references/SPEC-WORKFLOW-EVIDENCE.md)
+records documented capabilities and limits, not a mandatory vendor choice.
+
 ## Provenance and evidence
 
 Each skill states its rule and records that it was extracted rather than
@@ -126,7 +140,7 @@ part, and it is told without the subject matter.
 ## Contributing
 
 [AGENTS.md](AGENTS.md) is the working agreement, including the house style, the
-one gate this repository has, and what that gate does **not** check — which is
+publish and skill-inventory gates, and what they do **not** check — which is
 most of what makes a skill good.
 
 MIT licensed. Corrections that come with a reproduction are especially welcome;

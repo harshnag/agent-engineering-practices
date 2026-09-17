@@ -1,11 +1,11 @@
 ---
 name: durable-project-memory
-description: Turn engineering work into durable project memory without bloating every agent prompt — deciding what belongs in a reasoning document versus a repeatable skill, recording root causes and external research, correcting stale claims, and routing large documentation corpora. Use when closing an investigation, writing a design or research note, deciding whether to create a skill, preserving findings from web or vendor research, correcting advice already sent to another agent, compressing long documentation, or designing how agents find the right part of a large documentation set.
+description: Turn engineering work into durable project memory without bloating every agent prompt — maintain current behavior contracts separately from proposed changes and history, trace acceptance scenarios to evidence, record research and root causes, and route large corpora. Use when planning or closing a change, adopting a spec workflow, writing a contract or research note, deciding whether to create a skill, correcting stale advice, preserving historical reasoning, or designing documentation routes.
 license: MIT
 metadata:
   provenance: Extracted from two private production codebases, 2026
   author: harshnag
-  version: "1.0"
+  version: "1.1"
 ---
 
 # Durable project memory
@@ -45,8 +45,10 @@ commit discussed it.
 | Knowledge | Where it belongs |
 |---|---|
 | A rule every session must apply immediately | the project instructions, in its shortest actionable form |
-| A project-specific design, failure, or decision | the reasoning document for that subsystem |
-| Current state, unfinished work, or an unverified boundary | the handover or a claimable work item |
+| An accepted requirement for current behavior | one maintained contract, which may be a section of an existing document |
+| A proposed behavior change, its design and acceptance | the existing claimable work item, used as a change packet |
+| A project-specific failure, decision, or superseded design | the reasoning document for that subsystem, explicitly routed from its current contract |
+| Session position, unfinished actions, or checks handed back | the handover linking to the owning contract or work item |
 | Evidence learned outside the repository | a dated research note, linked from the decision it supports |
 | A workflow reusable across projects | a skill |
 | A one-off command result | nowhere, unless it supports a durable claim |
@@ -58,6 +60,72 @@ Promote a project rule into a skill only after you can state the mechanism
 without the project's names, vocabulary, thresholds, commands, or operating
 environment. If removing those details removes the lesson, it is project memory,
 not a portable workflow.
+
+## Maintain current contracts without replacing history
+
+> **Current requirements, proposed changes, and historical reasoning have
+> different jobs. Give each requirement one authoritative owner.**
+
+This extends the memory workflow; it is not another instruction authority or
+another task system. `AGENTS.md` still governs work. The project chooses paths,
+headings, and identifiers; an existing topic section can own a contract without
+a new directory. Separate the roles even when they share a file.
+
+1. **Find the owner before adding prose.** Read the accepted requirement,
+   implementation, tests, and surrounding reasoning. Name the repository
+   revision and relevant environment. Do not turn a proposal into a current
+   guarantee or canonize a defect because the implementation exhibits it.
+   Record disagreements as gaps; unknown behavior stays unverified.
+2. **State observable cases.** For each requirement, give stable scenario
+   identifiers, conditions, action, expected outcome, and relevant failure or
+   compatibility boundaries. Link shared requirements to their owner rather
+   than restating them. Keep implementation detail in design, with source links
+   from the contract for inspection.
+3. **Make the evidence route explicit.** Link each scenario to implementation
+   and an automated assertion or exact manual procedure and observation.
+   Distinguish automated, manual, and unverified coverage. An evidence mode is
+   not a passing result: record the subject, result, and limits of any run
+   separately. A test file's existence does not prove it exercises the case;
+   a procedure nobody ran is still unverified.
+4. **Propose a delta in the existing queue.** The claimable item is the change
+   packet: intent, scope, affected owners, added/modified/removed cases,
+   non-goals, design, tasks, and acceptance evidence. Link unchanged constraints.
+   Preserve `agent-concurrency`'s states and claims; do not add a spec backlog or
+   a manually synchronized pending index.
+5. **Implement and review the same change.** Reconcile the affected current
+   contract with code and evidence in the reviewed revision, while keeping
+   unlanded work visibly proposed to readers of the base. Report failed,
+   missing, or unreadable checks, and retain existing safety and delivery
+   predicates. A spec validator or an agent's completion verdict cannot waive
+   them. New checks need deterministic negative controls.
+6. **Close without erasing why.** Preserve decisions, rejected alternatives,
+   findings, and scoped verification in durable history before deleting the
+   completed item. Link the current owner to that history and route the
+   historical document back to the current owner. Keep existing anchors or
+   explicit redirects. Never automatically merge conflicting requirements or
+   rewrite history to sound as though the current answer was always known.
+
+For a behavior-preserving repair, link the unchanged contract and record the
+regression evidence; do not invent a requirement delta. For a documentation
+migration, move authority and routes without silently changing behavior.
+If a contract and implementation disagree, surface the mismatch and obtain the
+project's decision rather than making either one true by editing the other.
+
+The [current-contract template](assets/current-contract-template.md) and
+[existing work-item/change-packet template](../agent-concurrency/assets/item-template.md)
+provide starting shapes, not a mandatory schema.
+The item template ships with `agent-concurrency`. If that skill is not installed,
+use the project's existing item or its
+[public template source](https://github.com/harshnag/agent-engineering-practices/blob/main/skills/agent-concurrency/assets/item-template.md);
+do not create a second template authority to repair a missing sibling link.
+[CONTRACT-WORKFLOW.md](references/CONTRACT-WORKFLOW.md) carries adoption,
+a worked example, and possible structural checks with their blind spots.
+
+**These are workflow rules, not installed enforcement.** This skill adds no
+checker, framework, or automatic spec merge. The
+[dated public comparison](references/SPEC-WORKFLOW-EVIDENCE.md) supports the
+artifact distinction, not a universal vendor choice or a measured productivity
+benefit.
 
 ## External research is a deliverable
 

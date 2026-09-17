@@ -6,7 +6,7 @@ compatibility: The claim protocol needs git. The tree lock is a POSIX sh pre-com
 metadata:
   provenance: Extracted from two private production codebases, 2026
   author: harshnag
-  version: "1.0"
+  version: "1.1"
 ---
 
 # Working alongside other agents
@@ -177,6 +177,8 @@ shared list is a file every agent writes — which makes the most droppable
 artefact in the project also its most contended.
 
 See `assets/item-template.md` for the item format the listing script parses.
+Use that item as the change packet too; `durable-project-memory` owns the
+lifecycle. Extra prose adds no parsed states, second queue, or task index.
 
 ### A claim has a retirement rule, because agents die
 
@@ -207,9 +209,10 @@ what a kickoff prompt says, what a scheduled run does, and what any agent does
 when handed a list. A refused item sitting next to real work gets built. It
 passes CI. It ships something the project decided against.
 
-**There is deliberately no `done`.** A finished item is *deleted*, and what it
-found moves into the document it is about. A fifth state grows a list whose
-whole value is being short enough that somebody reads all of it first.
+**There is deliberately no `done`.** Reconcile affected contracts and preserve
+findings, decisions, and verification in linked topic history before deleting
+the finished item. Deletion must not erase the only explanation. A fifth state
+grows a list whose value is being short enough to read in full.
 
 ## Do not build an index of the items
 

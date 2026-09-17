@@ -5,7 +5,7 @@ license: MIT
 metadata:
   provenance: Extracted from two private production codebases, 2026
   author: harshnag
-  version: "1.0"
+  version: "1.1"
 ---
 
 # The instructions file
@@ -112,18 +112,19 @@ Two things to state alongside the order:
 - **The read-in is not free.** Measure the compulsory prompt boundary and the
   corpus separately. The total corpus is a routing warning, not a claim about one
   request's token usage.
-- **What the docs are *for*.** They record reasoning rather than behaviour. That
-  is why re-deriving an answer already in them is how a second, divergent copy
-  starts.
+- **What each doc is *for*.** Route accepted behavior to its current contract,
+  proposed changes to the existing work queue, and explanations to accessible
+  history. Re-deriving a requirement already owned elsewhere starts a second,
+  divergent copy; treating an old proposal as current starts a fiction.
 
 Long documents need addressing: a generated contents block with an explicit
 size budget, plus a heading or symbol search that reports line numbers. The
 index routes; it does not summarize. Say when a size ceiling drops subsections,
 or the largest document presents the shallowest map without admitting it.
 
-See `durable-project-memory` for the full workflow: task routing, bounded
-compression, research notes, and the distinction between project memory and a
-portable skill.
+See `durable-project-memory` for the contract/change/history lifecycle, scenario
+evidence, task routing, bounded compression, research notes, and the distinction
+between project memory and a portable skill.
 
 ## The rules, and what makes one belong here
 
@@ -191,18 +192,21 @@ budget as the work. Move anything that is:
 
 ### A current-state layer for a long reasoning document
 
-A long document may open with a short "how it works now" block when the historical
-reasoning below has reversed several times. To keep that layer from becoming a
-second stale handover:
+A long document may keep its current contract before the history or open with a
+route to a separate owner. Choose based on retrieval and ownership, not a
+mandatory directory or page-size cap. The earlier guidance required a capped
+"how it works now" block; the durable constraint is one checkable current owner,
+not a particular presentation.
 
-- each fact names the file or command that decides it;
-- it carries no dates, measurements, or perishable counts;
-- it names only real, checkable artifacts;
-- it has a size cap, so adding means replacing;
-- it appears before the history.
+Keep the behavioral requirements in that owner, with observable scenarios and
+implementation/test or manual-evidence links. Scope observations by revision
+and environment; do not present a historical measurement as a current guarantee.
+The history retains decisions and reversals, labels superseded positions, and
+links back to the current owner. Preserve existing anchors or redirects.
 
-This makes drift loud and cheap to check. It does not prove the block is true.
-Comparing it with another copy of itself cannot do that.
+`durable-project-memory` owns the procedure and templates. An evidence link or
+structural check does not prove the requirement holds; state the unverified
+boundaries and keep the project's behavioral gates.
 
 Two properties are worth gating in a check, because they are what a file like
 this quietly loses:

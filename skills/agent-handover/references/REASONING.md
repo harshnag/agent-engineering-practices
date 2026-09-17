@@ -30,7 +30,9 @@ The temptation is to write a handover that is correct and keep it correct. That
 fails in a specific way: the file accumulates authority, the successor reads it
 instead of the docs, and the docs stop being read. A handover believed over the
 reasoned documents is worse than none, because it is a single unreviewed summary
-standing in front of everything that was gated.
+standing in front of the requirement owners and their evidence. That does not
+mean every document is gated: authority, verification coverage and the latest
+observed result are different properties.
 
 So the disclaimer is not modesty. It is a load-bearing instruction that sets the
 precedence order, and it has to live in the file because the file is what gets

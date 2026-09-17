@@ -6,6 +6,10 @@
 - [ ] Confirm review came from a different context.
 - [ ] Resolve the exact pull request head.
 - [ ] Read required jobs and steps for that exact head.
+- [ ] Reconcile affected contract owners and inspect scenario evidence at that
+      head; keep structural validation distinct from behavioral results.
+- [ ] Preserve decisions and verification limits in accessible history before
+      deleting the completed change item from the existing queue.
 - [ ] Confirm the base and mergeability.
 - [ ] Apply and confirm any compatible production migration.
 - [ ] Merge with an expected-head guard.
@@ -27,3 +31,5 @@
 - [ ] Migration predicate and confirmation.
 - [ ] Running identity and byte boundary.
 - [ ] Anything not run or not readable.
+- [ ] Affected contract/history links, with repository and runtime evidence
+      clearly distinguished.
