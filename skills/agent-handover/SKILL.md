@@ -5,7 +5,7 @@ license: MIT
 metadata:
   provenance: Extracted from two private production codebases, 2026
   author: harshnag
-  version: "1.0"
+  version: "1.1"
 ---
 
 # Handing over
@@ -80,8 +80,9 @@ and the handover is the most droppable artefact a project has.
 State this inside the file, in the file's own voice:
 
 > **Do not trust this file over the docs.** It is one session's summary of where
-> things stood when it stopped. The docs are reasoned and gated; this is a note.
-> If they disagree, the docs are right and this is stale — fix it.
+> things stood when it stopped. Current contracts and governing instructions
+> own the requirements; this note does not. Re-check disagreements against their
+> evidence and update the stale summary. A document is not necessarily gated.
 
 That sentence is what makes the file safe to write quickly, and what stops a
 successor building on a stale summary. Without it a handover accumulates
@@ -91,6 +92,12 @@ The corollary is a rule for the writer:
 
 > **Anything load-bearing goes in a doc first, and the handover links to it.** A
 > decision reachable only from the handover is in the wrong place.
+
+Keep three routes distinct: current contracts for accepted requirements,
+existing work items for proposed changes and unfinished checks, and accessible
+history for decisions and reversals. `durable-project-memory` owns that
+lifecycle. Do not turn the handover into another current specification or a
+second task queue.
 
 ## Say how to re-check; do not quote what rots
 

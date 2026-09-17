@@ -51,15 +51,23 @@ Everything else is routed by task:
 
 | Working on | Read |
 |---|---|
-| <!-- subsystem or operation --> | <!-- the document that owns its reasoning --> |
+| <!-- subsystem or operation --> | <!-- current contract owner and its linked reasoning/history --> |
+| <!-- proposing or resuming a change --> | <!-- the existing work queue and its claimable change-packet template --> |
 
 <!-- For long documents, name the generated contents or heading-search command.
 Say if the index omits deeper headings when it reaches a size budget. An index is
 addressing, not a summary: once routed, read the neighboring sections too. -->
 
-**The docs are the context this project runs on.** They record *reasoning* rather
-than behaviour, and a session reads itself in from them before writing anything.
-A mechanic described as though it exists is a plan built on a fiction.
+**The docs are the context this project runs on.** Current contracts own accepted
+behavior requirements; change packets propose deltas; topic history preserves
+reasoning and reversals. Each requirement has one owner. A proposed mechanic
+described as though it exists is a plan built on a fiction.
+
+<!-- Choose local paths or existing sections for these roles; no new directory
+     is required. Link current owners to accessible history and history back to
+     current owners. Keep anchors or explicit redirects. Do not copy behavioral
+     requirements into this instructions file or create a second pending queue.
+     durable-project-memory supplies the workflow and adaptable templates. -->
 
 <!-- Say whether anybody has measured what the read-in costs. Name the prompt
      boundary, keep corpus size separate, and label estimates as estimates.
@@ -82,8 +90,11 @@ A mechanic described as though it exists is a plan built on a fiction.
   them back rather than concluding the suite was enough. -->
 - **Open the built things, not just the documents about them.** A README is
   *about* an artefact; the decisions are *in* it.
-- **Docs are a deliverable.** A change that is not written down did not fully
-  happen.
+- **Docs are a deliverable.** Reconcile affected current contracts with the
+  reviewed change, link scenarios to implementation and test/manual evidence,
+  and preserve reasoning before closing the existing work item. Planned checks
+  and checks not run remain unverified; links and structural passes are not
+  evidence of runtime correctness.
 - **Research is a deliverable.** Anything learned outside the repository is
   committed before it is acted on, with a date, sources beside their claims,
   what was verified from primary material, and what was not found.

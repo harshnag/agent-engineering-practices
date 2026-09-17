@@ -164,5 +164,17 @@ A suggested order, cheapest first:
    `skills/agent-concurrency/references/AUTOMATING-REVIEW.md`. Prove each control
    can refuse before believing it.
 
+When current requirements are hard to distinguish from proposals or history,
+use the existing `durable-project-memory` skill's
+[contract workflow](skills/durable-project-memory/references/CONTRACT-WORKFLOW.md).
+Adapt its [current-contract template](skills/durable-project-memory/assets/current-contract-template.md)
+and the [claimable work-item template](skills/agent-concurrency/assets/item-template.md)
+to local paths. Keep one owner per requirement and the existing pending queue;
+link scenarios to actual evidence and preserve accessible reasoning. This adds
+no installation step, vendor requirement, or automatic enforcement. Confirm
+the skill engages on a request to plan or reconcile a behavior change, then
+inspect the resulting ownership and evidence routes rather than treating the
+template's presence as adoption.
+
 Skills are per-user, so adoption does not need to be all-or-nothing, and nothing
 here changes anyone's workflow until they read a rule and choose to apply it.

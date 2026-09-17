@@ -61,9 +61,10 @@ somewhere *chosen*.
 
 The two entries that are always misplaced:
 
-**The handover goes first, not last.** It is the only document that tells you
-what is currently true. Reading the reasoned documents first and the handover
-last means re-reading them with the state in mind.
+**The handover goes first, not last.** It tells you where the last session
+stopped, not which behavior is authoritatively current. Reading the topic
+documents first and the handover last means re-reading them with the unfinished
+work in mind. Current contracts own requirements; the handover points to them.
 
 **Concurrency goes early, not late.** It governs whether the session may write at
 all, and in which tree. An agent that reads it after starting work has already
@@ -87,6 +88,24 @@ degradation and put a heading or symbol search with line numbers beside it.
 **Without a route:** every session invents one, the important documents get read
 last or not at all, and the largest document presents the least detailed map
 while looking complete.
+
+## Why current contracts do not replace reasoning
+
+A historical design can contain a formerly correct requirement, a proposal
+never implemented, and the reason both changed. A short route to a maintained
+current owner makes those roles explicit without deleting their explanation.
+The owner can remain a section of the same document; a new directory is not the
+mechanism.
+
+The earlier current-state guidance prescribed a capped block without dates or
+measurements. That presentation cannot replace ownership or evidence. A scoped
+observation can legitimately carry a date and revision; an undated claim can
+still be false. Use observable cases and evidence routes, preserving actual
+results with their limits. `durable-project-memory` owns that workflow.
+
+**Without the distinction:** a proposal reads as implemented behavior, or a
+historical reversal is erased to keep the current answer short. Keeping two
+current descriptions merely exchanges that problem for drift.
 
 ## Why the gate must describe its own boundary
 

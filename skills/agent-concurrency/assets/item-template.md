@@ -21,8 +21,11 @@
      effort. `refused` was decided against and never becomes work, however much
      it looks like the last item on a plan.
 
-     There is deliberately no `done`. A finished item is DELETED, and what it
-     found moves into the document it is about. -->
+     There is deliberately no `done`. A finished item is DELETED only after its
+     findings, decisions and verification have durable, accessible owners.
+     This same item is the change packet when behavior changes; do not create
+     a second proposal/task queue. The sections below are adaptable, not fields
+     validated by the listing script. -->
 
 ## What is wrong
 
@@ -45,6 +48,38 @@
 <!-- Optional, and usually the most useful section. The remedy above almost
      never restores everything the defect took; saying which part survives stops
      the next agent closing this and believing more than they should. -->
+
+## Contract delta and acceptance
+
+<!-- For a behavior change, link each affected current requirement owner and
+     name added, modified or removed scenario IDs. State preconditions, action
+     and expected outcome, including failure and compatibility cases. Link
+     unchanged requirements instead of restating them.
+
+     For a repair with unchanged requirements, say "no requirement delta" and
+     link the existing cases. A documentation migration changes authority and
+     routes, not behavior. Omit this section when it is genuinely inapplicable. -->
+
+## Work and evidence
+
+<!-- Put the bounded tasks and dependencies here, within this one claim.
+     Per acceptance case, link the implementation and exact automated assertion
+     or manual procedure. Planned checks are unverified. Record actual results
+     with revision, command/procedure, environment and limits; a linked file or
+     checked task box is not a passing test.
+
+     Name checks not run or blocked and why. Preserve existing verification,
+     review and delivery predicates; a structural spec check does not replace
+     them. For new checks, name and run deterministic negative controls. -->
+
+## Reconciliation before closure
+
+<!-- Update affected contract owners with the reviewed behavior and evidence.
+     Preserve decisions, rejected alternatives and findings in the topic's
+     durable history, with links both to and from the current owner. Preserve
+     existing anchors or redirects. Resolve concurrent requirement changes by
+     review, not automatic spec merge. Only then delete this completed item.
+     Keep genuinely outstanding work in this queue under its existing states. -->
 
 ## Where the reasoning is
 

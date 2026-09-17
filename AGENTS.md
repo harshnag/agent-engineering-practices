@@ -41,6 +41,11 @@ practice. Re-derive rather than trusting a number in this file:
 - **Design first.** The reasoning goes in the commit message before the file goes
   in the tree. The diff already says what changed.
 - **Docs are a deliverable**, and here the docs *are* the deliverable.
+- **Keep current rules, proposed changes, and history distinct.** The skill
+  body owns the portable procedure; references own worked reasoning and dated
+  evidence; assets are adaptable templates, not additional authorities. Follow
+  `skills/durable-project-memory/` when changing those roles. Preserve explicit
+  routes to valuable history and do not imply a template installs enforcement.
 - **`main` is protected, and work lands through a pull request.** No direct
   pushes, no force-pushes, no branch deletion. **Never approve your own pull
   request** — an author cannot review their own work, and an agent asked to

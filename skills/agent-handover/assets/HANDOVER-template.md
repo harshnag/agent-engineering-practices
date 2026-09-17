@@ -6,8 +6,9 @@ Where this stopped, what is open, and what was not verified.
 
 > **Do not trust this file over the docs.** It is one session's summary of where
 > things stood when it stopped, and can omit constraints or lag behind the
-> repository. The docs are reasoned and gated; this is a note. If they disagree,
-> the docs are right and this is stale — fix it.
+> repository. Current contracts and governing instructions own the requirements;
+> this note does not. Re-check disagreements against their evidence and update
+> the stale summary. A document is not necessarily gated.
 
 ## Where things stand
 
@@ -36,6 +37,11 @@ decided against and never becomes work.
 
 <!-- Do not write a count here. It goes stale the first time anybody claims one.
      Point at the listing command instead. -->
+
+<!-- A proposed change remains in this same queue, not a second spec backlog.
+     Link affected contract owners and acceptance evidence from its item. Before
+     deleting a completed item, reconcile the contracts and preserve decisions,
+     findings and verification in accessible topic history. -->
 
 ## Who continues this
 
@@ -68,8 +74,9 @@ Stated plainly, because a successor assumes anything unmentioned was done.
 
 ## Where the reasoning lives
 
-Not here. <!-- Links only. If something is explained only in this file, it is in
-the wrong place — move it into the doc it is about and link that. -->
+Not here. <!-- Link current contract owners separately from the history that
+explains them. If something is explained only in this file, it is in the wrong
+place — move it into its durable owner and link that. Preserve history routes. -->
 
 ## Keeping this file honest
 

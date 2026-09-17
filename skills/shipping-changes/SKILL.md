@@ -5,7 +5,7 @@ license: MIT
 metadata:
   provenance: Extracted from two private production codebases, 2026
   author: harshnag
-  version: "1.0"
+  version: "1.1"
 ---
 
 # Shipping changes
@@ -71,6 +71,12 @@ the delta, and start the predicates again.
 
 A worker saying it is finished pushing cannot close this race: review feedback
 is itself a reason to push again.
+
+Where a change affects a maintained behavior contract, review its reconciliation
+and scenario evidence with the implementation at the same head.
+`durable-project-memory` owns the contract/change/history workflow. A current
+contract on a work branch is not a claim that production runs it, and a passed
+specification-shape check is not evidence of deployment or runtime correctness.
 
 ## A successful run may have checked nothing
 
