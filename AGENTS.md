@@ -62,6 +62,11 @@ practice. Re-derive rather than trusting a number in this file:
   review, and prove it refuses before believing it.
 - **Anything that writes gets its own working tree.**
   `skills/agent-concurrency/` is the protocol.
+- **Coordinate through owned files first.** Keep assignments, decisions,
+  progress, blockers and handoffs in existing artifacts, without another queue.
+  Follow [the file-first protocol](skills/durable-project-memory/SKILL.md#coordinate-through-owned-files-first)
+  for readable revision-qualified pointers, minimal notifications, isolation,
+  and the separate live liveness/admission boundary.
 
 ## Ship the rules; link the evidence
 

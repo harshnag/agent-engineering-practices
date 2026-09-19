@@ -25,8 +25,9 @@ and let the coordinator place it.
 A coordinator cannot audit its own confident claims. It can make a worker's
 check inexpensive:
 
-- send the exact file, assertion, and clause rather than a paraphrase;
-- say that the file on disk outranks the message;
+- record the exact file, assertion, and clause in the owning artifact;
+- identify its revision; the intended authoritative artifact outranks a message,
+  not an arbitrary stale copy on disk;
 - ask to be corrected;
 - act visibly when corrected.
 
@@ -37,6 +38,14 @@ The first duty of a fleet is not agreement. It is making a locally defensible,
 globally wrong decision visible before several workers act on it.
 
 ## Delivery is not assignment
+
+Use `durable-project-memory`'s file-first protocol: assignments, decisions,
+progress, blockers, and handoffs live in existing owned items and topic files.
+Publish a readable repository/revision/path pointer across isolated trees; do
+not create a second queue or edit another session's tree. Messages are reserved
+for essential wakeups, inaccessible artifacts, and urgent safety corrections,
+not routine acknowledgments or duplicate specifications. Files do not replace
+live liveness or admission instruments.
 
 A successful create or send call proves that a request was accepted. It does not
 prove a worker received the intended brief, understood the same item, or started
@@ -101,7 +110,8 @@ message.
 
 So:
 
-1. Probe directly.
+1. When a safety decision needs liveness evidence, probe directly; this is not
+   a routine progress request.
 2. Treat a reply as evidence of life.
 3. Treat every absence as unresolved.
 4. Escalate or leave the worker alone; do not convert a timeout into ownership.
@@ -141,7 +151,9 @@ A shared expiry is a stampede, especially when resuming work triggers CI.
 ## Corrections have authority, time, and a channel
 
 A correction is another claim. Apply `durable-project-memory`: update the
-durable artifact first, then send a dated pointer and its evidence.
+durable artifact first, then notify only when necessary with a revision-qualified
+pointer. An urgent safety stop need not wait for publication; persist the
+correction as soon as safe.
 
 There is an additional coordination hazard:
 
@@ -165,16 +177,17 @@ stop. Silence is the only thing that drains a stale outbound queue.
 
 Every state report carries a timestamp or, preferably, the command that
 reconstructs the state. If the sender performs another relevant action after
-reporting completion, it sends the changed fact too.
+reporting completion, it updates the owning artifact too. Notify only when the
+change needs an essential wakeup or safety correction.
 
 ## Use the sideways channel for immediacy, not durability
 
 Direct agent-to-agent messaging is useful because it can arrive before the next
 handover. It is not project memory, a work claim, or evidence.
 
-- Say the finding sideways so it arrives in time.
-- Commit it so it arrives at all.
-- Send the pointer, not a perishable payload.
+- Record the finding in its owning artifact and publish a readable revision.
+- Notify sideways only when waiting for discovery would matter.
+- Send the repository, branch/revision, path, and reason, not a perishable payload.
 - Carry the source chain; each relay otherwise drops the clause that lets the
   recipient weigh the claim.
 

@@ -121,6 +121,12 @@ merge, or historical compression is required. Structural validity is not
 behavioral verification. The [dated framework review](skills/durable-project-memory/references/SPEC-WORKFLOW-EVIDENCE.md)
 records documented capabilities and limits, not a mandatory vendor choice.
 
+The same skill owns [file-first coordination](skills/durable-project-memory/SKILL.md#coordinate-through-owned-files-first):
+assignments, decisions, progress, blockers and handoffs stay in existing owned
+artifacts. Share readable revision-qualified pointers across isolated worktrees,
+not duplicated specifications; reserve messages for essential notifications.
+Files do not replace live liveness or admission checks.
+
 ## Provenance and evidence
 
 Each skill states its rule and records that it was extracted rather than

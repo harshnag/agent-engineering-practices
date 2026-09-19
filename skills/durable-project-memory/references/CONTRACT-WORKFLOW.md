@@ -115,3 +115,54 @@ documentation from measured results. A framework can standardize artifacts;
 it can also duplicate the mechanisms already present. Evaluate a specific gap
 before adopting one, and keep the project's isolation, resource, evidence,
 review and delivery controls intact.
+
+## File-first coordination
+
+**Decision, 2026-09-18.** Extend the existing
+[memory procedure](../SKILL.md#coordinate-through-owned-files-first), not the
+queue. Assignments and progress belong in the claimable item; durable decisions
+belong in topic history; handovers route to both. The coordination skill owns
+live-control decisions, not another copy of the work specification.
+
+**Evidence boundary.** The user requested this policy in the origin project.
+Its proposed documentation section was read as a provisional, uncommitted
+artifact on this date after its named remote branch was unavailable. That is
+evidence of requested design intent, not of a landed rule, measured reduction
+in messaging, or operational enforcement. Private source names, paths and
+domain details are deliberately not reproduced. The existing
+[public framework comparison](SPEC-WORKFLOW-EVIDENCE.md) supports separation
+of artifact roles; it does not establish an OpenSpec messaging ban. No framework
+is installed or required by this decision.
+
+**Why this shape.** A chat-only decision is hard to discover and can arrive
+after its replacement. Files preserve an inspectable owner, but isolated trees
+do not share uncommitted edits. Therefore a usable pointer identifies a readable
+revision, not merely a filename. A branch locates ongoing work; the exact commit
+identifies what the receiver read. Read-only inspection avoids contaminating
+the receiver's own checkout.
+
+Rejected alternatives: a second coordination ledger recreates contention and
+competing authority; a total messaging ban strands workers that cannot discover
+updates and delays urgent safety stops; interpreting a progress file as a
+heartbeat confuses recorded work with present life or capacity. Native claim,
+review, publishing and admission gates remain unchanged.
+
+### Acceptance and verification boundary
+
+These are manual policy-review cases, not installed automated checks or claims
+that a session transport was exercised:
+
+| Case | Required reading outcome | Owning surface |
+|---|---|---|
+| Assignment or progress changes | Update the existing item, not a second queue or chat specification | Skill procedure and item template |
+| Receiver has another worktree | Read repository, branch, exact revision, path and section without editing another tree | Skill procedure and handover template |
+| Artifact exists only as an unpublished edit | Mark provisional, identify location/time; do not call it a stable handoff | Skill procedure |
+| Routine acknowledgment or status request | Omit it; essential discovery wakeups remain possible | Skill procedure and coordination skill |
+| Pointer cannot be read | Report the inaccessible artifact minimally; state remains unresolved | Skill procedure |
+| Urgent correction cannot await publication | Stop unsafe action, then persist and point to the correction; preserve correction ordering | Skill procedure and coordination skill |
+| Claim or progress timestamp looks quiet | Use live instruments; do not infer admission, death or reclaim permission | Skill procedure and coordination skill |
+
+Review these cases against the linked procedure and templates in the candidate
+revision. The publish and inventory gates cover their documented structural
+boundaries only; they do not enforce message traffic, prove pointer access for
+every receiver, or measure collaboration quality. No new checker is introduced.

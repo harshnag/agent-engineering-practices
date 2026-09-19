@@ -1,6 +1,6 @@
 ---
 name: durable-project-memory
-description: Turn engineering work into durable project memory without bloating every agent prompt — maintain current behavior contracts separately from proposed changes and history, trace acceptance scenarios to evidence, record research and root causes, and route large corpora. Use when planning or closing a change, adopting a spec workflow, writing a contract or research note, deciding whether to create a skill, correcting stale advice, preserving historical reasoning, or designing documentation routes.
+description: Turn engineering work into durable project memory without bloating every agent prompt — maintain current behavior contracts separately from proposed changes and history, coordinate through owned files, trace acceptance scenarios to evidence, record research and root causes, and route large corpora. Use when planning or closing a change, coordinating assignments or handoffs, adopting a spec workflow, writing a contract or research note, deciding whether to create a skill, correcting stale advice, preserving historical reasoning, or designing documentation routes.
 license: MIT
 metadata:
   provenance: Extracted from two private production codebases, 2026
@@ -126,6 +126,45 @@ checker, framework, or automatic spec merge. The
 [dated public comparison](references/SPEC-WORKFLOW-EVIDENCE.md) supports the
 artifact distinction, not a universal vendor choice or a measured productivity
 benefit.
+
+## Coordinate through owned files first
+
+**Assignments, decisions, progress, blockers, and handoffs belong in existing
+owned artifacts, not a parallel chat ledger.** Use the existing claimable item
+for scope and progress, the topic document for durable decisions and evidence,
+and the handover for continuation pointers. Preserve native paths, claim states,
+and ownership; do not add a coordination queue or synchronized status index.
+
+1. Update the owning artifact in your own working tree. Publish a readable
+   revision before another worker must depend on it, normally by committing and
+   pushing through the project's existing gates.
+2. Identify the repository, branch, exact revision, path, and relevant section.
+   A relative filename in your checkout is not a shared artifact. The receiver
+   reads that revision using a read-only object display, without switching or
+   overwriting its working tree, and checks that it is the intended version.
+   An uncommitted artifact must be explicitly labelled provisional with its
+   location and observation time; read another tree only when necessary, never
+   edit it. It is not a stable handoff.
+3. Omit routine acknowledgments, status requests, and duplicated progress
+   messages. Use a minimal notification only for an essential wakeup, an
+   inaccessible artifact, or an urgent safety correction. Carry the pointer and
+   reason, not a second specification. If discovery needs a wakeup, do not
+   assume a file edit wakes a session.
+4. Correct the artifact before notifying readers. An urgent safety stop may
+   precede publication when waiting would cause harm; identify the affected
+   state and follow with the durable correction as soon as safe. An unreadable
+   pointer stays unresolved, not implicitly accepted or completed.
+
+**Files are not authoritative liveness or admission evidence.** A claim records
+ownership, not present capacity; a progress timestamp cannot authorize dispatch,
+reclaiming work, or retirement. Use the project's live session and admission
+instruments. Necessary liveness probes serve that safety decision, not routine
+status collection; silence remains unresolved.
+
+This is a workflow policy, not installed messaging enforcement or a vendor
+requirement. [The adoption rationale and cases](references/CONTRACT-WORKFLOW.md#file-first-coordination)
+record its origin and limits. `coordinating-agents` retains the live-control and
+correction-ordering protocol.
 
 ## External research is a deliverable
 
