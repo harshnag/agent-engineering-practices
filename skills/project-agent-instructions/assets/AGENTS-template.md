@@ -95,6 +95,14 @@ described as though it exists is a plan built on a fiction.
   and preserve reasoning before closing the existing work item. Planned checks
   and checks not run remain unverified; links and structural passes are not
   evidence of runtime correctness.
+- **Coordinate through owned files first.** Keep assignments, decisions,
+  progress, blockers and handoffs in existing items and topic documents; no
+  second queue. Publish readable repository/branch/revision/path pointers
+  across isolated trees, never edit another session's tree, and keep messages
+  to essential wakeups, inaccessible artifacts or urgent safety corrections.
+  Files do not replace live liveness and admission checks.
+  <!-- Route to the local owner of durable-project-memory's file-first policy,
+       including provisional artifacts and urgent correction ordering. -->
 - **Research is a deliverable.** Anything learned outside the repository is
   committed before it is acted on, with a date, sources beside their claims,
   what was verified from primary material, and what was not found.

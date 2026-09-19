@@ -63,6 +63,16 @@
 ## Work and evidence
 
 <!-- Put the bounded tasks and dependencies here, within this one claim.
+     This is also the default home for assignment, progress and blockers, not
+     a parallel chat ledger. Link durable decisions in their topic owner and
+     continuation in the handover. Publish from your own tree and identify the
+     repository, branch, exact revision, path and section for other workers.
+     A local relative path is not readable across isolated trees by itself.
+     Label unpublished observations provisional; never edit another tree.
+     Keep messages to essential wakeups, inaccessible-artifact reports and
+     urgent safety corrections, carrying a pointer rather than copied scope.
+     Neither this claim nor its timestamp proves liveness or admission.
+
      Per acceptance case, link the implementation and exact automated assertion
      or manual procedure. Planned checks are unverified. Record actual results
      with revision, command/procedure, environment and limits; a linked file or

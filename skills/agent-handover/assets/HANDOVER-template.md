@@ -26,7 +26,13 @@ to believe a figure somebody typed.
 | The gate | `<verify command>` must exit 0 — and see what it does *not* cover |
 
 <!-- Then, in prose: what the last session was doing and why. Link the doc that
-     carries the reasoning; do not restate it here. -->
+     carries the reasoning; do not restate it here. Across isolated trees, name
+     repository, branch, exact readable revision, path and section. Publish
+     before a successor depends on it; an uncommitted artifact is provisional,
+     not a stable handoff. Never edit another session's tree. Files and stale
+     timestamps do not establish liveness or authorize admission/retirement.
+     Send only an essential wakeup, inaccessible-artifact report or urgent
+     safety correction, with a pointer rather than a duplicate handover. -->
 
 ## What is open
 
