@@ -10,7 +10,7 @@ than in the skill body.
 From an origin project, and worth reconstructing because every step was
 individually reasonable.
 
-**The code.** A modal was hidden with the `hidden` attribute — the platform's own
+**The code.** A modal was hidden with the `hidden` attribute, the platform's own
 mechanism, backed by a user-agent rule of `[hidden] { display: none }`. The
 stylesheet separately said `.modal { display: grid }`, to lay the modal out when
 it was shown.
@@ -31,17 +31,17 @@ coordinates, what would receive it?* Only a real pointer event, dispatched
 through the compositor at a position, does that.
 
 **Why more checks would not have helped.** Every additional assertion in the same
-style inherits the same blindness. This is `checking-claims`' rule about searches
-— *a search inherits the assumption that makes the mistake possible* — in its
-testing form:
+style inherits the same blindness. This is `checking-claims`' rule about
+searches, *a search inherits the assumption that makes the mistake possible*, in
+its testing form:
 
 > **A check written in the vocabulary that hides the bug cannot find the bug, and
 > passing tells you only that the vocabulary is consistent.**
 
-**The repair.** Not "add more interaction tests". A check for the *specific
-mechanism*: that nothing occludes the root at the point a person would press. And
-it was watched failing on the real defect before being trusted, which is the only
-thing separating it from decoration.
+**The repair.** The team added a check for the *specific mechanism*: that nothing
+occludes the root at the point a person would press. It was watched failing on
+the real defect before being trusted, which is the only thing separating it from
+decoration.
 
 ## The taxonomy: what a suite is structurally blind to
 
@@ -61,9 +61,8 @@ both files and sees both rules; the browser produces one outcome.
 
 **Timing and late arrival.** What is on screen at 200ms versus at 2s, and what
 moves when the difference resolves. The counter-intuitive form, from an origin
-project: *what moves is not what arrives late — it is what arrives late* **above**
-*something else.* A late insertion stops being cosmetic the moment it lands on a
-tap target.
+project: the problem is what arrives late **above** *something else.* A late
+insertion stops being cosmetic the moment it lands on a tap target.
 
 **Platform-drawn output.** Corner rounding, safe areas, system chrome, colour
 management, font fallback, device pixel ratio. Your code is not what produces the
@@ -74,11 +73,11 @@ scale it is drawn. A test can assert a hex value; it cannot assert that a person
 can read it.
 
 **Domain-shaped rendering.** Any project whose output is a drawn artefact rather
-than text has more of this surface than most — anything with a coordinate
-transform, a threshold that changes what is shown at different scales, a
-continuous value mapped to colour, content fetched in pieces as you move around
-it, or labels that must not collide. All are things a test asserts a value for
-and a person sees the result of.
+than text has more of this surface than most. That includes anything with a
+coordinate transform, a threshold that changes what is shown at different
+scales, a continuous value mapped to colour, content fetched in pieces as you
+move around it, or labels that must not collide. All are things a test asserts a
+value for and a person sees the result of.
 
 **The environment itself.** Whether the build output is what ran, whether asset
 paths resolve at the real origin, whether the data displayed is the data the
@@ -94,7 +93,7 @@ the sequence is:
 
 1. Drive the real thing. Find the defect.
 2. Write a check for **the mechanism**, not for the symptom.
-3. **Watch it fail** on the real defect.
+3. Watch it fail on the real defect.
 4. Fix, and watch it pass.
 
 Step 3 is not optional and is the one usually skipped, because by the time the
@@ -108,7 +107,7 @@ Not a ceremony. The point is to record the boundary, so it is short and every
 line ends up in the handover.
 
 - [ ] **Build it the way it ships**, not the way it develops. Then serve that.
-- [ ] **Open it and interact using real input** — press, scroll, type, drag. Do
+- [ ] **Open it and interact using real input**: press, scroll, type, drag. Do
       not call anything.
 - [ ] **Look at first paint**, before data arrives. Then look again after.
 - [ ] **Two widths at least**, one of them narrow enough to reflow.

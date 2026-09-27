@@ -1,6 +1,6 @@
 ---
 name: shipping-changes
-description: Safely carry reviewed work from pull request through merge and deployment — pinning the exact head that passed, monitoring the exact post-merge run, applying migrations before an automatic deploy, verifying deployed identity, separating artifact trust domains, and interpreting skipped, queued, absent, or cancelled work honestly. Use when opening, updating, merging, or auto-merging a pull request; deploying to production; changing a schema; diagnosing a green merge that did not ship; designing deployment automation; or claiming which commit is live.
+description: Safely carry reviewed work from pull request through merge and deployment by pinning the exact head that passed, monitoring the exact post-merge run, applying migrations before an automatic deploy, verifying deployed identity, separating artifact trust domains, and interpreting skipped, queued, absent, or cancelled work honestly. Use when opening, updating, merging, or auto-merging a pull request; deploying to production; changing a schema; diagnosing a green merge that did not ship; designing deployment automation; or claiming which commit is live.
 license: MIT
 metadata:
   provenance: Extracted from two private production codebases, 2026
@@ -129,10 +129,10 @@ required jobs.
 Do not stop at green CI if deployment is a separate job or service. A cancelled
 or absent deploy leaves the trunk advanced and production unchanged.
 
-Separate two event questions:
+Ask two separate event questions:
 
-- **Is anything in flight that can deploy this commit?**
-- **What commit is running now?**
+- Is anything in flight that can deploy this commit?
+- What commit is running now?
 
 "Production is behind" does not answer whether anything is coming. A useful
 monitor distinguishes in flight, inert, contradicted, and unreadable.
