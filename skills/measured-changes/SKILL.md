@@ -21,8 +21,8 @@ Write the reasoning down before writing the change: what the current behaviour
 is, why it is wrong, what you expect the change to do, and **what number would
 tell you it did**.
 
-This is not ceremony. It is the only way to notice afterwards that you got the
-result you wanted for a reason you did not intend.
+That order is how you notice afterwards that you got the result you wanted for
+a reason you did not intend.
 
 > **A mechanic described as though it exists is a plan built on a fiction.**
 > Before building on a behaviour you believe the system has, find the code or
@@ -42,8 +42,8 @@ number available for reinterpretation.
 Using the system tells you whether it is broken. It cannot tell you whether a
 1.5pp change went the right way, and it will confidently tell you it did.
 
-Where the output is a *judgement about someone* — a score, a rank, a risk
-rating — this stops being a quality rule and becomes an accountability one.
+Where the output is a *judgement about someone*, such as a score, a rank, or a
+risk rating, this stops being a quality rule and becomes an accountability one.
 **The difference between a defensible score and a libel is a harness**, and no
 amount of squinting at a visualisation substitutes.
 
@@ -60,8 +60,8 @@ The standard error on a proportion is roughly `sqrt(0.25/n)`:
 
 **If the effect you are measuring is smaller than that, you are measuring
 noise.** Two real examples of what this feels like from the inside: a result
-that was *impossible by construction* — a superset scoring worse than its
-subset — and an "underperforming" component that was being run with different
+that was *impossible by construction*, with a superset scoring worse than its
+subset, and an "underperforming" component that was being run with different
 settings from everything it was compared against. Both read as bugs. Neither
 was.
 
@@ -79,7 +79,7 @@ small pure state space adds noise and can miss the one case nobody knew to name.
 ## A check that flips on noise is worse than no check
 
 A measured value of 39.9% against a 40% floor passes at 5,000 samples and fails
-at 40,000. That is not a passing check; it is a coin toss with a threshold drawn
+at 40,000. That check is a coin toss with a threshold drawn
 on it.
 
 **Land mid-band with margin either side**, and record the measured figure with
@@ -94,7 +94,7 @@ The anchor rule, and the most expensive one to learn.
 A sweep across three very different values returned **byte-identical** results
 and printed PASS every time. The harness built its own fixture, the fixture was
 missing the very component being varied, and the system dropped the unknown
-input silently — as designed, because tolerating unknown input is what keeps old
+input silently, as designed, because tolerating unknown input is what keeps old
 saved data working.
 
 So the check ran, compared a thing against itself, and reported a healthy
@@ -105,13 +105,13 @@ spread.
 
 Three practices follow:
 
-- **Watch every new gate fail on the bug it guards, before trusting it.** If you
+- Watch every new gate fail on the bug it guards, before trusting it. If you
   cannot make it go red, you have not written a check.
-- **Fixtures must assert their own completeness.** A helper that assembles a
-  test fixture should *throw* when something it was asked for is missing, rather
-  than returning an empty value. Silent tolerance is correct in production and
+- Fixtures must assert their own completeness. A helper that assembles a test
+  fixture should *throw* when something it was asked for is missing, rather than
+  returning an empty value. Silent tolerance is correct in production and
   catastrophic in a harness.
-- **Mutation works after the fact.** Copy the module to a temp path, break one
+- Mutation works after the fact. Copy the module to a temp path, break one
   behaviour, point the untouched test at the copy. No edit to real source, so it
   is safe in a shared tree and possible long after the code merged.
 
@@ -137,7 +137,7 @@ forbidden word in the project's own text, inside a sentence arguing against
 using it.** That is the whole argument for having it.
 
 > **A value that silently defaults is indistinguishable from a deliberate
-> exclusion** — opposite intent, identical representation, in the output and the
+> exclusion**. Opposite intent, identical representation, in the output and the
 > interface and every export. Make the default an error, or make it visible.
 
 ## Describe your gate accurately
@@ -145,14 +145,14 @@ using it.** That is the whole argument for having it.
 > **A gate is allowed to be small. It is not allowed to be described as larger
 > than it is.**
 
-State plainly what the verification command does *not* cover — network fetches,
+State plainly what the verification command does *not* cover: network fetches,
 data rebuilds, real rendering, migrations. An agent that reads "verify must pass
 before commit" and concludes verify is sufficient will ship the thing verify
 never looked at.
 
 ## Structural checks and numeric checks are different things
 
-Some assertions encode a *design promise* — "this strategy should beat that one
+Some assertions encode a *design promise*: "this strategy should beat that one
 under these conditions". Others encode a *measured range*.
 
 > **When a structural check starts failing, either a constant went too far or
@@ -169,17 +169,17 @@ the boundary the syntax was supposed to buy.
 
 If you pin outputs against committed constants, a failure is either:
 
-1. **An intended change** — regenerate the baseline and explain it in the commit
+1. An intended change: regenerate the baseline and explain it in the commit
    message, or
-2. **An accident.**
+2. An accident.
 
 These are not interchangeable, and regenerating without deciding which one it is
 destroys the only signal the baseline exists to give. State the measured
-resolution too — "the corpus moves on a 0.01% change to this constant" tells the
+resolution too: "the corpus moves on a 0.01% change to this constant" tells the
 next person how much sensitivity they are holding.
 
-Anything already computed under the old numbers — stored ratings, historical
-tables, cached results, published figures — is why this matters: a silent
+Anything already computed under the old numbers (stored ratings, historical
+tables, cached results, published figures) is why this matters: a silent
 regeneration invalidates data that has already shipped.
 
 ### A baseline cannot see a defect older than itself
@@ -195,7 +195,7 @@ the day before the defect shipped; a pure baseline comparison always says green.
 ## Know which changes need re-verification, and why
 
 Isolate sources of randomness so cosmetic additions provably cannot move a
-result — for example, giving presentation its own RNG stream, separate from
+result, for example by giving presentation its own RNG stream, separate from
 simulation.
 
 The payoff is a real diagnostic: **adding a line of copy cannot change the
@@ -236,7 +236,7 @@ The stopwatch can be perfectly honest about a fast path that skipped the work.
 ## Keep the gate that runs everywhere cheap
 
 If a fast gate runs on every deploy and a slow one runs in CI, expensive checks
-belong in the slow one — and something must *enforce* that, or they migrate.
+belong in the slow one, and something must *enforce* that, or they migrate.
 
 Write a test that fails when an expensive check appears in the cheap gate. The
 rule is easy to state and impossible to remember at the moment somebody adds one
@@ -264,13 +264,13 @@ See `references/PERFORMANCE-BUDGETS.md` for reach, units, and two-sided ratchets
 
 ## Record it, or it did not fully happen
 
-- **Docs are a deliverable.** A measured result that lives only in a terminal is
+- Docs are a deliverable. A measured result that lives only in a terminal is
   gone. Put the number, the target, and the sample size in the document that
   explains the system.
-- **Commit messages explain *why*.** The diff already says what changed. The
-  reasoning — what was measured, what it replaced, what was rejected — exists
+- Commit messages explain *why*. The diff already says what changed. The
+  reasoning (what was measured, what it replaced, what was rejected) exists
   nowhere else.
-- **A number in prose is a measurement with an expiry date.** Write "39.9% at
+- A number in prose is a measurement with an expiry date. Write "39.9% at
   5,000 samples, against a 40% floor" rather than "just under the floor". A
   figure carrying the run it came from is a recorded observation and does not
   rot; a bare one reads as current forever.
@@ -281,11 +281,11 @@ finds the proposed explanation was wrong.
 
 ## The suite is not enough
 
-This has its own skill — see `verify-in-the-real-thing`. The short form:
+This has its own skill, `verify-in-the-real-thing`. The short form:
 
 > **Drive the real artifact, in the real environment.** In the origin projects,
 > essentially every real defect was found that way and none by the test suite.
 
-If you cannot — sandbox, firewall, missing credentials — **say so explicitly and
-hand that check back.** Concluding the suite was sufficient is the failure this
-rule exists to prevent.
+If you cannot because of a sandbox, firewall, or missing credentials, **say so
+explicitly and hand that check back.** Concluding the suite was sufficient is the
+failure this rule exists to prevent.

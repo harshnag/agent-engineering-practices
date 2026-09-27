@@ -41,10 +41,10 @@ small category.
 
 A useful budget reports three different failures:
 
-- **over:** the build exceeds the ceiling;
-- **loose:** the ceiling's slack has grown large enough to admit the regression
+- over, when the build exceeds the ceiling;
+- loose, when the ceiling's slack has grown large enough to admit the regression
   it exists to catch;
-- **drift:** the build no longer agrees with the recorded measurement.
+- drift, when the build no longer agrees with the recorded measurement.
 
 Lowering a ceiling after a measured saving is ordinary. Raising one requires a
 new measurement and a written argument.
