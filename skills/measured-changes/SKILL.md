@@ -21,8 +21,8 @@ Write the reasoning down before writing the change: what the current behaviour
 is, why it is wrong, what you expect the change to do, and **what number would
 tell you it did**.
 
-That order is how you notice afterwards that you got the result you wanted for
-a reason you did not intend.
+That order is the only way to notice afterwards that you got the result you
+wanted for a reason you did not intend.
 
 > **A mechanic described as though it exists is a plan built on a fiction.**
 > Before building on a behaviour you believe the system has, find the code or

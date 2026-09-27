@@ -12,9 +12,9 @@ metadata:
 
 A session ends. Everything it learned and failed to write down ends with it.
 
-The successor needs the current state, but a stale summary can be worse than no
-summary. It can omit a constraint, lag behind the repository, and still sound
-authoritative.
+The successor needs to know where things stand, and it must not be *misled* by a
+summary that can omit constraints or lag behind the repository. A handover
+defends both at once, and the two pull against each other.
 
 ## Write it before you are forced to
 

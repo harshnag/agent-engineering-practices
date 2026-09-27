@@ -38,10 +38,10 @@ its testing form:
 > **A check written in the vocabulary that hides the bug cannot find the bug, and
 > passing tells you only that the vocabulary is consistent.**
 
-**The repair.** The team added a check for the *specific mechanism*: that nothing
-occludes the root at the point a person would press. It was watched failing on
-the real defect before being trusted, which is the only thing separating it from
-decoration.
+**The repair.** Rather than more interaction tests, a check for the *specific
+mechanism*: that nothing occludes the root at the point a person would press. It
+was watched failing on the real defect before being trusted, which is the only
+thing separating it from decoration.
 
 ## The taxonomy: what a suite is structurally blind to
 
@@ -61,8 +61,9 @@ both files and sees both rules; the browser produces one outcome.
 
 **Timing and late arrival.** What is on screen at 200ms versus at 2s, and what
 moves when the difference resolves. The counter-intuitive form, from an origin
-project: the problem is what arrives late **above** *something else.* A late
-insertion stops being cosmetic the moment it lands on a tap target.
+project: *what moves is not what arrives late; it is what arrives late* **above**
+*something else.* A late insertion stops being cosmetic the moment it lands on a
+tap target.
 
 **Platform-drawn output.** Corner rounding, safe areas, system chrome, colour
 management, font fallback, device pixel ratio. Your code is not what produces the

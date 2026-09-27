@@ -109,7 +109,7 @@ Two things to state alongside the order:
   question it answers. A list of every document in sequence is not strict; once
   it exceeds a session's budget it is impossible, and every reader routes
   informally anyway.
-- Measure the read-in cost. Measure the compulsory prompt boundary and the corpus
+- The read-in is not free. Measure the compulsory prompt boundary and the corpus
   separately. The total corpus is a routing warning, not a claim about one
   request's token usage.
 - Say what each doc is for. Route accepted behavior to its current contract,

@@ -34,8 +34,8 @@ standing in front of the requirement owners and their evidence. That does not
 mean every document is gated: authority, verification coverage and the latest
 observed result are different properties.
 
-The disclaimer sets the precedence order. It has to live in the file because
-the file is what gets read first.
+The disclaimer is a load-bearing instruction: it sets the precedence order. It
+has to live in the file because the file is what gets read first.
 
 The earlier explanation claimed every handover was written by the person with
 the least context left. That is not a structural fact: a session can stop early,

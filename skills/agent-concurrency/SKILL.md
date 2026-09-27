@@ -257,8 +257,8 @@ agents followed every rule. No degree of care closes a window you are not awake
 for.
 
 > **Enforce the failures the loser cannot see coming; leave the rest as rules.**
-> A rule is cheap, readable, and self-explaining, but it can only protect
-> against the mistakes of whoever is reading it.
+> A rule is cheaper than enforcement, readable, and self-explaining, but it
+> can only protect against the mistakes of whoever is reading it.
 
 `scripts/pre-commit` gives a working tree to the first agent that commits in it
 and refuses the next one, printing how to carry staged and untracked work into a

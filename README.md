@@ -102,13 +102,13 @@ Then `project-agent-instructions` ships a template for the `AGENTS.md` that make
 the practice local to a codebase, and `agent-concurrency` ships runnable
 enforcement:
 
-- [<code>scripts/pre-commit</code>](skills/agent-concurrency/scripts/pre-commit)
+- [`scripts/pre-commit`](skills/agent-concurrency/scripts/pre-commit)
   refuses a second agent committing in a working tree another agent holds, and
   tells it how to move its work safely.
-- [<code>scripts/open.ts</code>](skills/agent-concurrency/scripts/open.ts) derives this
+- [`scripts/open.ts`](skills/agent-concurrency/scripts/open.ts) derives this
   checkout's item states from the files themselves, so there is no shared index
   for parallel agents to contend over.
-- [<code>references/AUTOMATING-REVIEW.md</code>](skills/agent-concurrency/references/AUTOMATING-REVIEW.md)
+- [`references/AUTOMATING-REVIEW.md`](skills/agent-concurrency/references/AUTOMATING-REVIEW.md)
   covers branch protection, required checks, CODEOWNERS and automated reviewers,
   each with how to prove it can refuse.
 

@@ -80,7 +80,8 @@ Then start a new Scout session and ask it to list the skills it can see.
 **Copilot CLI** reads `~/.copilot/skills/`. The one-liner is all that is needed.
 
 **Copilot coding agent and Copilot in the IDE** pick up repository-level
-instructions, so put an `AGENTS.md` in the repository before installing skills.
+instructions, so the highest-leverage move there is an `AGENTS.md` in the
+repository, which needs no skill installed at all.
 `project-agent-instructions` ships a template:
 
     cp skills/project-agent-instructions/assets/AGENTS-template.md AGENTS.md
