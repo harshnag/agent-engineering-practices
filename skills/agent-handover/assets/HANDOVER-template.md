@@ -23,7 +23,7 @@ to believe a figure somebody typed.
 | Open pull requests | `gh pr list` |
 | Working tree | `git status --short` |
 | Who else is here | the session list, and `docs/open/` for claims |
-| The gate | `<verify command>` must exit 0 — and see what it does *not* cover |
+| The gate | `<verify command>` must exit 0; also read what it does *not* cover |
 
 <!-- Then, in prose: what the last session was doing and why. Link the doc that
      carries the reasoning; do not restate it here. Across isolated trees, name
@@ -37,7 +37,7 @@ to believe a figure somebody typed.
 ## What is open
 
 Open work lives in [`docs/open/`](docs/open/), one file per item, because it must
-be claimable. **Read the states before picking anything** — only `open` is a
+be claimable. **Read the states before picking anything.** Only `open` is a
 task, `blocked` is waiting on something that is not effort, and `refused` was
 decided against and never becomes work.
 
@@ -52,7 +52,7 @@ decided against and never becomes work.
 ## Who continues this
 
 <!-- Completed work needs no successor. For a necessary continuation, name the
-     unfinished scope, successor, ownership and where its work will appear —
+     unfinished scope, successor, ownership and where its work will appear:
      its own branch and working tree, landing through a pull request. Follow the
      project's admission and retirement rules; never remove a live session's
      tree. If no successor was created, SAY SO AND WHY. Silence reads as a
@@ -67,7 +67,7 @@ Stated plainly, because a successor assumes anything unmentioned was done.
 
 <!-- State the boundary, not the effort. Not "tested in a browser" but which
      browser, which widths, which environment, and what was never opened. Not
-     "the gate passes" but what the gate does not reach — network fetches, data
+     "the gate passes" but what the gate does not reach: network fetches, data
      rebuilds, real rendering, migrations. Anything you were sandboxed or
      firewalled out of goes here, handed back explicitly. -->
 
@@ -82,16 +82,16 @@ Stated plainly, because a successor assumes anything unmentioned was done.
 
 Not here. <!-- Link current contract owners separately from the history that
 explains them. If something is explained only in this file, it is in the wrong
-place — move it into its durable owner and link that. Preserve history routes. -->
+place. Move it into its durable owner and link that. Preserve history routes. -->
 
 ## Keeping this file honest
 
-- **Update it before you hand off, not after you are asked.** It is worth exactly
+- Update it before you hand off, not after you are asked. It is worth exactly
   as much as its last edit.
-- **Anything load-bearing goes in a doc first**, and this file links to it.
-- **Settle open questions while you still have the context to argue about them.**
-  A question left here is one the next session answers with less of the reasoning
+- Anything load-bearing goes in a doc first, and this file links to it.
+- Settle open questions while you still have the context to argue about them. A
+  question left here is one the next session answers with less of the reasoning
   than you had.
-- **State what you did not verify.** The alternative is a successor assuming it
-  was done — and with several agents reading this at once, the assumption is made
-  in parallel.
+- State what you did not verify. The alternative is a successor assuming it was
+  done, and with several agents reading this at once, the assumption is made in
+  parallel.

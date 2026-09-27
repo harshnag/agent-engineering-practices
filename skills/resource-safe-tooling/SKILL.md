@@ -13,9 +13,8 @@ metadata:
 Worktrees split files, branches, and indexes. They do not split the machine
 underneath them.
 
-The threat is not a malicious program. It is several ordinary commands, each
-correct in isolation, multiplying on a host that also carries interactive work,
-CI, browsers, and other sessions.
+The threat is several ordinary commands, each correct in isolation, multiplying
+on a host that also carries interactive work, CI, browsers, and other sessions.
 
 > **The machine is the one shared resource the repository cannot isolate by
 > convention.**

@@ -1,7 +1,7 @@
 # Agent engineering practices
 
 Portable working rules for AI coding agents, packaged as
-[Agent Skills](https://agentskills.io/specification) — the open `SKILL.md`
+[Agent Skills](https://agentskills.io/specification), the open `SKILL.md`
 format that GitHub Copilot, Microsoft Scout, Claude Code, Cursor and ~45 other
 agents load on demand.
 
@@ -16,7 +16,7 @@ labelled separately; they are not claims of measured adoption benefits.
     gh skill install harshnag/agent-engineering-practices --all --scope user
 
 Every agent that reads `~/.copilot/skills/` picks them up automatically. Confirm
-with `ls ~/.copilot/skills/` — you should see eleven directories. If you have
+with `ls ~/.copilot/skills/`; you should see twelve directories. If you have
 installed any of them before, add `--force`, because `--all` aborts the batch
 rather than skipping what is already there.
 
@@ -26,8 +26,8 @@ actually *activated* rather than merely installed.
 
 ## The problem these address
 
-An agent's failure mode is not bad code. It is **plausible** work — output that
-passes review, passes the suite, and is wrong in a way nothing surfaces.
+An agent's dangerous failure mode is **plausible** work: output that passes
+review, passes the suite, and is wrong in a way nothing surfaces.
 
 The pattern repeats across every rule here:
 
@@ -35,7 +35,7 @@ The pattern repeats across every rule here:
   fixture was missing the thing being varied.
 - A suite of interactive checks passes while a full-screen overlay swallows
   every click, because programmatic clicks do not hit-test.
-- A category the ingest does not recognise silently becomes zero — which is
+- A category the ingest does not recognise silently becomes zero. That is
   byte-identical to a deliberate exclusion, and means the opposite.
 - A confident claim about the build system that nobody ran a command to check,
   which produces no symptom until it produces a plan.
@@ -43,11 +43,11 @@ The pattern repeats across every rule here:
 None of these are caught by working harder or reviewing more carefully. They are
 caught by specific, checkable practices, which is what this repository is.
 
-## The eleven skills
+## The twelve skills
 
 | Skill | What it governs |
 |---|---|
-| [`checking-claims`](skills/checking-claims/) | Deciding whether a claim is true before acting on it — especially claims about your own tooling |
+| [`checking-claims`](skills/checking-claims/) | Deciding whether a claim is true before acting on it, especially claims about your own tooling |
 | [`measured-changes`](skills/measured-changes/) | Tuning anything whose effect is smaller than its noise, and building gates that can actually fail |
 | [`verify-in-the-real-thing`](skills/verify-in-the-real-thing/) | Why a passing suite is not evidence the thing works |
 | [`external-data-claims`](skills/external-data-claims/) | Consuming other people's data without inheriting their assumptions |
@@ -58,12 +58,13 @@ caught by specific, checkable practices, which is what this repository is.
 | [`resource-safe-tooling`](skills/resource-safe-tooling/) | Designing process-heavy tooling that remains safe on shared or constrained machines |
 | [`coordinating-agents`](skills/coordinating-agents/) | Dispatching and steering a fleet when listings are stale and completion is asynchronous |
 | [`shipping-changes`](skills/shipping-changes/) | Landing and deploying the exact reviewed revision, including migrations and runtime identity |
+| [`unslop`](skills/unslop/) | Writing and auditing prose (and AI-written code) so it does not read as generated, without changing what it says |
 
 ## Three ideas that carry most of the value
 
 **A gate that cannot fail is decoration.** The most expensive lesson here. If you
 have not watched a check go red on the bug it guards, you have not written a
-check — you have written something that looks like evidence. This applies to test
+check. You have written something that looks like evidence. This applies to test
 suites, to CI, and to AI code review alike.
 
 **A claim about your own tooling needs evidence exactly as much as a claim about
@@ -80,20 +81,20 @@ has never rejected anything is decoration under the first rule.
 
 Three properties that a document does not have:
 
-1. **It loads itself.** Only each skill's name and description — roughly 100
-   tokens — sit in context at startup. The full body loads when the agent decides
-   the skill is relevant; supporting files load only if it needs them. Guidance
+1. It loads itself. Only each skill's name and description, roughly 100 tokens,
+   sit in context at startup. The full body loads when the agent decides the
+   skill is relevant; supporting files load only if it needs them. Guidance
    nobody remembers to link is guidance that does not exist.
-2. **It is one copy, versioned.** These same rules previously lived as documents
-   copied between repositories, and the copies had **already diverged** — each
-   having learned something the others had not, with nothing anywhere noticing.
+2. It is one copy, versioned. These same rules previously lived as documents
+   copied between repositories, and the copies had **already diverged**. Each
+   had learned something the others had not, with nothing anywhere noticing.
    A skill has `gh skill update`.
-3. **It is agent-agnostic.** One open specification, read by roughly 45 agents,
+3. It is agent-agnostic. One open specification, read by roughly 45 agents,
    so the practice does not have to be re-litigated per tool.
 
 ## Adoption
 
-Start with one skill, not eleven. `checking-claims` is the shortest and has the
+Start with one skill, not twelve. `checking-claims` is the shortest and has the
 widest application; `agent-concurrency` is the one to take first if more than one
 agent or engineer touches a repository.
 
@@ -101,12 +102,15 @@ Then `project-agent-instructions` ships a template for the `AGENTS.md` that make
 the practice local to a codebase, and `agent-concurrency` ships runnable
 enforcement:
 
-- `scripts/pre-commit` — refuses a second agent committing in a working tree
-  another agent holds, and tells it how to move its work safely.
-- `scripts/open.ts` — derives this checkout's item states from the files
-  themselves, so there is no shared index for parallel agents to contend over.
-- `references/AUTOMATING-REVIEW.md` — branch protection, required checks,
-  CODEOWNERS and automated reviewers, each with how to prove it can refuse.
+- [`scripts/pre-commit`](skills/agent-concurrency/scripts/pre-commit)
+  refuses a second agent committing in a working tree another agent holds, and
+  tells it how to move its work safely.
+- [`scripts/open.ts`](skills/agent-concurrency/scripts/open.ts) derives this
+  checkout's item states from the files themselves, so there is no shared index
+  for parallel agents to contend over.
+- [`references/AUTOMATING-REVIEW.md`](skills/agent-concurrency/references/AUTOMATING-REVIEW.md)
+  covers branch protection, required checks, CODEOWNERS and automated reviewers,
+  each with how to prove it can refuse.
 
 For spec-driven changes, extend the existing workflow rather than installing a
 second task system. `durable-project-memory` provides the
@@ -121,7 +125,8 @@ merge, or historical compression is required. Structural validity is not
 behavioral verification. The [dated framework review](skills/durable-project-memory/references/SPEC-WORKFLOW-EVIDENCE.md)
 records documented capabilities and limits, not a mandatory vendor choice.
 
-The same skill owns [file-first coordination](skills/durable-project-memory/SKILL.md#coordinate-through-owned-files-first):
+The same skill owns
+[file-first coordination](skills/durable-project-memory/SKILL.md#coordinate-through-owned-files-first):
 assignments, decisions, progress, blockers and handoffs stay in existing owned
 artifacts. Share readable revision-qualified pointers across isolated worktrees,
 not duplicated specifications; reserve messages for essential notifications.
@@ -130,14 +135,16 @@ Files do not replace live liveness or admission checks.
 ## Provenance and evidence
 
 Each skill states its rule and records that it was extracted rather than
-invented. **The originating codebases are private and are not named**, which
-forces a discipline worth having on its own terms:
+invented. The exception is `unslop`, which is adapted from public sources and
+credits them in its [NOTICE.md](skills/unslop/NOTICE.md). **The originating
+codebases are private and are not named**, which forces a discipline worth
+having on its own terms:
 
 > **Ship the rules; link the evidence.**
 
 A rule is portable. The failure that produced it is not. Restating a specific
 project's domain detail in a repository that has neither would turn a recorded
-observation into an unverifiable assertion — which is the exact failure
+observation into an unverifiable assertion. That is the exact failure
 `checking-claims` is about. So the mechanism travels and the domain does not.
 
 Where a skill does carry a story, it is because the mechanism is the transferable
@@ -146,8 +153,8 @@ part, and it is told without the subject matter.
 ## Contributing
 
 [AGENTS.md](AGENTS.md) is the working agreement, including the house style, the
-publish and skill-inventory gates, and what they do **not** check — which is
-most of what makes a skill good.
+publish and skill-inventory gates, and what they do **not** check. That unchecked
+part is most of what makes a skill good.
 
 MIT licensed. Corrections that come with a reproduction are especially welcome;
 several rules here exist because somebody re-ran a command instead of re-reading

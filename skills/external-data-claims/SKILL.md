@@ -1,6 +1,6 @@
 ---
 name: external-data-claims
-description: Consuming somebody else's dataset without inheriting their assumptions — publishing the selection predicate beside every count, hard-failing on unrecognised categories, keeping nothing-observed, too-few, withheld and a measured zero as distinct claims, and never letting a derived number travel without what produced it. Use when ingesting a third-party or public dataset, mapping source categories to your own, joining datasets, computing a score or index from data you did not collect, choosing thresholds or bands, deciding how to display missing data, or writing a figure into a document, deck or interface.
+description: Consuming somebody else's dataset without inheriting their assumptions by publishing the selection predicate beside every count, hard-failing on unrecognised categories, keeping nothing-observed, too-few, withheld and a measured zero as distinct claims, and never letting a derived number travel without what produced it. Use when ingesting a third-party or public dataset, mapping source categories to your own, joining datasets, computing a score or index from data you did not collect, choosing thresholds or bands, deciding how to display missing data, or writing a figure into a document, deck or interface.
 license: MIT
 metadata:
   provenance: Extracted from two private production codebases, 2026
@@ -30,7 +30,7 @@ it produces a plan.
 Write the distinction into the **name**. A field called `events` is read as
 events by everybody downstream forever; `reported_events` is not. Where only a
 subset of records carries the property you group by, name the count for what it
-is — *records that carried a location*, never *events* — because a large fraction
+is: *records that carried a location*, never *events*, because a large fraction
 may never have carried one.
 
 ## Always publish the selection predicate next to the count
@@ -49,30 +49,30 @@ locally-invented strings rather than the standard's labels.
 The transferable part is not the undercount:
 
 > **The slice had a materially different distribution from the true class**, so
-> it did not merely undercount — it produced a *different finding, with the same
-> shape as a correct one.*
+> it was both an undercount and a *different finding, with the same shape as a
+> correct one.*
 
 So: **select on the standardised key, never on a human-readable label**, and
-publish the predicate — the field, the values, the window, the version — beside
+publish the predicate: the field, the values, the window, the version, beside
 every number you quote.
 
 ## An unrecognised category must be an error, not a zero
 
 > **A value that silently defaults is indistinguishable from a deliberate
-> exclusion** — opposite intent, identical representation, in the output and the
+> exclusion**. Opposite intent, identical representation, in the output and the
 > interface and every export.
 
 Two enforceable rules follow:
 
-- **Exclusions are named entries with stated reasons.** If a category is left
-  out, it is out *on the record*, with the argument attached. An exclusion that
+- Exclusions are named entries with stated reasons. If a category is left out,
+  it is out *on the record*, with the argument attached. An exclusion that
   exists only as an absence cannot be reviewed, defended, or noticed.
-- **The ingest hard-fails on any source category it does not recognise.** Not a
+- The ingest hard-fails on any source category it does not recognise. Not a
   warning, not a log line. A build that stops.
 
 Vocabularies drift, and the drift is invisible. In the origin project a source's
 category list held **43 distinct values across its full history and 37 in the
-last twelve months** — and the six missing included two of the highest-weighted
+last twelve months**, and the six missing included two of the highest-weighted
 categories in the mapping. A vocabulary built from the recent window would have
 scored the most severe possible input as a non-event, raising nothing.
 
@@ -81,8 +81,8 @@ scored the most severe possible input as a non-event, raising nothing.
 
 ## Nothing observed, too few, no denominator and withheld are four claims, not one
 
-A single "no data" treatment collapses distinct claims into one representation —
-the silent-default failure again, at the presentation layer. **A measured zero is
+A single "no data" treatment collapses distinct claims into one representation.
+That is the silent-default failure again, at the presentation layer. **A measured zero is
 a fifth thing and is not "no data" at all**, which is exactly why it must not
 share a representation with any of them.
 
@@ -98,11 +98,11 @@ Keep them apart in the data model as well as visually:
 
 Two consequences, because they are the ones that get skipped:
 
-- **Never render a withheld or unmeasured value as zero, or in the same treatment
-  as a genuine low value.** No data is not a good result.
-- **Where a category is systematically withheld above some rate, refuse to
-  present it at that granularity at all.** Report it only at a level where it is
-  complete, flagged as unavailable below that.
+- Never render a withheld or unmeasured value as zero, or in the same treatment
+  as a genuine low value. No data is not a good result.
+- Where a category is systematically withheld above some rate, refuse to present
+  it at that granularity at all. Report it only at a level where it is complete,
+  flagged as unavailable below that.
 
 Measure that rate **per source, per ingest**. It is a local policy decision made
 by whoever published, it differs between publishers, and a rate observed in one
@@ -111,15 +111,15 @@ source tells you nothing about another.
 ### Missing is not a measurement
 
 The same error one level in. In the origin project a component of a derived score
-was computed from a reference dataset holding zero records for a given unit — not
+was computed from a reference dataset holding zero records for a given unit, not
 because the quantity there was zero, but because nobody had ever surveyed it.
 That unit scored worst-possible. *Unsurveyed* and *absent* are opposite claims
 with identical representation.
 
 The repair generalises: **compute over the components that are known, report
 which those were, and say so at the point of display.** Nearly half the units in
-that dataset turned out to have no observation for that component at all — which
-is a fact about the reference data rather than about the world.
+that dataset turned out to have no observation for that component at all, a fact
+about the reference data rather than about the world.
 
 ## A scale invented in absolute terms is a broken scale that looks like a finding
 
@@ -128,7 +128,7 @@ produce output with the exact shape of a result.
 
 In the origin project, hard-coded thresholds that were reasonable for the
 population they were written for put **113 of 116 units in the worst band** when
-applied to a different one. That is not a finding, it is a broken scale, and it
+applied to a different one. That is a broken scale that
 read as a finding.
 
 > **Derive bands from the distribution you actually have**, and gate on the
@@ -150,7 +150,7 @@ category schemes that differ per publisher, are where this goes wrong in
 practice.
 
 **Log and alert on records dropped by a join, broken down by category.** A join
-that discards non-matching rows is otherwise completely silent — the count is
+that discards non-matching rows is otherwise completely silent. The count is
 simply smaller, and nothing says so.
 
 ## The derivation ships with the verdict
@@ -170,7 +170,7 @@ snapshot it came from travel together or not at all.
 ## A summary figure travels without its caveats
 
 > **A deck, a summary, or a headline number should carry the fewest and most
-> robust figures that will support it.** A research document should carry *more*
+> stable figures that will support it.** A research document should carry *more*
 > than its conclusions, because its job is to protect the next author from
 > rediscovering the same trap.
 
@@ -185,9 +185,9 @@ If the figure ranks, rates, or scores anything describing a group of people or a
 place where they live, the rules above stop being quality practice and become
 accountability practice. Two change character entirely:
 
-- **Never input a demographic attribute, or a proxy for one** — and be honest
-  that income, property value, and similar variables are proxies.
-- **A raw count is a map of exposure and of measurement intensity.** Shipping one
+- Never input a demographic attribute, or a proxy for one, and be honest that
+  income, property value, and similar variables are proxies.
+- A raw count is a map of exposure and of measurement intensity. Shipping one
   "temporarily" because normalisation is harder ships the wrong claim under the
   right label.
 
@@ -203,7 +203,7 @@ than to build your way to it:
 > **Building your way to the rule gets you most of the way and then stops,
 > silently, exactly where the rule is load-bearing.**
 
-Three distinct "no data" states were needed. Two were reached by building — they
+Three distinct "no data" states were needed. Two were reached by building; they
 caused visible trouble, so they got fixed. The third was got *wrong*: rendered as
 nothing at all, indistinguishable from the background and from being outside the
 dataset entirely, **in the very screen arguing that no-data does not mean good.**

@@ -20,8 +20,8 @@ made the mistake was already doing.
 
 Domain logic gets measured, because nobody trusts a domain claim without a
 test. **Tooling gets reasoned about**, because it feels like the kind of thing
-you can simply know — and a wrong belief about a build system produces no
-symptom until it produces a plan.
+you can simply know. A wrong belief about a build system produces no symptom
+until it produces a plan.
 
 > **A claim about your own tooling needs evidence exactly as much as a claim
 > about the code.** `ls`, `curl`, or a run you can point at. The reason it feels
@@ -29,7 +29,7 @@ symptom until it produces a plan.
 
 In practice: before writing "CI runs X on every push", "the deploy step runs
 the test suite", "this binding is why the route 404s", or "that command isn't
-available here" — run something that shows it.
+available here", run something that shows it.
 
 ## A finding is an inference until somebody checks, whoever generated it
 
@@ -53,7 +53,7 @@ reasoning about the answer.
 ### The subject is part of the evidence
 
 Running the right command in the wrong checkout, against the wrong ref, or over a
-cached view is not weaker evidence. It is evidence about another subject.
+cached view gives evidence about another subject.
 
 > **"Measured, not reasoned" answers how you know so convincingly that it can
 > hide the question that matters: measured on what?**
@@ -63,13 +63,13 @@ selection predicate. Record those arguments with the conclusion.
 
 ## A search inherits the assumption that makes the mistake possible
 
-When you grep to establish whether something is a convention, the pattern
-usually filters on the very property being counted — so it quietly answers the
-question it was meant to ask.
+When you grep to establish whether something is a convention, the pattern often
+filters on the very property being counted. The search then answers the question
+it was meant to ask.
 
 > **A search for a pattern finds the instances that state it fully, and misses
-> exactly the ones that rely on it being already established** — which are the
-> ones that prove it is established.
+> exactly the ones that rely on it being already established.** Those omitted
+> instances are the ones that prove it is established.
 
 A house style is proved by the places that *modify* the base treatment rather
 than restate it, and no pattern for the base treatment finds those. If a count
@@ -127,7 +127,7 @@ empty, or success.
 
 ## A second reader is not the safeguard; checking is
 
-They correlate, because a second reader has no stake in the claim — which makes
+They correlate because a second reader has no stake in the claim. That makes
 checking *easy*, not *necessary*.
 
 > **A reviewer's claim needs checking exactly as much as an author's.**
@@ -144,10 +144,10 @@ The one mechanism that works on your own claims.
 > It is cheap, it is nobody's judgement, and it is the only move that does not
 > inherit the assumption that produced the mistake.
 
-A single measurement written down as a general fact is the standard failure —
+A single measurement written down as a general fact is the standard failure:
 "performance is 91" from one cold run, beside a sentence about repeated runs
-that was true of a *different* set of runs. The number was not wrong; it was a
-different quantity from the one it was recorded as.
+that was true of a *different* set of runs. The number measured a different
+quantity from the one it was recorded as.
 
 ## A claim survives by being inherited
 
@@ -190,18 +190,18 @@ Settle it by **mutation**, which is cheap and works long after the fact:
 3. Independently confirm the mutation changed the intended property.
 4. Point the untouched test file at the copy and run it from a green baseline.
 
-Repeat per behaviour the test claims to guard. Two things to watch for:
+Repeat per behaviour the test claims to guard. Four things to watch for:
 
-- **A single-test catch is worth more than a failing suite.** If one break
-  reddens one assertion and leaves the rest green, the checks are separated. A
-  break that reddens everything tells you only that something is wrong.
-- **Mutation against a temp copy needs no edit to the real source**, so it is
-  safe in a shared tree and possible after the code is merged — which is what
-  makes an old unverified claim recoverable rather than permanent.
-- **A passing mutation has two explanations:** the gate missed the defect, or
-  the mutation did not create it. An empty mutation diff proves only the second.
-- **Re-run the mutation last.** A check watched failing before its own comments
-  or fixtures changed has a true claim with an expired timestamp.
+- A single-test catch is worth more than a failing suite. If one break reddens
+  one assertion and leaves the rest green, the checks are separated. A break that
+  reddens everything tells you only that something is wrong.
+- Mutation against a temp copy needs no edit to the real source, so it is safe in
+  a shared tree and possible after the code is merged. That makes an old
+  unverified claim recoverable rather than permanent.
+- A passing mutation has two explanations: the gate missed the defect, or the
+  mutation did not create it. An empty mutation diff proves only the second.
+- Re-run the mutation last. A check watched failing before its own comments or
+  fixtures changed has a true claim with an expired timestamp.
 
 If the claim turns out true, that is the *uninformative* outcome, not the
 reassuring one. It was true by luck of who wrote it, and the next such header

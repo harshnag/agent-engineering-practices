@@ -1,10 +1,11 @@
 # Installing
 
-Every agent below reads the same open [Agent Skills](https://agentskills.io/specification)
-format, so you install once per machine and the rules are available everywhere.
+Every agent below reads the same open
+[Agent Skills](https://agentskills.io/specification) format, so you install once
+per machine and the rules are available everywhere.
 
-**Nothing here runs code at install time.** A skill is Markdown plus, in one
-case, two scripts you run deliberately.
+**Nothing here runs code at install time.** A skill is Markdown, sometimes with
+scripts you run deliberately: `agent-concurrency` has two, and `unslop` has one.
 
 ---
 
@@ -12,17 +13,17 @@ case, two scripts you run deliberately.
 
     gh skill install harshnag/agent-engineering-practices --all --scope user
 
-That places the eleven skills in `~/.copilot/skills/`, which **GitHub Copilot CLI
+That places the twelve skills in `~/.copilot/skills/`, which **GitHub Copilot CLI
 and Microsoft Scout both read**. Confirm:
 
     gh skill list
 
-Requires a recent `gh` — `gh skill` is in preview, so if the command is not
-found, update the CLI first:
+Requires a recent `gh`. `gh skill` is in preview, so update the CLI first if
+the command is not found:
 
     gh --version && gh extension upgrade --all
 
-### Install one skill rather than all eleven
+### Install one skill rather than all twelve
 
 Recommended for a first look. Start with the shortest and most broadly
 applicable:
@@ -32,11 +33,11 @@ applicable:
 Add more by name at any time: `agent-concurrency`, `agent-handover`,
 `measured-changes`, `external-data-claims`, `verify-in-the-real-thing`,
 `project-agent-instructions`, `durable-project-memory`,
-`resource-safe-tooling`, `coordinating-agents`, `shipping-changes`.
+`resource-safe-tooling`, `coordinating-agents`, `shipping-changes`, `unslop`.
 
 > **If you later want all of them, add `--force`.** Verified behaviour of
 > `gh` 2.96: `--all` **aborts the whole batch with exit 1** if *any* one skill is
-> already installed — it does not install the remaining skills, and it says
+> already installed. It does not install the remaining skills, and it says
 > `skills already installed: <name> (use --force to overwrite)`. So the natural
 > path of trying one and then taking the rest silently leaves you short:
 >
@@ -58,7 +59,7 @@ with the codebase and apply to everyone working in it:
 ## Microsoft Scout
 
 Scout discovers `SKILL.md` folders in `~/.copilot/skills/`, so **the one-liner
-above is the installation** — there is no separate step.
+above is the installation**. There is no separate step.
 
 Scout also reads `~/.copilot/m-skills/`, which syncs across your devices. To use
 that instead:
@@ -71,7 +72,7 @@ Then start a new Scout session and ask it to list the skills it can see.
 
 > **Verify rather than assume.** Scout is not among `gh skill install`'s
 > `--agent` targets, so installation relies on the shared directory rather than
-> on explicit support. Confirm it loads for you before relying on it — which is
+> on explicit support. Confirm it loads for you before relying on it. That is
 > `checking-claims` applied to this page.
 
 ## GitHub Copilot
@@ -79,9 +80,9 @@ Then start a new Scout session and ask it to list the skills it can see.
 **Copilot CLI** reads `~/.copilot/skills/`. The one-liner is all that is needed.
 
 **Copilot coding agent and Copilot in the IDE** pick up repository-level
-instructions, so the highest-leverage move is not installing skills at all — it
-is putting an `AGENTS.md` in the repository. `project-agent-instructions` ships a
-template:
+instructions, so the highest-leverage move there is an `AGENTS.md` in the
+repository, which needs no skill installed at all.
+`project-agent-instructions` ships a template:
 
     cp skills/project-agent-instructions/assets/AGENTS-template.md AGENTS.md
 
@@ -104,7 +105,7 @@ Or manually, into the personal skills directory:
 
     gh skill install --help
 
-For anything not on that list, the format is a plain directory — copy
+For anything not on that list, the format is a plain directory. Copy
 `skills/<name>/` into whatever location your agent reads, keeping the folder
 structure intact. `SKILL.md` must stay at the root of its folder and its `name`
 field must match the folder name.
@@ -115,26 +116,25 @@ field must match the folder name.
 
 Installation is not activation, and this is the step most people skip.
 
-1. **Confirm the files are where you think.**
+1. Confirm the files are where you think.
 
        ls ~/.copilot/skills/
 
-   Eleven directories, each containing a `SKILL.md`. Fewer means an install was
-   refused — see the `--force` note above.
+   Twelve directories, each containing a `SKILL.md`. Fewer means an install was
+   refused. See the `--force` note above.
 
-2. **Start a fresh agent session** — skills are read at startup.
+2. Start a fresh agent session. Skills are read at startup.
 
-3. **Ask directly:** *"Which skills do you have available?"* The agent should
+3. Ask directly: *"Which skills do you have available?"* The agent should
    name them. Only each skill's name and description are loaded at this point.
 
-4. **Trigger one, and check it engaged.** Ask something the description covers,
-   such as *"I need to add a check that catches a regression — how should I know
+4. Trigger one, and check it engaged. Ask something the description covers,
+   such as *"I need to add a check that catches a regression; how should I know
    it works?"* You should get the mechanism from `measured-changes`: watch it
    fail on the bug it guards before trusting it.
 
-If nothing engages, the description is the thing to look at — it is the only part
-loaded at startup, and therefore the only thing deciding whether a skill is ever
-activated.
+If nothing engages, look at the description. It is the only part loaded at
+startup, and therefore the only thing deciding whether a skill is activated.
 
 ## Updating
 
@@ -152,15 +152,14 @@ Delete the folder:
 
 A suggested order, cheapest first:
 
-1. **One person installs `checking-claims` and uses it for a week.** It is short
+1. One person installs `checking-claims` and uses it for a week. It is short
    and it applies to everything.
-2. **Add `AGENTS.md` to one repository**, from the template. This is the change
-   with the largest effect, because it applies to every agent session in that
-   codebase whether or not anybody installed anything.
-3. **Add `agent-concurrency`** once more than one agent or engineer works in the
-   same repository — it is the one whose absence causes damage rather than
-   inefficiency.
-4. **Turn on branch protection**, using
+2. Add `AGENTS.md` to one repository, from the template. This has the largest
+   effect, because it applies to every agent session in that codebase whether or
+   not anybody installed anything.
+3. Add `agent-concurrency` once more than one agent or engineer works in the
+   same repository. Its absence causes damage rather than inefficiency.
+4. Turn on branch protection, using
    `skills/agent-concurrency/references/AUTOMATING-REVIEW.md`. Prove each control
    can refuse before believing it.
 

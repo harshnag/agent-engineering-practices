@@ -8,8 +8,8 @@ is here rather than in the skill body.
 
 Both origin projects started by passing the handover session-to-session in a
 kickoff prompt. Both moved it into the repository, and they got there by
-different routes — which is the reason to believe the conclusion rather than
-either argument.
+different routes. That convergence is the reason to believe the conclusion
+rather than either argument on its own.
 
 One arrived at it from **droppability**: the handover was the most important
 artefact in the project and the only one not written down. That project had
@@ -34,9 +34,8 @@ standing in front of the requirement owners and their evidence. That does not
 mean every document is gated: authority, verification coverage and the latest
 observed result are different properties.
 
-So the disclaimer is not modesty. It is a load-bearing instruction that sets the
-precedence order, and it has to live in the file because the file is what gets
-read first.
+The disclaimer is a load-bearing instruction: it sets the precedence order. It
+has to live in the file because the file is what gets read first.
 
 The earlier explanation claimed every handover was written by the person with
 the least context left. That is not a structural fact: a session can stop early,
@@ -51,8 +50,9 @@ or established that restarting at a chosen value improved outcomes.
 
 The [public-source review](CONTEXT-HANDOFF-EVIDENCE.md) distinguishes active
 occupancy from lifetime usage, capacity and corpus estimates. Runtime compaction
-thresholds are scheduling decisions, not evidence of a common quality cliff;
-long-context degradation does not identify an optimal coding handoff count.
+thresholds are scheduling decisions rather than evidence of a common quality
+cliff; long-context degradation does not identify an optimal coding handoff
+count.
 
 So checkpoint reasoning as work progresses, and recover when capacity warnings
 or missing task state make continuity doubtful. Compaction can help but loses
@@ -62,9 +62,9 @@ an unsupported threshold without asserting that unbounded sessions are safe.
 
 ## The successor question reversed three times
 
-Who creates the next session, and what kind, is genuinely unsettled. The
-reversals are recorded in the `agent-concurrency` skill, because the durable part
-is a concurrency constraint rather than a handover one.
+Who creates the next session, and what kind, is still unsettled. The reversals
+are recorded in the `agent-concurrency` skill, because the durable part is a
+concurrency constraint rather than a handover one.
 
 What belongs here is what the reversals imply about handover *text*:
 
@@ -77,10 +77,10 @@ fourth situation when it arrives, because it can see which constraint the
 instruction was serving.
 
 One concrete consequence: **if no successor was created, say so and say why.**
-Silence reads as a successor that exists. In an origin project this was not
-hypothetical — the documented way to create one produced a session that appeared
-in the sidebar and never received its kickoff prompt, which looks exactly like a
-successor that is thinking.
+Silence reads as a successor that exists. In an origin project, the documented
+way to create one produced a session that appeared in the sidebar and never
+received its kickoff prompt, which looks exactly like a successor that is
+thinking.
 
 That is a reporting rule, not an instruction to create one. Completed work needs
 no successor. A necessary continuation still needs explicit unfinished scope,
@@ -100,18 +100,18 @@ The general form is a rule from `measured-changes`:
 
 ## Why "what was not verified" is a heading and not a habit
 
-The failure mode is not dishonesty, it is compression. A session that drove the
-app in one browser at two widths writes "verified in the browser" — true, and
-read as more than it says.
+The failure mode is compression. A session that drove the app in one browser at
+two widths writes "verified in the browser". That is true, and it reads as more
+than it says.
 
 A heading does three things a habit does not:
 
-1. **It is visible when missing.** An empty section is a question; an absent
-   habit is nothing.
-2. **It separates the boundary of what was checked from the effort spent**, which
-   are constantly conflated.
-3. **It gives a blocked agent somewhere to hand a check back to.** The default
-   conclusion of a sandboxed agent is that the suite was sufficient — see the
+1. It is visible when missing. An empty section is a question; an absent habit
+   is nothing.
+2. It separates the boundary of what was checked from the effort spent, which are
+   constantly conflated.
+3. It gives a blocked agent somewhere to hand a check back to. The default
+   conclusion of a sandboxed agent is that the suite was sufficient; see the
    `verify-in-the-real-thing` skill for why that is nearly always wrong.
 
 In one origin project this section runs to several hundred lines of a
@@ -126,30 +126,30 @@ reasoning that raised it, the alternatives it already rejected, and the context
 that makes one answer obviously wrong. None of that survives unless written, and
 writing all of it costs more than answering the question.
 
-So the cheap move is to settle it — and the expensive move *looks* cheap, because
-its cost lands on somebody else.
+The cheap move is to settle it. The expensive move *looks* cheap because its
+cost lands on somebody else.
 
-Where it genuinely cannot be settled — it needs a person, an external dependency,
-or a decision nobody has authority to make — the item file carries the
-recommendation and the reasoning. An item that only names the question has moved
-the cost without reducing it.
+Where it cannot be settled because it needs a person, an external dependency, or
+a decision nobody has authority to make, the item file carries the recommendation
+and the reasoning. An item that only names the question has moved the cost
+without reducing it.
 
 ## Why finishing means pushing
 
 The three reasons, in the order an origin project paid for them:
 
-1. **Uncommitted work in a shared checkout belongs to whoever commits next.** Two
+1. Uncommitted work in a shared checkout belongs to whoever commits next. Two
    sessions' work sat modified in one tree at once and neither could see the
    other. A commit lock stops the commit, which is the shot; it cannot stop the
    staging, which is the loaded gun.
-2. **A commit is not automatically about one thing.** While committing exactly
-   this rule, a staged deletion of a data file was swept into a commit whose
-   message was about something else. It was caught by listing the commit's files
-   and looking — not by any gate — and was free to fix only because nothing had
-   been pushed. Prefer explicit paths over `git add -A` whenever the tree holds
+2. A commit is not automatically about one thing. While committing exactly this
+   rule, a staged deletion of a data file was swept into a commit whose message
+   was about something else. It was caught by listing the commit's files and
+   looking, not by any gate, and was free to fix only because nothing had been
+   pushed. Prefer explicit paths over `git add -A` whenever the tree holds
    anything that is not yours.
-3. **Push may be deploy.** Where the trunk is what the public gets, a commit
-   sitting on a laptop is a fix nobody has.
+3. Push may be deploy. Where the trunk is what the public gets, a commit sitting
+   on a laptop is a fix nobody has.
 
 The first two are concurrency failures, which is why this rule is not merely
 tidiness. The `agent-concurrency` skill is the fuller treatment.

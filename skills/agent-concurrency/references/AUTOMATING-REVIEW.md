@@ -2,7 +2,7 @@
 
 Read `SKILL.md` first for why the trunk is protected and why the author cannot be
 the reviewer. This is the operational half: how to enforce it, and how each
-mechanism fails quietly.
+mechanism fails without signalling.
 
 Everything here is subject to the rule the enforcement exists to serve:
 
@@ -10,7 +10,7 @@ Everything here is subject to the rule the enforcement exists to serve:
 > worse, because it looks like review.**
 
 So each section ends with how to make that mechanism fail on purpose. If you have
-not seen it refuse something, you have not installed it — you have installed the
+not seen it refuse something, you have not installed it. You have installed the
 appearance of it.
 
 ## 1. Protect the trunk, or none of the rest matters
@@ -29,20 +29,20 @@ The three that carry the weight:
 
 | Rule | What it stops |
 |---|---|
-| `pull_request` | direct pushes to the trunk — the whole point |
+| `pull_request` | direct pushes to the trunk, which is the whole point |
 | `non_fast_forward` | force-pushes rewriting history others have fetched |
 | `deletion` | removing the branch |
 
 Then, inside the `pull_request` rule, the parameters that decide whether review is
 real: `required_approving_review_count` (at least 1),
 `dismiss_stale_reviews_on_push` (an approval is of a diff, not of a branch), and
-`require_last_push_approval` — which is the one that specifically closes the
-self-approval loophole, because it stops the last pusher approving.
+`require_last_push_approval`. That one specifically closes the self-approval
+loophole, because it stops the last pusher approving.
 
 **Two things to know before relying on it.** Repository admins are frequently
 exempt by default, so the person most likely to be driving an agent is the person
-least protected by the rule — check `bypass_actors` and empty it. And on some
-plans, protection of private repositories is limited; verify on the actual
+least protected by the rule. Check `bypass_actors` and empty it. On some plans,
+protection of private repositories is limited; verify on the actual
 repository rather than assuming.
 
 Before claiming protection is unavailable, probe both the repository's legacy
@@ -62,13 +62,13 @@ looked; a required check says the gate ran and passed on *this* commit.
 
 Name the checks explicitly in the ruleset, and set
 `strict_required_status_checks_policy` so a branch must be up to date with the
-trunk before merging — otherwise two individually-green branches merge into a
+trunk before merging. Otherwise two individually-green branches merge into a
 broken trunk, which is the verification-across-a-mixture failure from `SKILL.md`
 in a different costume.
 
 **The characteristic silent failure** is a required check that is not running at
 all. A renamed workflow, a job skipped by a path filter, or a check that was
-never reported leaves the requirement satisfied by nothing — and a skipped job
+never reported leaves the requirement satisfied by nothing. A skipped job
 frequently reports as success.
 
 **Make it fail:** push a commit that breaks the thing the check guards, and watch
@@ -78,7 +78,7 @@ name after any workflow rename.
 ### Green branch, unverified merge
 
 Two branches can each pass and produce a broken tree together without a text
-conflict — one removes a path while another adds a reference to it.
+conflict: one removes a path while another adds a reference to it.
 
 Rebase onto the current trunk, inspect the result, and run the gate on that exact
 tree. A clean rebase means only that no conflict marker was needed. Confirm:
@@ -152,21 +152,21 @@ non-owner only, and confirm the merge is still blocked.
 
 ## 4. Automated reviewers, including agents
 
-An automated reviewer — a code-review action, a bot, or an agent session invoked
-against the diff — is genuinely useful, and is the easiest of all of these to turn
+An automated reviewer can be useful: a code-review action, a bot, or an agent
+session invoked against the diff. It is also the easiest of all of these to turn
 into decoration.
 
 Three rules make it worth having:
 
-- **It must be able to reject.** If it only ever comments, it is a linter with
+- It must be able to reject. If it only ever comments, it is a linter with
   opinions. Decide deliberately whether it blocks; do not discover the answer
   later.
-- **It must not be the author.** An agent reviewing a branch it wrote in the same
+- It must not be the author. An agent reviewing a branch it wrote in the same
   session is the author with a second prompt. Invoke it as a separate context
-  that receives the diff and the repository — and *not* the author's reasoning,
+  that receives the diff and the repository, and *not* the author's reasoning,
   plan, or commit message as justification. Ask it to check claims, not to agree
   with them.
-- **Its approval must not satisfy a human requirement.** Configure it so a bot
+- Its approval must not satisfy a human requirement. Configure it so a bot
   approval does not count toward `required_approving_review_count`, or you have
   automated the tick rather than the review.
 
@@ -177,7 +177,7 @@ messages and pull request bodies as claims with an author rather than as context
 
 That instruction is not theoretical: in this repository's own history, a review
 agent given it found a figure carried in from an origin project **that the origin
-had already retracted** — inside the skill about verification, next to the rule
+had already retracted**, inside the skill about verification, next to the rule
 *a claim survives by being inherited*. No gate here checks prose, and no author
 re-reads a line they did not write. See `checking-claims`.
 
@@ -196,18 +196,18 @@ is not a review mechanism** and does not substitute for one.
 
 ## 6. What to automate last, or not at all
 
-- **Auto-merge on approval** is fine. It moves the decision earlier rather than
-  removing it — the approval is now also a merge authorisation, so say so.
-- **Auto-approval of any kind** is the thing this document exists to argue
-  against. An automation that approves when checks pass has redefined review as
-  the checks, and the checks are what review exists to catch the gaps in.
-- **A bypass path for "urgent" changes** should be a person's explicit, recorded
+- Auto-merge on approval is fine. It moves the decision earlier rather than
+  removing it. The approval is now also a merge authorisation, so say so.
+- Auto-approval of any kind is the thing this document exists to argue against.
+  An automation that approves when checks pass has redefined review as the
+  checks, and the checks are what review exists to catch the gaps in.
+- A bypass path for "urgent" changes should be a person's explicit, recorded
   decision. An automated exception is used far more than anybody intends, and
   hardest at the moment care matters most.
-- **A convenience wrapper around merge** is not enforcement if the underlying
-  command remains available. It shortens the most consequential action and hides
-  the head pin and predicates the visible form teaches. Automate the checks;
-  keep the merge explicit.
+- A convenience wrapper around merge is not enforcement if the underlying command
+  remains available. It shortens the most consequential action and hides the head
+  pin and predicates the visible form teaches. Automate the checks; keep the
+  merge explicit.
 
 ## A one-page setup, for a small repository
 
@@ -218,8 +218,8 @@ Enough to be real, cheap enough to be kept:
    deletion, no admin bypass.
 2. One required status check that actually runs the project's gate.
 3. `CODEOWNERS`, once more than one person or team exists.
-4. A review agent invoked adversarially on each pull request — non-blocking at
-   first, and **not** counted as the approval.
+4. A review agent invoked adversarially on each pull request. Start it as
+   non-blocking, and do **not** count it as the approval.
 5. Prove each of the first four can refuse, in order, before believing any of
    them.
 
