@@ -10,15 +10,15 @@ It is the only section that changes how every other section is read, and it is
 the only one that is *invisible* when missing.
 
 A stale injected instruction arrives with exactly the authority of a checked one.
-There is no formatting difference, no warning, no timestamp. An agent obeying a
-reversed rule looks identical to an agent obeying the current one — from the
-inside and from the outside — and the divergence is only visible to somebody who
-directly compares the injected text against the file on disk.
+There is no formatting difference, no warning, no timestamp. From the inside and
+from the outside, an agent obeying a reversed rule looks identical to an agent
+obeying the current one. The divergence is visible only to somebody who directly
+compares the injected text against the file on disk.
 
 That is why the section has to say *how to check* rather than merely *the file
 wins*. "The file wins" is unactionable if you cannot see that they differ. The
-three steps — file on disk, then `git log` on the file, then say so in the
-session — are what turn the precedence rule into something an agent can execute.
+three steps make the precedence rule executable: read the file on disk, run
+`git log` on the file, then say so in the session.
 
 **Without it:** a session spends its whole budget correctly implementing a rule
 the project abandoned, and nothing at any point fails.
@@ -123,7 +123,7 @@ So the boundary has to be stated as explicitly as the requirement:
 > than it is.**
 
 **Without it:** an agent ships the entire class of thing the gate does not look
-at, and reports the work as verified. See the `verify-in-the-real-thing` skill —
+at, and reports the work as verified. See the `verify-in-the-real-thing` skill:
 the default conclusion of a blocked or sandboxed agent is that the suite was
 sufficient, and a file that does not contradict that is agreeing with it.
 
@@ -142,7 +142,7 @@ file is a copy that drifts.
 ## Why "additions replace rather than accumulate"
 
 These files grow. Every addition is individually justified, every addition was
-prompted by something real, and the total becomes unreadable — at which point it
+prompted by something real, and the total becomes unreadable. At that point it
 stops being read, which costs more than any individual rule was worth.
 
 The mechanism is from `checking-claims`:
@@ -156,9 +156,9 @@ at which somebody reads the whole file and asks whether it is still readable, so
 the instruction to replace rather than append has to be written down and pointed
 at during edits.
 
-The related rule — **state a limit, never a current size** — exists because a
-file that says how long it currently is has embedded a measurement that rots, in
-the document specifically about not doing that.
+The related rule, **state a limit, never a current size**, exists because a file
+that says how long it currently is has embedded a measurement that rots, in the
+document specifically about not doing that.
 
 ## Why setup must install itself
 
@@ -167,7 +167,7 @@ by nobody.
 
 The specific case that produced the rule: a pre-commit hook committed to the
 repository, with a `git config core.hooksPath` line in the setup section. Every
-clone that never ran the line had the file and not the protection — and the file
+clone that never ran the line had the file and not the protection. The file
 being present is what makes it look protected.
 
 > **A hook nobody has told git about is a file that looks like a safeguard.**
@@ -180,9 +180,8 @@ exactly once, by a human, on every machine, will not be.**
 
 Three things that get put in an instructions file and should not be:
 
-- **Architecture.** It is long, it changes, and it is only needed by sessions
-  touching that area. Link it.
-- **Status.** Anything about what is currently being worked on belongs in the
-  handover, which is the file allowed to go stale.
-- **Anything you cannot say in a way that could be violated.** "Write good code"
-  costs a line on every activation and changes no decision.
+- Architecture is long, changes, and is only needed by sessions touching that
+  area. Link it.
+- Status belongs in the handover, which is the file allowed to go stale.
+- Anything you cannot say in a way that could be violated should stay out.
+  "Write good code" costs a line on every activation and changes no decision.

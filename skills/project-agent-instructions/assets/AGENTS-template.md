@@ -1,6 +1,6 @@
 # Working on <project>
 
-Read this first. It is the working agreement for anybody — person or agent — who
+Read this first. It is the working agreement for anybody, person or agent, who
 writes anything in this repository.
 
 <!-- PROVENANCE. If most of these rules were carried in from elsewhere, say so
@@ -14,16 +14,16 @@ writes anything in this repository.
 have been handed an old copy of it without being told.
 
 Agent tooling injects this file into a session as custom instructions, and that
-copy **can be stale by days**. Nothing fails when it is wrong — the session
+copy **can be stale by days**. Nothing fails when it is wrong. The session
 spends its whole budget obeying a rule the project reversed.
 
 So, when the rules you were given and the file on disk disagree:
 
-1. **The file on disk wins**, and `origin/main` breaks the tie if they differ.
+1. The file on disk wins, and `origin/main` breaks the tie if they differ.
 2. Check what changed: `git log --oneline -5 -- AGENTS.md`, then read the commit
-   message. **Every reversal here is explained in one.**
-3. **Say so in the session**, so whoever is driving knows their tooling is
-   serving stale rules — it is invisible from their side too.
+   message. Every reversal here is explained in one.
+3. Say so in the session, so whoever is driving knows their tooling is serving
+   stale rules. It is invisible from their side too.
 
 This file wins between copies. It can still be wrong about the repository, so
 claims about gates, workflows, and deployment must name the file or command that
@@ -31,7 +31,7 @@ decides them.
 
 ## Read yourself in, by routing
 
-**[HANDOVER.md](HANDOVER.md) first** — where the last session stopped, what is
+[HANDOVER.md](HANDOVER.md) comes first: where the last session stopped, what is
 open, and what it did not verify. It is a pointer rather than a substitute, and
 it is the one document here allowed to be wrong: read it for the open decisions,
 then believe the docs over it.
@@ -43,7 +43,7 @@ code gets its own working tree. **Check who is here rather than assuming either
 way.**
 
 Then <!-- the short document about believing claims -->, which is the one to read
-before believing anything about the tooling — including your own claims about it.
+before believing anything about the tooling, including your own claims about it.
 
 Then `git log --oneline -20`.
 
@@ -75,38 +75,38 @@ described as though it exists is a plan built on a fiction.
 
 ## The rules, which are not negotiable
 
-- **Design first.** Write the reasoning down before writing the code.
-- **Measure, do not judge.** <!-- Name what this project measures and with what
+- Design first. Write the reasoning down before writing the code.
+- Measure, do not judge. <!-- Name what this project measures and with what
      harness. Never tune by using the thing. -->
-- **A gate that cannot fail is decoration.** Watch every new check fail on the
-  bug it guards before trusting it.
-- **`<verify command>` must exit 0 before any commit.** It does **not**
+- A gate that cannot fail is decoration. Watch every new check fail on the bug it
+  guards before trusting it.
+- `<verify command>` must exit 0 before any commit. It does **not**
   <!-- name what it does not cover: network fetches, data rebuilds, real
   rendering, migrations -->. A gate is allowed to be small; it is not allowed to
   be described as larger than it is. Everything added extends it.
-- **Drive the real artifact, in the real environment.** A passing suite is not
+- Drive the real artifact, in the real environment. A passing suite is not
   evidence the thing works. <!-- Name which checks need network, a browser,
   credentials or a device. An agent that cannot run them must say so and hand
   them back rather than concluding the suite was enough. -->
-- **Open the built things, not just the documents about them.** A README is
-  *about* an artefact; the decisions are *in* it.
-- **Docs are a deliverable.** Reconcile affected current contracts with the
-  reviewed change, link scenarios to implementation and test/manual evidence,
-  and preserve reasoning before closing the existing work item. Planned checks
-  and checks not run remain unverified; links and structural passes are not
-  evidence of runtime correctness.
-- **Coordinate through owned files first.** Keep assignments, decisions,
-  progress, blockers and handoffs in existing items and topic documents; no
-  second queue. Publish readable repository/branch/revision/path pointers
-  across isolated trees, never edit another session's tree, and keep messages
-  to essential wakeups, inaccessible artifacts or urgent safety corrections.
-  Files do not replace live liveness and admission checks.
+- Open the built things, not just the documents about them. A README is *about*
+  an artefact; the decisions are *in* it.
+- Docs are a deliverable. Reconcile affected current contracts with the reviewed
+  change, link scenarios to implementation and test/manual evidence, and
+  preserve reasoning before closing the existing work item. Planned checks and
+  checks not run remain unverified; links and structural passes are not evidence
+  of runtime correctness.
+- Coordinate through owned files first. Keep assignments, decisions, progress,
+  blockers and handoffs in existing items and topic documents; no second queue.
+  Publish readable repository/branch/revision/path pointers across isolated
+  trees, never edit another session's tree, and keep messages to essential
+  wakeups, inaccessible artifacts or urgent safety corrections. Files do not
+  replace live liveness and admission checks.
   <!-- Route to the local owner of durable-project-memory's file-first policy,
        including provisional artifacts and urgent correction ordering. -->
-- **Research is a deliverable.** Anything learned outside the repository is
-  committed before it is acted on, with a date, sources beside their claims,
-  what was verified from primary material, and what was not found.
-- **Commit messages are prose explaining *why***, often several paragraphs. Read
+- Research is a deliverable. Anything learned outside the repository is committed
+  before it is acted on, with a date, sources beside their claims, what was
+  verified from primary material, and what was not found.
+- Commit messages are prose explaining *why*, often several paragraphs. Read
   `git log` before writing one.
 
 ## The rule this project has that the others do not
@@ -116,14 +116,14 @@ described as though it exists is a plan built on a fiction.
      the thing worth failing a build over.
 
      State the constraint and POINT AT the document holding its enforceable form.
-     Do not restate that form here — a second copy drifts. Carry only the part
-     that governs how the rest of this file is applied. -->
+     Do not restate that form here, because a second copy drifts. Carry only the
+     part that governs how the rest of this file is applied. -->
 
 ## Finish by pushing. Do not leave work pending
 
 **Work that is done is committed and pushed before the session ends.** Not
 staged, not left modified in the tree, not described in a handover as "ready to
-commit". A session that stops with uncommitted work has not finished it — it has
+commit". A session that stops with uncommitted work has not finished it. It has
 moved it somewhere less safe than where it started.
 
 Uncommitted work in a shared checkout belongs to whoever commits next, and a
@@ -160,7 +160,7 @@ unrelated work with fresh context; resuming is not necessarily a reset.
 **Settle what is open before you go.** Ask every open design question while you
 still have the context to argue about it. What genuinely cannot be settled goes
 in its own file with the recommendation and the reasoning, so the next agent
-inherits an argument rather than a blank — and can claim it, which a paragraph in
+inherits an argument rather than a blank, and can claim it, which a paragraph in
 a handover cannot be.
 
 **And say what you did not check.** A successor assumes anything unmentioned was
@@ -169,7 +169,7 @@ done.
 <!-- Necessary-successor policy: unfinished scope, ownership, how many, what kind,
      created by whom, and where their work will appear. Follow admission rules,
      give every writer its own tree, and never remove a live session's tree.
-     If the mechanism is known to be broken, say so here — a successor you cannot
+     If the mechanism is known to be broken, say so here. A successor you cannot
      create the right way is a successor you do not create. State the constraint
      the policy serves, not just the current instruction. Link the project's
      context-policy rationale; the agent-handover skill carries public evidence

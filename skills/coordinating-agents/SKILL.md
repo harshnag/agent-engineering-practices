@@ -34,8 +34,8 @@ check inexpensive:
 > **A paraphrase can be contested only with an opinion. A quotation can be
 > contested with a command.**
 
-The first duty of a fleet is not agreement. It is making a locally defensible,
-globally wrong decision visible before several workers act on it.
+The first duty of a fleet is to make a locally defensible, globally wrong
+decision visible before several workers act on it.
 
 ## Delivery is not assignment
 
@@ -129,8 +129,8 @@ silently while proceeding without permission leaves a visible error.
 
 Mark every instruction as one of:
 
-- **Inform:** act when the stated predicates hold, then report the result.
-- **Stop and ask:** do not act; the outcome depends on a fact only the recipient
+- Inform means act when the stated predicates hold, then report the result.
+- Stop and ask means do not act; the outcome depends on a fact only the recipient
   or a person can supply.
 
 Reserve stop-and-ask for real shared-state or human-presence decisions. A

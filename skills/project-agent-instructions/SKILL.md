@@ -1,6 +1,6 @@
 ---
 name: project-agent-instructions
-description: Writing and maintaining the AGENTS.md that governs a repository — what belongs in it, what belongs in a linked document instead, how to route a large reasoning corpus, how to record inherited rules, and how to detect stale or missing injected instructions. Use when setting up agent instructions, editing or reviewing an AGENTS.md or CLAUDE.md, designing an agent read-in order, noticing instructions disagree with the repository or vanished after a workspace change, deciding whether a rule belongs in instructions or a doc, or onboarding agents onto a project.
+description: Writing and maintaining the AGENTS.md that governs a repository, including what belongs in it, what belongs in a linked document instead, how to route a large reasoning corpus, how to record inherited rules, and how to detect stale or missing injected instructions. Use when setting up agent instructions, editing or reviewing an AGENTS.md or CLAUDE.md, designing an agent read-in order, noticing instructions disagree with the repository or vanished after a workspace change, deciding whether a rule belongs in instructions or a doc, or onboarding agents onto a project.
 license: MIT
 metadata:
   provenance: Extracted from two private production codebases, 2026
@@ -33,11 +33,11 @@ divergence existed only in what the agent had been told.
 
 So state the precedence explicitly, in the file:
 
-1. **The file on disk wins**, and the remote trunk breaks the tie if they differ.
+1. The file on disk wins, and the remote trunk breaks the tie if they differ.
 2. Check what changed: `git log --oneline -5 -- AGENTS.md`, then read the commit
    message. Every reversal should be explained in one.
-3. **Say so in the session**, so whoever is driving knows their tooling is
-   serving stale rules — it is invisible from their side too.
+3. Say so in the session, so whoever is driving knows their tooling is
+   serving stale rules. It is invisible from their side too.
 
 And write the file so this is checkable: **explain every reversal in a commit
 message**, so step 2 returns something.
@@ -81,8 +81,8 @@ has never bitten *here*.
 Then **promote a rule when it is demonstrated locally**, and name what happened.
 In one origin project, two inherited rules were demonstrated within hours of
 arriving, and the file was edited to say which two and where the evidence lives.
-That edit is what keeps the convention honest — without it, everything stays
-marked "inherited" forever and the marking stops meaning anything.
+That edit keeps the convention honest. Without it, everything stays marked
+"inherited" forever and the marking stops meaning anything.
 
 ## Prescribe a routed read-in, and put the handover first
 
@@ -92,27 +92,27 @@ needs.
 
 The compulsory order that both origin projects converged on:
 
-1. **The handover** — where the last session stopped, what is open, what it did
-   not verify. Say in the instructions that it is the one document allowed to be
+1. The handover: where the last session stopped, what is open, what it did not
+   verify. Say in the instructions that it is the one document allowed to be
    wrong, and that the docs win over it. See the `agent-handover` skill.
-2. **The README or design anchor** — what this is, and the constraints that
-   decide priorities.
-3. **The concurrency document** — *because you may not be alone in here.* This
-   belongs early, not late; it governs whether the session may write at all.
-4. **The short one about believing things** — before trusting any claim about the
+2. The README or design anchor: what this is, and the constraints that decide
+   priorities.
+3. The concurrency document, *because you may not be alone in here.* This belongs
+   early, not late; it governs whether the session may write at all.
+4. The short one about believing things, before trusting any claim about the
    tooling, including your own.
-5. **`git log --oneline -20`.**
+5. `git log --oneline -20`.
 
 Two things to state alongside the order:
 
-- **Everything else is routed by task.** Give each document one sentence saying
-  what question it answers. A list of every document in sequence is not strict;
-  once it exceeds a session's budget it is impossible, and every reader routes
+- Route everything else by task. Give each document one sentence saying what
+  question it answers. A list of every document in sequence is not strict; once
+  it exceeds a session's budget it is impossible, and every reader routes
   informally anyway.
-- **The read-in is not free.** Measure the compulsory prompt boundary and the
-  corpus separately. The total corpus is a routing warning, not a claim about one
+- Measure the read-in cost. Measure the compulsory prompt boundary and the corpus
+  separately. The total corpus is a routing warning, not a claim about one
   request's token usage.
-- **What each doc is *for*.** Route accepted behavior to its current contract,
+- Say what each doc is for. Route accepted behavior to its current contract,
   proposed changes to the existing work queue, and explanations to accessible
   history. Re-deriving a requirement already owned elsewhere starts a second,
   divergent copy; treating an old proposal as current starts a fiction.
@@ -133,24 +133,22 @@ agent does today. A good test: if it cannot be violated, it is not a rule.
 
 The durable core, each of which has its own skill here:
 
-- **Design first.** Write the reasoning down before writing the code.
-- **Measure, do not judge** — anything whose effect is smaller than its variance.
+- Design first. Write the reasoning down before writing the code.
+- Measure, do not judge, anything whose effect is smaller than its variance.
   (`measured-changes`)
-- **A gate that cannot fail is decoration.** Watch every new check fail on the
-  bug it guards before trusting it. (`measured-changes`)
-- **Drive the real artifact in the real environment.**
+- A gate that cannot fail is decoration. Watch every new check fail on the bug it
+  guards before trusting it. (`measured-changes`)
+- Drive the real artifact in the real environment.
   (`verify-in-the-real-thing`)
-- **Docs are a deliverable.** A change that is not written down did not fully
-  happen.
-- **Research is a deliverable.** A finding acquired outside the repository is
+- Docs are a deliverable. A change that is not written down did not fully happen.
+- Research is a deliverable. A finding acquired outside the repository is
   committed with its date, sources, verification boundary, and negative findings
   before the project acts on it. (`durable-project-memory`)
-- **Commit messages are prose explaining *why*.** Read `git log` before writing
-  one. (`unslop` covers how to write them, and this file, without the habits
-  that make generated prose hard to trust.)
-- **You are not alone in here** — claim work, own your working tree.
+- Commit messages are prose explaining *why*. Read `git log` before writing one.
+  Use `unslop` to keep that prose plain and specific.
+- You are not alone in here: claim work, own your working tree.
   (`agent-concurrency`)
-- **Finish by pushing.** (`agent-handover`)
+- Finish by pushing. (`agent-handover`)
 
 For context-related handoffs, prescribe durable checkpoints and recovery from
 observed pressure or lost task state, not a pre-set token cutoff or a usage
@@ -164,7 +162,7 @@ owns the procedure and its
 > than it is.**
 
 Name the verification command, say it must exit 0 before any commit, and then say
-what it does **not** do — no network fetches, no data rebuild, no real rendering,
+what it does **not** do: no network fetches, no data rebuild, no real rendering,
 no migrations. An agent that reads "verify must pass before commit" and concludes
 verify is sufficient will ship the thing verify never looked at.
 
@@ -173,8 +171,8 @@ and require an agent that cannot run them to say so and hand them back.
 
 ### Name the one rule this project has that the others do not
 
-Every project has something that is genuinely its own — a constraint that decides
-implementation rather than a preference. Give it a section, and make it the thing
+Every project has something of its own: a constraint that decides implementation
+rather than a preference. Give it a section, and make it the thing
 worth failing a build over.
 
 Do not restate its detail in the instructions file. Point at the document that
@@ -186,10 +184,12 @@ the file is applied.
 The instructions file is loaded by every session, so it competes for the same
 budget as the work. Move anything that is:
 
-- **Long.** If it needs more than a paragraph of reasoning, it is a document.
-- **Only relevant sometimes.** Deployment, data pipelines, one subsystem.
-- **Load-bearing enough to be argued about.** An argument needs room, and the
-  instructions file is the wrong place to have one.
+- Long material belongs in a document when it needs more than a paragraph of
+  reasoning.
+- Sometimes-relevant material belongs in a document: deployment, data pipelines,
+  one subsystem.
+- Load-bearing material that needs argument belongs in a document. An argument
+  needs room, and the instructions file is the wrong place to have one.
 
 ### A current-state layer for a long reasoning document
 
@@ -212,10 +212,10 @@ boundaries and keep the project's behavioral gates.
 Two properties are worth gating in a check, because they are what a file like
 this quietly loses:
 
-- **One copy.** The rule lives in one place, because a second copy can only
+- Keep one copy. The rule lives in one place, because a second copy can only
   drift.
-- **Reachable.** A document nothing links to is gone in practice whatever it
-  contains — so the instructions file must point at it.
+- Keep it reachable. A document nothing links to is gone in practice whatever it
+  contains, so the instructions file must point at it.
 
 Generated agreement is not completeness. An index derived from current headings
 stays green if a heading and its index entry disappear together. Any check for
@@ -224,8 +224,9 @@ known required subject.
 
 ## Setup belongs in the file, and must install itself
 
-Anything an agent has to run once — a hooks path, a dependency install — goes in
-a `## Setup` section, and something in the normal workflow should perform it.
+Anything an agent has to run once, such as a hooks path or dependency install,
+goes in a `## Setup` section, and something in the normal workflow should perform
+it.
 
 > **A hook nobody has told git about is a file that looks like a safeguard.**
 
@@ -234,16 +235,16 @@ manager exists, hang it off a `prepare` script.
 
 ## Keeping it honest
 
-- **Every reversal is explained in a commit message.** That is what makes the
-  stale-copy check above return an answer.
-- **Additions replace rather than accumulate.** These files grow past being
+- Explain every reversal in a commit message. That is what makes the stale-copy
+  check above return an answer.
+- Make additions replace rather than accumulate. These files grow past being
   readable, and every addition was justified at the time. From `checking-claims`:
-  *a diff has no denominator* — what gets reviewed is the change, while the
+  *a diff has no denominator*. The reviewed object is the change, while the
   property being violated belongs to the whole.
-- **A rule nobody has ever applied is a candidate for deletion**, and saying it
-  is inherited is how you can tell.
-- **State a limit, never a current size.** A number in prose is a measurement
-  with an expiry date.
+- Treat a rule nobody has ever applied as a candidate for deletion. Saying it is
+  inherited is how you can tell.
+- State a limit, never a current size. A number in prose is a measurement with an
+  expiry date.
 
 ---
 
