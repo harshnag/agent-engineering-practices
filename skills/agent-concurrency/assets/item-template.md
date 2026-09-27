@@ -2,7 +2,7 @@
 
 **Status:** open
 **Claimed:** —
-**Found:** <date, and how — by hitting it, or by reading>
+**Found:** <date, and how: by hitting it, or by reading>
 
 <!-- `scripts/open.ts` reads exactly four things: the `# ` title, `**Status:**`,
      `**Claimed:**`, and `**Blocked on:**` (which appears further down, only when
@@ -11,7 +11,7 @@
 
        **Status:**      open | claimed | blocked | refused
        **Claimed:**     an em dash when nobody holds it, otherwise a session
-                        identifier AND A TIMESTAMP — age is diagnostic input
+                        identifier AND A TIMESTAMP. Age is diagnostic input
                         to the project's liveness policy, not permission to
                         steal a quiet claim
        **Blocked on:**  only when status is `blocked`; name the thing, not the
@@ -30,7 +30,7 @@
 ## What is wrong
 
 <!-- The observation, not the remedy. What happens, what should happen, and how
-     you know — a command, a log line, a screen. If this was reasoned rather
+     you know: a command, a log line, a screen. If this was reasoned rather
      than observed, say so here; that is the difference between a defect and a
      suspicion, and both are worth filing under different headings. -->
 
@@ -58,7 +58,7 @@
 
      For a repair with unchanged requirements, say "no requirement delta" and
      link the existing cases. A documentation migration changes authority and
-     routes, not behavior. Omit this section when it is genuinely inapplicable. -->
+     routes, not behavior. Omit this section when it does not apply. -->
 
 ## Work and evidence
 
@@ -89,10 +89,10 @@
      durable history, with links both to and from the current owner. Preserve
      existing anchors or redirects. Resolve concurrent requirement changes by
      review, not automatic spec merge. Only then delete this completed item.
-     Keep genuinely outstanding work in this queue under its existing states. -->
+     Keep outstanding work in this queue under its existing states. -->
 
 ## Where the reasoning is
 
 <!-- Links only. Anything load-bearing belongs in the document it is about, not
-     here — an item is deleted when it is finished, and everything in it goes
+     here. An item is deleted when it is finished, and everything in it goes
      with it. -->
