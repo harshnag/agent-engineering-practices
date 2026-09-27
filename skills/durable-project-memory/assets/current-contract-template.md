@@ -29,12 +29,12 @@ environment and date; state what the evidence cannot establish>
 <!-- Verification describes the coverage route: automated, manual or unverified.
      It does not mean the latest result passed. Identify the exact assertion and
      invocation for automated evidence; for manual evidence link reproducible
-     steps, expected observations and the actual record. If no check or run
-     exists, say so rather than inventing a link or copying a prior pass. -->
+     steps and expected observations, plus the actual record. If no check or
+     run exists, say so rather than inventing a link or copying a prior pass. -->
 
 ## Boundaries
 
-<!-- Non-goals, known mismatches, unverified cases, and checks needing a device,
+<!-- Non-goals and known mismatches; unverified cases; checks needing a device,
      credentials or another environment. Link unresolved work in the existing
      queue. No unchecked box or unknown result becomes an implicit pass.
      Describe structural validation separately from behavioral evidence. -->

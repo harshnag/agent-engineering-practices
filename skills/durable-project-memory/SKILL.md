@@ -1,6 +1,6 @@
 ---
 name: durable-project-memory
-description: Turn engineering work into durable project memory without bloating every agent prompt — maintain current behavior contracts separately from proposed changes and history, coordinate through owned files, trace acceptance scenarios to evidence, record research and root causes, and route large corpora. Use when planning or closing a change, coordinating assignments or handoffs, adopting a spec workflow, writing a contract or research note, deciding whether to create a skill, correcting stale advice, preserving historical reasoning, or designing documentation routes.
+description: Turn engineering work into durable project memory without bloating every agent prompt by maintaining current behavior contracts separately from proposed changes and history, coordinating through owned files, tracing acceptance scenarios to evidence, recording research and root causes, and routing large corpora. Use when planning or closing a change, coordinating assignments or handoffs, adopting a spec workflow, writing a contract or research note, deciding whether to create a skill, correcting stale advice, preserving historical reasoning, or designing documentation routes.
 license: MIT
 metadata:
   provenance: Extracted from two private production codebases, 2026
@@ -26,11 +26,12 @@ never need.
 Before closing an investigation, write four things into the document that owns
 the affected system:
 
-1. **Report:** what was observed, at which boundary, and when.
-2. **Root cause:** what is proved, separated from what is merely consistent with
-   the evidence.
-3. **Decision:** what changed, what was refused, and why.
-4. **Verification:** what was run or opened, including what it cannot establish.
+1. Report what was observed, at which boundary, and when.
+2. Record the root cause: what is proved, separated from what is merely
+   consistent with the evidence.
+3. Record the decision: what changed, what was refused, and why.
+4. Record the verification: what was run or opened, including what it cannot
+   establish.
 
 A fix without the report cannot be recognised when it recurs. A decision without
 the rejected alternatives gets reversed by somebody who rediscovers only their
@@ -71,34 +72,34 @@ another task system. `AGENTS.md` still governs work. The project chooses paths,
 headings, and identifiers; an existing topic section can own a contract without
 a new directory. Separate the roles even when they share a file.
 
-1. **Find the owner before adding prose.** Read the accepted requirement,
+1. Find the owner before adding prose. Read the accepted requirement,
    implementation, tests, and surrounding reasoning. Name the repository
    revision and relevant environment. Do not turn a proposal into a current
    guarantee or canonize a defect because the implementation exhibits it.
    Record disagreements as gaps; unknown behavior stays unverified.
-2. **State observable cases.** For each requirement, give stable scenario
+2. State observable cases. For each requirement, give stable scenario
    identifiers, conditions, action, expected outcome, and relevant failure or
    compatibility boundaries. Link shared requirements to their owner rather
    than restating them. Keep implementation detail in design, with source links
    from the contract for inspection.
-3. **Make the evidence route explicit.** Link each scenario to implementation
-   and an automated assertion or exact manual procedure and observation.
-   Distinguish automated, manual, and unverified coverage. An evidence mode is
-   not a passing result: record the subject, result, and limits of any run
-   separately. A test file's existence does not prove it exercises the case;
-   a procedure nobody ran is still unverified.
-4. **Propose a delta in the existing queue.** The claimable item is the change
+3. Make the evidence route explicit. Link each scenario to implementation and
+   an automated assertion or exact manual procedure and observation. Distinguish
+   automated, manual, and unverified coverage. An evidence mode is not a passing
+   result: record the subject, result, and limits of any run separately. A test
+   file's existence does not prove it exercises the case; a procedure nobody ran
+   is still unverified.
+4. Propose a delta in the existing queue. The claimable item is the change
    packet: intent, scope, affected owners, added/modified/removed cases,
-   non-goals, design, tasks, and acceptance evidence. Link unchanged constraints.
-   Preserve `agent-concurrency`'s states and claims; do not add a spec backlog or
-   a manually synchronized pending index.
-5. **Implement and review the same change.** Reconcile the affected current
-   contract with code and evidence in the reviewed revision, while keeping
-   unlanded work visibly proposed to readers of the base. Report failed,
-   missing, or unreadable checks, and retain existing safety and delivery
-   predicates. A spec validator or an agent's completion verdict cannot waive
-   them. New checks need deterministic negative controls.
-6. **Close without erasing why.** Preserve decisions, rejected alternatives,
+   non-goals, design, tasks, and acceptance evidence. Link unchanged
+   constraints. Preserve `agent-concurrency`'s states and claims; do not add a
+   spec backlog or a manually synchronized pending index.
+5. Implement and review the same change. Reconcile the affected current contract
+   with code and evidence in the reviewed revision, while keeping unlanded work
+   visibly proposed to readers of the base. Report failed, missing, or
+   unreadable checks, and retain existing safety and delivery predicates. A spec
+   validator or an agent's completion verdict cannot waive them. New checks need
+   deterministic negative controls.
+6. Close without erasing why. Preserve decisions, rejected alternatives,
    findings, and scoped verification in durable history before deleting the
    completed item. Link the current owner to that history and route the
    historical document back to the current owner. Keep existing anchors or
@@ -176,13 +177,13 @@ expensive to obtain and completely invisible in the code diff.
 Use one note per question so parallel researchers touch disjoint files. Every
 note carries:
 
-- **The date.** Vendor behavior and public guidance move.
-- **The source beside the claim it supports.** A bibliography does not say which
+- The date, because vendor behavior and public guidance move.
+- The source beside the claim it supports. A bibliography does not say which
   sentence a source establishes.
-- **The verification boundary.** State what you read in a primary source and
-  what came from a summary, search result, or secondary source.
-- **Negative findings.** Record what you looked for and did not find; otherwise
-  the next session cannot distinguish "nobody checked" from "checked, absent".
+- The verification boundary: what you read in a primary source and what came
+  from a summary, search result, or secondary source.
+- Negative findings: what you looked for and did not find. Otherwise the next
+  session cannot distinguish "nobody checked" from "checked, absent".
 
 The research note owns the evidence. The subsystem document owns the decision
 made from it and links back. Keeping those separate lets a decision change
@@ -209,17 +210,17 @@ aging when sent.
 
 ## Route a large corpus; do not prescribe reading all of it
 
-An instruction to read more documentation than fits in a session is not strict.
-It is unfollowable, so every session invents a route without saying so.
+An instruction to read more documentation than fits in a session cannot be
+followed strictly. Every session invents a route without saying so.
 
 Use three layers:
 
-1. **A small compulsory entry set:** current handover, concurrency rules, recent
+1. A small compulsory entry set: current handover, concurrency rules, recent
    history, and the instruction-freshness check.
-2. **A task-to-document routing table:** which document answers which class of
+2. A task-to-document routing table: which document answers which class of
    question.
-3. **Addressing inside long documents:** generated contents plus a heading or
-   symbol search that carries line numbers.
+3. Addressing inside long documents: generated contents plus a heading or symbol
+   search that carries line numbers.
 
 An index is for addressing, not summarizing. It helps a reader arrive at the
 right neighborhood; it does not license reading less of the topic being changed.
@@ -260,8 +261,8 @@ Bound compression with a selector:
 - or sections no route reaches.
 
 Measure before and after. Stop when the selector no longer finds candidates.
-The remaining length is not proof the corpus is ideal; it is proof that this
-compression task is finished.
+The remaining length only proves this compression task is finished. It does not
+prove the corpus is ideal.
 
 ## Make the memory reachable
 
