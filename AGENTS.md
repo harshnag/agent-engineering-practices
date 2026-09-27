@@ -1,19 +1,19 @@
 # Working on agent-engineering-practices
 
-The working agreement for anybody — person or agent — who writes anything here.
+The working agreement for anybody, person or agent, who writes anything here.
 
 **Almost nothing in this repository was learned here.** Every rule was extracted
 from two private production codebases, except `unslop`, which is adapted from
-public sources credited in `skills/unslop/NOTICE.md`. That makes the provenance rule from
-`project-agent-instructions` load-bearing: where a rule is inherited rather than
-demonstrated here, this file says so. Do not let that soften it — **an inherited
-rule is a rule somebody else already broke.**
+public sources credited in `skills/unslop/NOTICE.md`. That makes the provenance
+rule from `project-agent-instructions` load-bearing: where a rule is inherited
+rather than demonstrated here, this file says so. Do not let that soften it:
+**an inherited rule is a rule somebody else already broke.**
 
 ## Read yourself in, in this order
 
-1. **[README.md](README.md)** — what this is and the rule that governs it.
-2. **The skills**, which are the product. Start with
-   `skills/checking-claims/SKILL.md` — it is short, and it is the one to read
+1. [README.md](README.md), for what this is and the rule that governs it.
+2. The skills, which are the product. Start with
+   `skills/checking-claims/SKILL.md`; it is short, and it is the one to read
    before believing anything about the tooling here, including your own claims
    about it. Read `skills/agent-concurrency/SKILL.md` before writing anything,
    because it governs how work lands.
@@ -34,22 +34,22 @@ practice. Re-derive rather than trusting a number in this file:
 
 ## The rules
 
-- **Ship the rules; link the evidence.** Below. The rule this repository exists
-  to demonstrate, and the one most easily broken while writing a skill about not
-  breaking it.
-- **A gate that cannot fail is decoration.** Mutation-test every check here
-  before trusting a pass. See *The gate*.
-- **Design first.** The reasoning goes in the commit message before the file goes
-  in the tree. The diff already says what changed.
-- **Docs are a deliverable**, and here the docs *are* the deliverable.
-- **Keep current rules, proposed changes, and history distinct.** The skill
-  body owns the portable procedure; references own worked reasoning and dated
+- Ship the rules; link the evidence. The rule is below. It is the rule this
+  repository exists to demonstrate, and the one most easily broken while writing
+  a skill about not breaking it.
+- A gate that cannot fail is decoration. Mutation-test every check here before
+  trusting a pass. See *The gate*.
+- Design first. The reasoning goes in the commit message before the file goes in
+  the tree. The diff already says what changed.
+- Docs are a deliverable, and here the docs *are* the deliverable.
+- Keep current rules, proposed changes, and history distinct. The skill body
+  owns the portable procedure; references own worked reasoning and dated
   evidence; assets are adaptable templates, not additional authorities. Follow
   `skills/durable-project-memory/` when changing those roles. Preserve explicit
   routes to valuable history and do not imply a template installs enforcement.
-- **`main` is protected, and work lands through a pull request.** No direct
-  pushes, no force-pushes, no branch deletion. **Never approve your own pull
-  request** — an author cannot review their own work, and an agent asked to
+- `main` is protected, and work lands through a pull request. No direct pushes,
+  no force-pushes, no branch deletion. **Never approve your own pull request**:
+  an author cannot review their own work, and an agent asked to
   approve its own change should refuse and say why. See
   [`skills/agent-concurrency/references/AUTOMATING-REVIEW.md`](skills/agent-concurrency/references/AUTOMATING-REVIEW.md).
 
@@ -57,14 +57,14 @@ practice. Re-derive rather than trusting a number in this file:
   is:** the ruleset requires a pull request and blocks force-push and deletion,
   and all three were proved able to refuse. It currently requires **zero**
   approvals, because with one contributor a one-approval rule would block every
-  merge — nobody can approve their own. So the review requirement above is
+  merge. Nobody can approve their own. So the review requirement above is
   presently a *rule*, not a *gate*. Raise `required_approving_review_count` to 1
   and turn on `require_last_push_approval` the moment a second person can
   review, and prove it refuses before believing it.
-- **Anything that writes gets its own working tree.**
+- Anything that writes gets its own working tree.
   `skills/agent-concurrency/` is the protocol.
-- **Coordinate through owned files first.** Keep assignments, decisions,
-  progress, blockers and handoffs in existing artifacts, without another queue.
+- Coordinate through owned files first. Keep assignments, decisions, progress,
+  blockers and handoffs in existing artifacts, without another queue.
   Follow [the file-first protocol](skills/durable-project-memory/SKILL.md#coordinate-through-owned-files-first)
   for readable revision-qualified pointers, minimal notifications, isolation,
   and the separate live liveness/admission boundary.
@@ -73,22 +73,22 @@ practice. Re-derive rather than trusting a number in this file:
 
 A rule is portable. The failure that produced it is not. Restating a specific
 project's domain detail in a repository that has neither turns a recorded
-observation into an unverifiable assertion — exactly what `checking-claims` is
-about.
+observation into an unverifiable assertion. That is exactly what
+`checking-claims` is about.
 
 The house style, which is not negotiable because it is what the rule looks like
 in practice:
 
-- **The originating codebases are private and are never named**, in frontmatter
-  or in prose. `metadata.provenance` records that a skill was extracted, and
-  nothing more. **Never add a link into a private repository** — it leaks a name
+- The originating codebases are private and are never named, in frontmatter or
+  in prose. `metadata.provenance` records that a skill was extracted, and
+  nothing more. **Never add a link into a private repository**: it leaks a name
   and resolves for nobody.
-- **The body says *the origin project***, never a name.
-- **No domain specifics, ever.** Not the subject matter, not the vocabulary, not
-  the entity names. A rule that cannot be stated without them is not portable
-  yet, and the fix is to find the mechanism underneath rather than to smuggle the
+- The body says *the origin project*, never a name.
+- No domain specifics, ever. Not the subject matter, not the vocabulary, not the
+  entity names. A rule that cannot be stated without them is not portable yet,
+  and the fix is to find the mechanism underneath rather than to smuggle the
   domain across.
-- **A story is carried only where the mechanism is the transferable part.**
+- A story is carried only where the mechanism is the transferable part.
   Figures are fine and worth keeping: *113 of 116 units in the worst band* is a
   recorded observation. Naming what the units were is somebody else's project.
 
@@ -102,7 +102,7 @@ is why this section is this long:
    pattern: **a check loosened to accommodate the data it just caught is a check
    that has been turned off.**
 3. A generic sentence kept a list of examples that were all drawn from one
-   project's subject matter — invisible to any string search, and caught only by
+   project's subject matter, invisible to any string search, and caught only by
    a reviewer reading for it. **The grep catches names. It cannot catch a
    domain.**
 
@@ -115,16 +115,16 @@ is why this section is this long:
       assets/           templates
 
 > **The trigger for moving something into `references/` is that it is not needed
-> on every activation — not that the file is long.**
+> on every activation, not that the file is long.**
 
 `SKILL.md` carries what an agent must know to *follow* the rule. `references/`
-carries what it needs to *argue about* the rule — derivations, histories of
+carries what it needs to *argue about* the rule: derivations, histories of
 reversal, checklists for one operation. A skill needs no reference file when it
 has no such material.
 
 Frontmatter must carry `name` (matching the directory), `description` (what it
-does *and* when to use it — the only part loaded at startup, so it is what
-decides whether the skill is ever activated), `license`, and `metadata`.
+does *and* when to use it), `license`, and `metadata`. The description is the
+only part loaded at startup, so it decides whether the skill is ever activated.
 
 ## The gate
 
@@ -139,7 +139,7 @@ stripped. All five were confirmed able to fail, by mutation.
 
 > **The gate cannot tell you a skill disappeared.** A directory with no
 > `SKILL.md` is silently skipped. Runs over seven skills, six, and one produced
-> **byte-identical output and exit 0** — same checksum — because nothing on a
+> **byte-identical output and exit 0**, the same checksum, because nothing on a
 > passing run names a skill or counts them.
 
 So compare the tree with an independently maintained expected inventory:
@@ -152,14 +152,15 @@ shrink with the tree. If a skill is intentionally added or removed, update the
 script in the same change.
 
 A second silent-skip case: a name containing a character outside the discovery
-pattern is not reported at all — the skill simply drops out.
+pattern is not reported at all. The skill simply drops out.
 
 Also unchecked: prose, relative links, whether a script runs, and the evidence
 rule above. **Everything that makes a skill good here is unchecked**, which is
 why review is a requirement rather than a courtesy.
 
-The scripts in `skills/agent-concurrency/scripts/` are not covered by the gate at
-all. If you change them, run them.
+The scripts in `skills/agent-concurrency/scripts/` and
+`skills/unslop/scripts/slop_scan.py` are not covered by the gate at all. If you
+change them, run them.
 
 ## Setup
 
