@@ -146,7 +146,8 @@ The durable core, each of which has its own skill here:
   committed with its date, sources, verification boundary, and negative findings
   before the project acts on it. (`durable-project-memory`)
 - **Commit messages are prose explaining *why*.** Read `git log` before writing
-  one.
+  one. (`unslop` covers how to write them, and this file, without the habits
+  that make generated prose hard to trust.)
 - **You are not alone in here** — claim work, own your working tree.
   (`agent-concurrency`)
 - **Finish by pushing.** (`agent-handover`)

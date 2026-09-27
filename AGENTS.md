@@ -3,7 +3,8 @@
 The working agreement for anybody — person or agent — who writes anything here.
 
 **Almost nothing in this repository was learned here.** Every rule was extracted
-from two private production codebases. That makes the provenance rule from
+from two private production codebases, except `unslop`, which is adapted from
+public sources credited in `skills/unslop/NOTICE.md`. That makes the provenance rule from
 `project-agent-instructions` load-bearing: where a rule is inherited rather than
 demonstrated here, this file says so. Do not let that soften it — **an inherited
 rule is a rule somebody else already broke.**

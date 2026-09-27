@@ -200,6 +200,9 @@ edits it next reads them:
 7. **Where the reasoning lives** — links only.
 8. **Keeping this file honest.**
 
+Write the prose plainly: `unslop` lists the habits that pad a handover without
+adding a fact.
+
 ## What a handover is not
 
 - **Not a substitute for the docs.** If it is the only place something is

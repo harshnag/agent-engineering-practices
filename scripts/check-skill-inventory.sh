@@ -15,6 +15,7 @@ measured-changes
 project-agent-instructions
 resource-safe-tooling
 shipping-changes
+unslop
 verify-in-the-real-thing'
 
 actual=$(
