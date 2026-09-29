@@ -16,7 +16,7 @@ labelled separately; they are not claims of measured adoption benefits.
     gh skill install harshnag/agent-engineering-practices --all --scope user
 
 Every agent that reads `~/.copilot/skills/` picks them up automatically. Confirm
-with `ls ~/.copilot/skills/`; you should see twelve directories. If you have
+with `ls ~/.copilot/skills/`; you should see thirteen directories. If you have
 installed any of them before, add `--force`, because `--all` aborts the batch
 rather than skipping what is already there.
 
@@ -43,7 +43,7 @@ The pattern repeats across every rule here:
 None of these are caught by working harder or reviewing more carefully. They are
 caught by specific, checkable practices, which is what this repository is.
 
-## The twelve skills
+## The thirteen skills
 
 | Skill | What it governs |
 |---|---|
@@ -57,6 +57,7 @@ caught by specific, checkable practices, which is what this repository is.
 | [`durable-project-memory`](skills/durable-project-memory/) | Maintaining current contracts, proposed changes and accessible history, with scenario-to-evidence links |
 | [`resource-safe-tooling`](skills/resource-safe-tooling/) | Designing process-heavy tooling that remains safe on shared or constrained machines |
 | [`coordinating-agents`](skills/coordinating-agents/) | Dispatching and steering a fleet when listings are stale and completion is asynchronous |
+| [`bounded-iteration`](skills/bounded-iteration/) | Keeping time, tool calls and tokens proportional to verified progress: fast checks, diagnosis before edits, stop rules, and time-boxed delegation |
 | [`shipping-changes`](skills/shipping-changes/) | Landing and deploying the exact reviewed revision, including migrations and runtime identity |
 | [`unslop`](skills/unslop/) | Writing and auditing prose (and AI-written code) so it does not read as generated, without changing what it says |
 
@@ -94,7 +95,7 @@ Three properties that a document does not have:
 
 ## Adoption
 
-Start with one skill, not twelve. `checking-claims` is the shortest and has the
+Start with one skill, not thirteen. `checking-claims` is the shortest and has the
 widest application; `agent-concurrency` is the one to take first if more than one
 agent or engineer touches a repository.
 

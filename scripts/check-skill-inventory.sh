@@ -7,6 +7,7 @@ cd "$root"
 
 expected='agent-concurrency
 agent-handover
+bounded-iteration
 checking-claims
 coordinating-agents
 durable-project-memory

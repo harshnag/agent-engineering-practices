@@ -42,6 +42,10 @@ number available for reinterpretation.
 Using the system tells you whether it is broken. It cannot tell you whether a
 1.5pp change went the right way, and it will confidently tell you it did.
 
+The same holds for a pass/fail check: editing a value and rerunning a suite to
+see whether it goes green is guessing with extra steps. `bounded-iteration`
+covers diagnosing before changing and when to stop.
+
 Where the output is a *judgement about someone*, such as a score, a rank, or a
 risk rating, this stops being a quality rule and becomes an accountability one.
 **The difference between a defensible score and a libel is a harness**, and no
