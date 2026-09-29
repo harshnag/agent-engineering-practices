@@ -84,6 +84,11 @@ described as though it exists is a plan built on a fiction.
   <!-- name what it does not cover: network fetches, data rebuilds, real
   rendering, migrations -->. A gate is allowed to be small; it is not allowed to
   be described as larger than it is. Everything added extends it.
+- Keep effort proportional to progress. Iterate with `<fast command running one
+  check>` and run the full gate once before committing. Diagnose before
+  changing; after two failed fixes to the same check, change approach; never add
+  data that exists only to satisfy a check. <!-- bounded-iteration ships a
+  paste-in block for this section. -->
 - Drive the real artifact, in the real environment. A passing suite is not
   evidence the thing works. <!-- Name which checks need network, a browser,
   credentials or a device. An agent that cannot run them must say so and hand

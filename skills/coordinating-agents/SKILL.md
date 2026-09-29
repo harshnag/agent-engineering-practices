@@ -68,6 +68,11 @@ Read back dispatch parameters immediately:
 
 The worker should perform the same readback on itself before writing.
 
+A brief also carries a time box, a stop condition, the fastest verification
+command and a reporting format, and the coordinator reads the diff mid-run for
+churn and check-gaming. `bounded-iteration` covers the brief and the signals of
+a looping worker.
+
 ## A census is not a count unless it can see the whole population
 
 Session lists, checkout directories, process tables, branch refs, lock files,
