@@ -16,6 +16,7 @@ measured-changes
 project-agent-instructions
 resource-safe-tooling
 shipping-changes
+token-efficiency
 unslop
 verify-in-the-real-thing'
 

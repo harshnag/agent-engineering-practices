@@ -3,8 +3,11 @@
 The working agreement for anybody, person or agent, who writes anything here.
 
 **Almost nothing in this repository was learned here.** Every rule was extracted
-from two private production codebases, except `unslop`, which is adapted from
-public sources credited in `skills/unslop/NOTICE.md`. That makes the provenance
+from two private production codebases, with two exceptions: `unslop`, which is
+adapted from public sources credited in `skills/unslop/NOTICE.md`, and
+`token-efficiency`, which is derived from public provider documentation and from
+one operator's measured agent sessions, recorded with their selection predicate
+in `skills/token-efficiency/references/MEASUREMENTS.md`. That makes the provenance
 rule from `project-agent-instructions` load-bearing: where a rule is inherited
 rather than demonstrated here, this file says so. Do not let that soften it:
 **an inherited rule is a rule somebody else already broke.**
@@ -158,9 +161,12 @@ Also unchecked: prose, relative links, whether a script runs, and the evidence
 rule above. **Everything that makes a skill good here is unchecked**, which is
 why review is a requirement rather than a courtesy.
 
-The scripts in `skills/agent-concurrency/scripts/` and
-`skills/unslop/scripts/slop_scan.py` are not covered by the gate at all. If you
-change them, run them.
+The scripts in `skills/agent-concurrency/scripts/`,
+`skills/unslop/scripts/slop_scan.py` and `skills/token-efficiency/scripts/` are
+not covered by the gate at all. If you change them, run them. The last has its
+own tests, which were mutation-tested:
+
+    python skills/token-efficiency/scripts/test_cache_report.py
 
 ## Setup
 
