@@ -171,11 +171,13 @@ def checkin_net(gaps, curve, intervals, r):
             if nets[j] is None:
                 continue
             n = max(0, math.ceil(p["gap"] / i) - 1)
+            if n == 0:
+                continue  # no check-in happens, so the strategy is the baseline: net exactly zero
             fi, fres = f(i), f(p["gap"] - n * i)
-            if fw is None or fres is None or (n and fi is None):
+            if fw is None or fres is None or fi is None:
                 nets[j] = None
                 continue
-            nets[j] += fw * miss - (n * k + n * (fi or 0) * miss + fres * miss)
+            nets[j] += fw * miss - (n * k + n * fi * miss + fres * miss)
     return base, nets
 
 
@@ -233,7 +235,19 @@ def attribute(pair, events):
 
 
 def controllable(label):
-    return label not in (HUMAN, UNREAD) and "ask_user" not in label
+    """Only gaps with positive evidence that the agent chose the wait. Unattributed idle is
+    reported, but counted as unknown rather than as a wait the agent chose."""
+    return label.startswith("inside one tool call:") and "ask_user" not in label
+
+
+def timestamp_check(ps, tolerance_ms=50):
+    """Pairs that contradict each reading of created_at, beyond a small tolerance:
+    as an end time, the call would start before the previous one ended;
+    as a start time, it would start before the previous one finished running."""
+    as_end = sum(p["cur"]["start"] < p["prev"]["end"] - tolerance_ms for p in ps)
+    as_start = sum(p["cur"]["end"] - p["prev"]["end"] < (p["prev"]["end"] - p["prev"]["start"]) - tolerance_ms
+                   for p in ps)
+    return as_end, as_start
 
 
 def report(calls, state_dir, long_gap, intervals, min_pairs, out=sys.stdout):
@@ -247,8 +261,11 @@ def report(calls, state_dir, long_gap, intervals, min_pairs, out=sys.stdout):
     last = max(c["end"] for c in calls)
     fmt = lambda t: dt.datetime.fromtimestamp(t / 1000, dt.timezone.utc).strftime("%Y-%m-%d %H:%M")
     ps = list(pairs(calls, r))
+    as_end, as_start = timestamp_check(ps)
     w(f"Selection: {len(calls)} model calls, {len(ps)} same-thread pairs, {len(sessions)} sessions, "
       f"{fmt(first)} to {fmt(last)} UTC")
+    w(f"created_at check (50 ms tolerance): {as_end} pairs contradict reading it as an end time, "
+      f"{as_start} as a start time")
     w(__doc__.split("Definitions used throughout (printed again in the report):")[1].strip("\n"))
 
     w("\n1. Spend by token type (AI credits; 1 credit = USD 0.01)")
@@ -316,12 +333,13 @@ def report(calls, state_dir, long_gap, intervals, min_pairs, out=sys.stdout):
     for k, v in lab_x.most_common():
         w(f"   {v:>10,.0f} credits  n={lab_n[k]:<4} {k}  {'; '.join(eg[k])}")
 
-    w("\n5. Expected net saving from checking in during agent-controllable long gaps")
+    w("\n5. Expected net saving from checking in during long gaps that one tool call filled")
+    w("   Human gaps, ask_user and unattributed idle are excluded: nothing shows the agent chose them.")
     w("   Uses each model's expected rebuilt fraction by gap (same-context pairs, forced non-decreasing).")
     w(f"   Buckets with < {MIN_BUCKET} pairs are unknown, and an interval that needs one prints '?'.")
     w("   Intervals are start-to-start: a wait of w after a call lasting d gives w + d.")
     w(f"   A check-in costs one cached read of the prompt, {CHECKIN_OUTPUT_TOKENS} output and "
-      f"{CHECKIN_APPENDED_TOKENS} appended tokens. Every controllable long gap counts, warm or cold.")
+      f"{CHECKIN_APPENDED_TOKENS} appended tokens. Every such gap counts, warm or cold.")
     w("   Break-even = (rebuild price - read price) / read price: check-ins one avoided rebuild pays for.")
     w(f"   {'model':20}{'gaps':>6}{'observed':>10}{'expected':>10}" +
       "".join(f"{'every %gm' % i:>11}" for i in intervals) + "   break-even")

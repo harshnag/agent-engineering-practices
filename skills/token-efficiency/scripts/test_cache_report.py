@@ -129,6 +129,7 @@ class ReportTests(unittest.TestCase):
         label, knobs = cr.attribute(self.ps[1], cr.load_events(self.f.state, "s1", {}))
         self.assertEqual(label, "inside one tool call: read_powershell")
         self.assertEqual(knobs, "delay=600")
+        self.assertTrue(cr.controllable(label))
 
     def test_tool_call_outranks_a_message_that_arrived_while_it_ran(self):
         self.f.events("s1", tool("t1", "read_powershell", 2.2, 7.9, {"delay": 600}) + [user(5)])
@@ -141,11 +142,30 @@ class ReportTests(unittest.TestCase):
         self.assertEqual(label, cr.HUMAN)
         self.assertFalse(cr.controllable(label))
 
-    def test_uncovered_gap_without_a_message_is_unattributed_idle(self):
+    def test_uncovered_gap_without_a_message_is_unattributed_and_not_counted_as_chosen(self):
         self.f.events("s1", tool("t1", "view", 2.2, 2.3))
         label, _ = cr.attribute(self.ps[1], cr.load_events(self.f.state, "s1", {}))
         self.assertEqual(label, cr.IDLE)
-        self.assertTrue(cr.controllable(label))
+        self.assertFalse(cr.controllable(label))
+
+    def test_ask_user_is_a_human_wait_not_an_agent_choice(self):
+        self.assertFalse(cr.controllable("inside one tool call: ask_user"))
+
+    def test_timestamp_check_counts_contradictions_of_each_reading(self):
+        f = self.f
+        # created_at is stored as the end time.
+        # t1: A runs 0-30 s, B runs 40-50 s. Fine as end times; read as start times, B would
+        #     begin 20 s after A began, while A was still running its 30 s.
+        f.call("t1", 0, 1_000, 0, 1_000, dur_s=30)
+        f.call("t1", 40 / 60, 1_000, 1_000, 0, dur_s=10)
+        # t2: A runs 0-10 s, B runs 5-25 s. As end times they overlap; as start times B begins
+        #     15 s after A, after A's 10 s had finished.
+        f.call("t2", 0, 1_000, 0, 1_000, dur_s=10)
+        f.call("t2", 5 / 60, 1_000, 1_000, 0, dur_s=20)
+        ps = [p for p in cr.pairs(f.calls(), {}) if p["cur"]["session"] in ("t1", "t2")]
+        self.assertEqual(len(ps), 2)
+        self.assertEqual(cr.timestamp_check(ps), (1, 1))
+        self.assertEqual(cr.timestamp_check([p for p in ps if p["cur"]["session"] == "t1"]), (0, 1))
 
     def test_missing_events_reports_unread_not_a_cause(self):
         label, _ = cr.attribute(self.ps[1], cr.load_events(self.f.state, "no-such-session", {}))
@@ -237,6 +257,12 @@ class CheckinTests(unittest.TestCase):
     def test_gap_shorter_than_the_interval_needs_no_check_in(self):
         _, (net,) = cr.checkin_net([gap_of(3)], five_minute_curve(), [4], {})
         self.assertAlmostEqual(net, 0.0)
+
+    def test_no_check_in_is_exactly_zero_even_when_the_curve_is_unknown(self):
+        unknown = [None] * len(five_minute_curve())
+        base, (net,) = cr.checkin_net([gap_of(3)], unknown, [4], {})
+        self.assertIsNone(base)
+        self.assertEqual(net, 0.0)
 
     def test_unknown_bucket_makes_the_answer_unknown(self):
         curve = five_minute_curve()

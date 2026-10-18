@@ -55,7 +55,7 @@ definitions first, then:
    It prints `?` rather than a number where the curve has too few samples.
 
 `scripts/test_cache_report.py` covers it against a synthetic store with known
-answers. Sixteen deliberate mutations were each caught; see
+answers. Twenty-one deliberate mutations were each caught; see
 [the measurements](references/MEASUREMENTS.md#the-report-was-mutation-tested).
 
 In the one data set measured so far (40,000 calls over six weeks), the levers
@@ -67,7 +67,7 @@ ranked like this:
 | Context size | cache reads were 55% of spend; the median prompt was about 220K tokens |
 | Cold cache with unchanged context, short gap | 15.4% of spend; provider or agent-runtime behaviour an agent mostly cannot change |
 | Cold cache after a human break | 5.8% |
-| Cold cache during a wait the agent chose | 3.9% |
+| Cold cache during a wait the agent chose | 3.0%, plus 1.0% in gaps no tool call explains |
 
 So the five-minute rule is real, and in that data the avoidable part of it was
 under 4% of spend. Fix it, because the fix is nearly free. Do not mistake it
@@ -95,19 +95,20 @@ checking in pays for waits up to roughly 90 or 45 minutes respectively. Past
 that, one rebuild is cheaper; stop checking in and wait.
 
 When the lifetime is long and misses inside it are probabilistic, check-ins
-rarely pay. On the two GPT-6 models, whose lifetime was about thirty minutes,
-every interval tested from 2 to 30 minutes cost more than it saved. On the
-five-minute Claude model, checking in every four minutes would have saved about
-29,000 credits net.
+rarely pay. On the two GPT-6 models, whose lifetime was about thirty minutes, no
+interval tested from 2 to 30 minutes saved more than 20 credits over six weeks,
+and the short ones lost thousands. On the five-minute Claude model, checking in
+every four minutes would have saved about 26,000 credits net.
 
 On a model with a short lifetime:
 
 - Never let one wait run past the lifetime. The clock starts when the previous
-  model call starts, so the wait plus that call's own duration has to stay under
-  it. For a five-minute lifetime, keep the two together under about four and a
-  half minutes: a wait of 240 seconds after a typical call of a few seconds,
-  less after a long response. In the measured data, waits written as
-  `initial_wait=400` or `delay=600` caused 158 rebuilds.
+  model call starts, so the wait plus that call's own duration must stay under
+  it. For a five-minute lifetime, budget 270 seconds minus the previous call's
+  duration: 240 seconds after a reply of a few seconds, which was about 95% of
+  measured calls, and 180 seconds when you cannot tell how long the call took.
+  In the measured data, waits written as `initial_wait=400` or `delay=600`
+  caused 158 rebuilds.
 - A check-in reads a status line or the tail of the output. It does not re-read
   the log, re-plan, or re-open files. Its output tokens are billed at the output
   rate, and a check-in that reasons for 2,000 tokens can cost as much as the
@@ -117,9 +118,9 @@ On a model with a short lifetime:
 - A synchronous sub-agent call is one wait the parent cannot cut short. If it
   may run past the lifetime, start it in the background and check in on it.
 
-In GitHub Copilot CLI that means `initial_wait` and `read_powershell` `delay`
-at 240 seconds or less, `read_agent` with a timeout of 180 seconds or less, and
-`task` in background mode for anything that may take more than a few minutes.
+In GitHub Copilot CLI that means `initial_wait`, `read_powershell` `delay` and
+`read_agent` `timeout` within that budget, and `task` in background mode for
+anything that may take more than a few minutes.
 
 If the tool's own instructions or the user say not to poll, that instruction
 wins. The measured saving was about 2% of spend: worth taking, never worth a

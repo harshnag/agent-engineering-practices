@@ -92,20 +92,23 @@ From the repository root:
 Three facts about the store were established before anything was counted,
 because each one changes every number below:
 
-1. `created_at` marks the end of a call. Over the 39,533 pairs, 151 would have a
-   call ending before its own duration had elapsed since the previous call
-   ended if `created_at` were an end time, and 13,752 would have a call starting
-   before the previous one finished if it were a start time. Start is therefore
+1. `created_at` marks the end of a call. The report's second line counts the
+   pairs that contradict each reading, with a 50 ms tolerance: read as an end
+   time, 151 of the 39,533 pairs would overlap the call before them; read as a
+   start time, 13,752 would start while the previous call was still running.
+   With no tolerance the counts are 154 and 13,889. Start is therefore
    `created_at − duration_ms`.
 2. `input_tokens` is uncached input + cache read + cache write. The per-call cost
    lines in `token_details_json` add up to it.
 3. A cost line's `costPerBatch` is in billionths of a credit per `batchSize`
    tokens. Summed, the lines give the spend below.
 
-Main-agent calls on claude-opus-5.5 took a median 7 seconds (p90 20, p99 75);
-134 of 8,161 took a minute or more, and 2 took four minutes or more. That is why
-`SKILL.md` gives the wait as 240 seconds after a typical call and less after a
-long one: the lifetime is counted from the start of the call, not its end.
+Main-agent calls on claude-opus-5.5 took a median 7 seconds (p90 20, p99 75).
+Of 8,161, 421 took more than 30 seconds, 134 a minute or more, and 2 four minutes
+or more. The lifetime is counted from the start of a call, so `SKILL.md` budgets
+a wait as 270 seconds minus the previous call's duration: 240 seconds after the
+roughly 95% of calls that take under 30 seconds, and 180 when the duration is
+unknown.
 
 ## Results
 
@@ -157,25 +160,28 @@ lines under each heading:
         4,073 credits  n=22   inside one tool call: ask_user
         1,686 credits  n=16   inside one tool call: task
 
-5. Expected net saving from checking in during agent-controllable long gaps
+5. Expected net saving from checking in during long gaps that one tool call filled
    model                 gaps  observed  expected   every 4m  every 10m  every 20m  every 25m   break-even
-   claude-opus-5.5        203    35,740    35,378     29,385    -10,233     -4,080     -2,895   24
-   gpt-6-astra            163     9,572    18,479    -12,157     -6,056     -1,332       -480   12
-   gpt-6.1-sol            196     2,971     5,008     -5,225     -1,322       -217         -8   24
-   gpt-5.5                 57       473         ?          ?          ?          ?          ?   9
-   claude-sonnet-5          1        19         ?          ?          ?          ?          ?   12
-   gpt-5.4-mini             3        15         ?          ?          ?          ?          ?   9
+   claude-opus-5.5        168    30,978    30,564     26,144     -4,178     -1,452       -967   24
+   gpt-6-astra             84     4,494     8,222     -3,406       -968        -24         20   12
+   gpt-6.1-sol            112     1,246     3,058     -2,348       -241          0          0   24
+   gpt-5.5                 52        87         ?          ?       -104          0          0   9
 ```
 
 The same command with `--intervals 2,3,15,30` gave, for claude-opus-5.5,
-22,427 at two minutes, 27,049 at three, −5,543 at fifteen and −2,148 at thirty.
-For gpt-6-astra and gpt-6.1-sol, all four were negative.
+20,819 at two minutes, 24,322 at three, −1,762 at fifteen and −502 at thirty.
+For gpt-6-astra it gave −12,271, −7,734, −94 and −114; for gpt-6.1-sol −3,394,
+−1,220, 0 and 0. A zero means no gap of that model was long enough for a
+check-in at that interval to happen.
 
 Derived from the same selection:
 
 - Human breaks: 67,041 + 4,073 for `ask_user` = 71,114 credits, 5.8% of spend.
-- Waits the agent chose: `powershell`, `read_powershell`, unattributed idle and
-  `task` together = 48,098 credits, 3.9% of spend.
+- Waits the agent chose, where one tool call filled the gap: `powershell`,
+  `read_powershell` and `task` together = 36,357 credits, 3.0% of spend.
+- Unattributed idle: 11,741 credits, 1.0%. No tool call covered those gaps and
+  no message arrived, so nothing shows who chose them. They are excluded from
+  section 5.
 - All 158 cold calls in section 4 that one `powershell` or `read_powershell`
   call filled had a wait setting (`initial_wait` or `delay`) of 300 seconds or
   more.
@@ -219,8 +225,8 @@ same curve at every check-in.
 Expected and observed costs agree for one model and not another. Section 5 uses
 one curve per model of the expected fraction of the prompt rebuilt at each gap,
 pooled across all contexts. For claude-opus-5.5 the expected and observed costs
-of the same gaps agree (35,378 and 35,740). For gpt-6-astra they do not (18,479
-and 9,572): the pooled curve overstates rebuilds for those particular gaps, so
+of the same gaps agree (30,564 and 30,978). For gpt-6-astra they do not (8,222
+and 4,494): the pooled curve overstates rebuilds for those particular gaps, so
 checking in on that model is worse than the table shows.
 
 Nothing here says which model did the work better. The per-call cost of a model
@@ -239,6 +245,19 @@ filled a gap; and the commit message claimed a counterfactual test that did not
 exist. Three figures in this file were also wrong. Each defect now has a test,
 and every figure above comes from the corrected script.
 
+The same reviewer then read the fixes and found five more. Four were accepted.
+Gaps no tool call explained had still been counted as waits the agent chose;
+they are now reported separately and left out of section 5. A flat 240-second
+wait exceeded the stated budget after the 5% of calls that take over 30
+seconds; the rule is now 270 seconds minus the previous call's duration, with
+180 as the fallback. An interval at which no check-in happens had been reported
+as unknown when its net is exactly zero. And the timestamp counts did not
+reproduce, because they used an unstated 50 ms tolerance; the report now
+computes and labels them. The fifth, that `task` has no background mode, was
+rejected: the main agent's `task` tool takes `mode: background`, and 169 of the
+254 `task` calls in these sessions' timelines, across 46 sessions, used it. The
+reviewer's own tool set evidently lacks that parameter.
+
 Two earlier defects were found by the author while building the report: a zero
 cache-write price had been read as free, and the first counterfactual credited
 check-ins at any interval with preventing misses, which claimed a 25-minute
@@ -247,7 +266,7 @@ check-in saved as much on a five-minute cache as a four-minute one.
 ## The report was mutation-tested
 
 Start green: `python skills/token-efficiency/scripts/test_cache_report.py`
-passes twenty tests. Then each behaviour was broken in a temporary copy, the
+passes twenty-three tests. Then each behaviour was broken in a temporary copy, the
 copy was checked to differ from the original, and the unchanged tests were
 pointed at it with `CACHE_REPORT`:
 
@@ -269,3 +288,8 @@ pointed at it with `CACHE_REPORT`:
 | Let compacted pairs shape the curve | `test_compacted_pairs_do_not_shape_the_curve` |
 | Assume a check-in never misses | `test_checking_in_under_the_lifetime_pays_and_over_it_does_not`, `test_exact_multiple_leaves_a_full_final_interval` |
 | Charge the final stretch at the whole gap | the same two |
+| Count unattributed idle as a wait the agent chose | `test_uncovered_gap_without_a_message_is_unattributed_and_not_counted_as_chosen` |
+| Count `ask_user` as a wait the agent chose | `test_ask_user_is_a_human_wait_not_an_agent_choice` |
+| Consult the curve when no check-in happens | `test_no_check_in_is_exactly_zero_even_when_the_curve_is_unknown` |
+| Swap the two timestamp readings | `test_timestamp_check_counts_contradictions_of_each_reading` |
+| Compare against the previous call's start, not its end | the same |
