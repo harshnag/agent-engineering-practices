@@ -14,7 +14,9 @@ Definitions used throughout (printed again in the report):
   hit      cache-read tokens of a call / prompt tokens of the previous call, capped at 1
   cold     hit < 0.5: most of the prefix the previous call established was not reused
   shrank   prompt fell below 0.8 x the previous prompt (compaction or a new context)
-  excess   lost prefix tokens x (cache-write or input rate - cache-read rate)
+  lost     tokens of the previous prompt that this call rebuilt instead of reading,
+           capped at this call's own prompt: min(previous, current) - cache read
+  excess   lost x (cache-write or input price - cache-read price)
 """
 import argparse
 import collections
@@ -27,11 +29,13 @@ import sys
 
 COLD = 0.5
 SHRANK = 0.8
+MIN_BUCKET = 5
 BUCKETS = [0, 1, 3, 4, 5, 5.5, 7, 10, 20, 30, 45, 60, math.inf]
 CHECKIN_OUTPUT_TOKENS = 250
 CHECKIN_APPENDED_TOKENS = 300
 HUMAN = "human idle (a user message arrived in the gap)"
 UNREAD = "unread (no events.jsonl for this session)"
+IDLE = "unattributed agent idle (no tool call covered the gap)"
 
 
 def ms(stamp):
@@ -92,6 +96,13 @@ def miss_rate(c, r):
     return full - read
 
 
+def checkin_cost(prev, r):
+    """One minimal call: a cached read of the prompt, a little output, a little appended."""
+    return (prev["inp"] * (price(prev, r, "cache_read") or 0)
+            + CHECKIN_OUTPUT_TOKENS * (price(prev, r, "output") or 0)
+            + CHECKIN_APPENDED_TOKENS * (price(prev, r, "cache_write") or price(prev, r, "input") or 0))
+
+
 def pairs(calls, r):
     prev = None
     for c in calls:
@@ -100,11 +111,14 @@ def pairs(calls, r):
             p = prev[1]
             gap = (c["start"] - p["start"]) / 60000
             hit = min(1.0, c["read"] / p["inp"])
-            cold = hit < COLD
-            shrank = c["inp"] < SHRANK * p["inp"]
+            lost = max(0, min(p["inp"], c["inp"]) - c["read"])
             mr = miss_rate(c, r)
-            excess = max(0, p["inp"] - c["read"]) * mr if (cold and mr is not None) else 0.0
-            yield dict(prev=p, cur=c, gap=gap, hit=hit, cold=cold, shrank=shrank, excess=excess)
+            cost = lost * mr if mr is not None else 0.0
+            cold = hit < COLD
+            yield dict(prev=p, cur=c, gap=gap, hit=hit, cold=cold,
+                       shrank=c["inp"] < SHRANK * p["inp"],
+                       lost_frac=lost / p["inp"], lost_cost=cost,
+                       excess=cost if cold else 0.0)
         prev = (key, c)
 
 
@@ -113,6 +127,56 @@ def bucket(g):
         if lo <= g < hi:
             return lo
     return BUCKETS[-2]
+
+
+def loss_curve(ps, model):
+    """Expected fraction of the previous prompt rebuilt, by gap bucket, from same-context pairs.
+    Forced non-decreasing across sampled buckets, since an expired entry stays expired.
+    A bucket with fewer than MIN_BUCKET pairs is None: unknown, never a measured zero."""
+    acc = collections.defaultdict(list)
+    for p in ps:
+        if p["cur"]["model"] == model and not p["shrank"]:
+            acc[bucket(p["gap"])].append(p["lost_frac"])
+    curve, run = [], 0.0
+    for lo in BUCKETS[:-1]:
+        xs = acc.get(lo, [])
+        if len(xs) >= MIN_BUCKET:
+            run = max(run, sum(xs) / len(xs))
+            curve.append(run)
+        else:
+            curve.append(None)
+    return curve
+
+
+def at(curve, g):
+    return curve[BUCKETS.index(bucket(g))]
+
+
+def checkin_net(gaps, curve, intervals, r):
+    """Expected credits saved by checking in every i minutes during each gap, against not checking in.
+    Intervals are start-to-start: a wait of w seconds after a call lasting d gives w + d.
+    Returns (expected cost without check-ins, [net saving per interval]); None where any gap needs
+    an unsampled bucket."""
+    def f(g):
+        return at(curve, g)
+    base, nets = 0.0, [0.0] * len(intervals)
+    for p in gaps:
+        prev, mr = p["prev"], miss_rate(p["cur"], r) or 0
+        miss, k, fw = prev["inp"] * mr, checkin_cost(prev, r), f(p["gap"])
+        if fw is None or base is None:
+            base = None
+        else:
+            base += fw * miss
+        for j, i in enumerate(intervals):
+            if nets[j] is None:
+                continue
+            n = max(0, math.ceil(p["gap"] / i) - 1)
+            fi, fres = f(i), f(p["gap"] - n * i)
+            if fw is None or fres is None or (n and fi is None):
+                nets[j] = None
+                continue
+            nets[j] += fw * miss - (n * k + n * (fi or 0) * miss + fres * miss)
+    return base, nets
 
 
 def load_events(state_dir, session, cache):
@@ -149,13 +213,12 @@ def load_events(state_dir, session, cache):
 
 
 def attribute(pair, events):
-    """Name what occupied a gap: the human, one long tool call, or the agent idling on a notification."""
+    """Name what occupied a gap: one tool call covering most of it, else a human message, else
+    unattributed idle. A tool call is checked first: a message can arrive while a tool runs."""
     if events is None:
         return UNREAD, ""
     spans, users = events
     lo, hi = pair["prev"]["end"], pair["cur"]["start"]
-    if pair["cur"]["agent"] == "" and any(lo <= u <= hi for u in users):
-        return HUMAN, ""
     best, cover = None, 0.0
     for s in spans.get(pair["cur"]["agent"], []):
         if s[0] < hi and s[1] > lo:
@@ -164,7 +227,9 @@ def attribute(pair, events):
                 best, cover = s, ov
     if best and cover >= 0.5:
         return f"inside one tool call: {best[2]}", best[3]
-    return "agent idle awaiting a notification", ""
+    if pair["cur"]["agent"] == "" and any(lo <= u <= hi for u in users):
+        return HUMAN, ""
+    return IDLE, ""
 
 
 def controllable(label):
@@ -181,7 +246,9 @@ def report(calls, state_dir, long_gap, intervals, min_pairs, out=sys.stdout):
     first = min(c["start"] for c in calls)
     last = max(c["end"] for c in calls)
     fmt = lambda t: dt.datetime.fromtimestamp(t / 1000, dt.timezone.utc).strftime("%Y-%m-%d %H:%M")
-    w(f"Selection: {len(calls)} model calls, {len(sessions)} sessions, {fmt(first)} to {fmt(last)} UTC")
+    ps = list(pairs(calls, r))
+    w(f"Selection: {len(calls)} model calls, {len(ps)} same-thread pairs, {len(sessions)} sessions, "
+      f"{fmt(first)} to {fmt(last)} UTC")
     w(__doc__.split("Definitions used throughout (printed again in the report):")[1].strip("\n"))
 
     w("\n1. Spend by token type (AI credits; 1 credit = USD 0.01)")
@@ -203,7 +270,6 @@ def report(calls, state_dir, long_gap, intervals, min_pairs, out=sys.stdout):
         xs = sorted(ctx[m])
         w(f"   {m:20}{n_model[m]:>6}{s:>11,.0f}{s / n_model[m]:>10.1f}{xs[len(xs) // 2]:>15,}{xs[int(len(xs) * .9)]:>12,}")
 
-    ps = list(pairs(calls, r))
     w(f"\n2. Cold calls by gap since the previous call started (models with >= {min_pairs} pairs)")
     w("   A step from ~0% to ~100% between two columns locates that model's cache lifetime.")
     table = collections.defaultdict(lambda: [0, 0])
@@ -231,10 +297,11 @@ def report(calls, state_dir, long_gap, intervals, min_pairs, out=sys.stdout):
     for k, v in cls.most_common():
         w(f"   {k:28} {v:>10,.0f}  {100 * v / total:5.1f}% of spend")
     w("   short gap + same context: the prefix changed or the provider did not reuse it; mostly outside an agent's control.")
+    w("   shrank: an upper bound; the common prefix of a compacted prompt is not known.")
 
     w("\n4. Long-gap cold calls with an unchanged context, by what filled the gap")
     cache, lab_x, lab_n, eg = {}, collections.Counter(), collections.Counter(), collections.defaultdict(list)
-    ctl = []
+    ctl = collections.defaultdict(list)
     for p in ps:
         if p["gap"] < long_gap or p["shrank"]:
             continue
@@ -245,53 +312,30 @@ def report(calls, state_dir, long_gap, intervals, min_pairs, out=sys.stdout):
             if knobs and len(eg[label]) < 3:
                 eg[label].append(f"{p['gap']:.0f}m {knobs}")
         if controllable(label):
-            ctl.append(p)
+            ctl[p["cur"]["model"]].append(p)
     for k, v in lab_x.most_common():
         w(f"   {v:>10,.0f} credits  n={lab_n[k]:<4} {k}  {'; '.join(eg[k])}")
 
     w("\n5. Expected net saving from checking in during agent-controllable long gaps")
-    w("   Uses each model's cold-rate curve from section 2, forced non-decreasing (an expired entry")
-    w("   stays expired; buckets with < 5 pairs inherit the curve so far). Every controllable long")
-    w("   gap counts, warm or cold. A check-in costs one read of the prompt, "
-      f"{CHECKIN_OUTPUT_TOKENS} output and {CHECKIN_APPENDED_TOKENS} appended tokens.")
-    w("   Break-even = (rebuild price - read price) / read price: check-ins one avoided miss pays for.")
+    w("   Uses each model's expected rebuilt fraction by gap (same-context pairs, forced non-decreasing).")
+    w(f"   Buckets with < {MIN_BUCKET} pairs are unknown, and an interval that needs one prints '?'.")
+    w("   Intervals are start-to-start: a wait of w after a call lasting d gives w + d.")
+    w(f"   A check-in costs one cached read of the prompt, {CHECKIN_OUTPUT_TOKENS} output and "
+      f"{CHECKIN_APPENDED_TOKENS} appended tokens. Every controllable long gap counts, warm or cold.")
+    w("   Break-even = (rebuild price - read price) / read price: check-ins one avoided rebuild pays for.")
     w(f"   {'model':20}{'gaps':>6}{'observed':>10}{'expected':>10}" +
       "".join(f"{'every %gm' % i:>11}" for i in intervals) + "   break-even")
-    by_m = collections.defaultdict(list)
-    for p in ctl:
-        by_m[p["cur"]["model"]].append(p)
-    for m, gs in sorted(by_m.items(), key=lambda kv: -sum(p["excess"] for p in kv[1])):
+    num = lambda x: f"{x:,.0f}" if x is not None else "?"
+    for m, gs in sorted(ctl.items(), key=lambda kv: -sum(p["lost_cost"] for p in kv[1])):
         if per_model[m] < min_pairs:
             continue
-        curve = cold_curve(table, m)
-        pc = lambda g: curve[BUCKETS.index(bucket(g))]
-        observed = sum(p["excess"] for p in gs)
-        base, nets = 0.0, [0.0] * len(intervals)
-        for p in gs:
-            prev, mr = p["prev"], miss_rate(p["cur"], r) or 0
-            miss = prev["inp"] * mr
-            k = (prev["inp"] * (price(prev, r, "cache_read") or 0)
-                 + CHECKIN_OUTPUT_TOKENS * (price(prev, r, "output") or 0)
-                 + CHECKIN_APPENDED_TOKENS * (price(prev, r, "cache_write") or price(prev, r, "input") or 0))
-            b = pc(p["gap"]) * miss
-            base += b
-            for j, i in enumerate(intervals):
-                n = max(0, math.ceil(p["gap"] / i) - 1)
-                nets[j] += b - (n * k + n * pc(i) * miss + pc(p["gap"] - n * i) * miss)
+        base, nets = checkin_net(gs, loss_curve(ps, m), intervals, r)
+        observed = sum(p["lost_cost"] for p in gs)
         mr, rd = miss_rate(gs[0]["cur"], r), price(gs[0]["cur"], r, "cache_read")
         be = f"{mr / rd:.0f}" if mr and rd else "?"
-        w(f"   {m:20}{len(gs):>6}{observed:>10,.0f}{base:>10,.0f}" + "".join(f"{x:>11,.0f}" for x in nets) + f"   {be}")
-    w("   Positive = checking in at that interval would have cost less than what the gaps were expected to cost.")
-
-
-def cold_curve(table, model, min_n=5):
-    curve, run = [], 0.0
-    for lo in BUCKETS[:-1]:
-        t = table.get((model, lo))
-        if t and t[0] >= min_n:
-            run = max(run, t[1] / t[0])
-        curve.append(run)
-    return curve
+        w(f"   {m:20}{len(gs):>6}{observed:>10,.0f}{num(base):>10}" + "".join(f"{num(x):>11}" for x in nets) + f"   {be}")
+    w("   observed = credits actually lost to rebuilds in those gaps; expected = the same from the curve.")
+    w("   Positive = checking in at that interval would have cost less than not checking in.")
 
 
 def main(argv=None):
@@ -303,7 +347,7 @@ def main(argv=None):
     ap.add_argument("--until", help="ISO date or timestamp, exclusive (UTC)")
     ap.add_argument("--session", help="restrict to one session id")
     ap.add_argument("--long-gap", type=float, default=5.0, help="minutes; default 5")
-    ap.add_argument("--intervals", default="4,10,20,25", help="check-in intervals in minutes to compare")
+    ap.add_argument("--intervals", default="4,10,20,25", help="check-in intervals in minutes, start-to-start")
     ap.add_argument("--min-pairs", type=int, default=50)
     a = ap.parse_args(argv)
     if not os.path.exists(a.db):

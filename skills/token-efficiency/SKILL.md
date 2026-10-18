@@ -36,7 +36,8 @@ run, a build, a sub-agent working, a human reading. Only the next call does.
 The claim that motivates most advice here, that a test suite running longer than
 five minutes burns tokens, is true for some models and false for others reached
 through the same tool. Run the report on your own sessions before changing
-anything:
+anything. From this skill's directory (`~/.copilot/skills/token-efficiency` once
+installed):
 
     python scripts/cache_report.py [--since 2026-10-01] [--session <id>]
 
@@ -47,13 +48,14 @@ definitions first, then:
 2. the cold-call rate by gap, per model. The column where the rate steps from
    near 0% to near 100% is that model's cache lifetime as you run it;
 3. cold-call cost split into compaction, short gaps, and long gaps;
-4. what filled each long gap: a human, one tool call (with its wait setting), or
-   the agent idling on a notification;
+4. what filled each long gap: one tool call (with its wait setting), a human,
+   or nothing the timeline can name;
 5. the expected net saving from checking in at several intervals, using each
-   model's measured cold-rate curve.
+   model's measured curve of how much of the prompt gets rebuilt at each gap.
+   It prints `?` rather than a number where the curve has too few samples.
 
 `scripts/test_cache_report.py` covers it against a synthetic store with known
-answers. Nine deliberate mutations were each caught; see
+answers. Sixteen deliberate mutations were each caught; see
 [the measurements](references/MEASUREMENTS.md#the-report-was-mutation-tested).
 
 In the one data set measured so far (40,000 calls over six weeks), the levers
@@ -63,9 +65,9 @@ ranked like this:
 |---|---|
 | Model rate | one model took 76% of spend at five to six times the per-call cost of the next two, at the same median prompt size |
 | Context size | cache reads were 55% of spend; the median prompt was about 220K tokens |
-| Cold cache with unchanged context, short gap | 15.6% of spend; provider or agent-runtime behaviour an agent mostly cannot change |
-| Cold cache after a human break | 6.4% |
-| Cold cache during a wait the agent chose | 3.5% |
+| Cold cache with unchanged context, short gap | 15.4% of spend; provider or agent-runtime behaviour an agent mostly cannot change |
+| Cold cache after a human break | 5.8% |
+| Cold cache during a wait the agent chose | 3.9% |
 
 So the five-minute rule is real, and in that data the avoidable part of it was
 under 4% of spend. Fix it, because the fix is nearly free. Do not mistake it
@@ -93,30 +95,35 @@ checking in pays for waits up to roughly 90 or 45 minutes respectively. Past
 that, one rebuild is cheaper; stop checking in and wait.
 
 When the lifetime is long and misses inside it are probabilistic, check-ins
-rarely pay. On the measured thirty-minute models, every interval tested from 2
-to 30 minutes cost more than it saved, while four-minute check-ins on the
-five-minute models saved about 28,000 credits net.
+rarely pay. On the two GPT-6 models, whose lifetime was about thirty minutes,
+every interval tested from 2 to 30 minutes cost more than it saved. On the
+five-minute Claude model, checking in every four minutes would have saved about
+29,000 credits net.
 
 On a model with a short lifetime:
 
-- Never block in one wait longer than about four minutes. The lifetime runs
-  from the start of the previous call, so that call's own duration counts too.
-  In the measured data, waits written as `initial_wait=400` or `delay=600`
-  caused 145 rebuilds.
+- Never let one wait run past the lifetime. The clock starts when the previous
+  model call starts, so the wait plus that call's own duration has to stay under
+  it. For a five-minute lifetime, keep the two together under about four and a
+  half minutes: a wait of 240 seconds after a typical call of a few seconds,
+  less after a long response. In the measured data, waits written as
+  `initial_wait=400` or `delay=600` caused 158 rebuilds.
 - A check-in reads a status line or the tail of the output. It does not re-read
   the log, re-plan, or re-open files. Its output tokens are billed at the output
   rate, and a check-in that reasons for 2,000 tokens can cost as much as the
   cached read it was protecting.
 - Prefer a bounded wait to ending the turn. An agent that stops to await a
   notification sends nothing, so the cache expires whatever the wait.
+- A synchronous sub-agent call is one wait the parent cannot cut short. If it
+  may run past the lifetime, start it in the background and check in on it.
 
 In GitHub Copilot CLI that means `initial_wait` and `read_powershell` `delay`
-at 240 seconds or less, and `read_agent` with its default timeout, which is
-already under the limit.
+at 240 seconds or less, `read_agent` with a timeout of 180 seconds or less, and
+`task` in background mode for anything that may take more than a few minutes.
 
 If the tool's own instructions or the user say not to poll, that instruction
-wins. The measured
-saving was about 2% of spend: worth taking, never worth a conflict.
+wins. The measured saving was about 2% of spend: worth taking, never worth a
+conflict.
 
 ## Make long waits rare
 

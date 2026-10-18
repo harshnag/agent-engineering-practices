@@ -9,9 +9,11 @@ import io
 import json
 import os
 import sqlite3
+import sys
 import tempfile
 import unittest
 
+sys.dont_write_bytecode = True
 HERE = os.path.dirname(os.path.abspath(__file__))
 spec = importlib.util.spec_from_file_location(
     "cache_report", os.environ.get("CACHE_REPORT", os.path.join(HERE, "cache_report.py")))
@@ -21,6 +23,7 @@ spec.loader.exec_module(cr)
 T0 = 1_800_000_000_000  # ms
 MIN = 60_000
 PRICES = {"input": 4.0, "cache_read": 0.2, "cache_write": 5.0, "output": 20.0}  # USD per MTok
+CREDITS = {k: v * 100 / 1e6 for k, v in PRICES.items()}  # credits per token
 
 
 def iso(t):
@@ -78,7 +81,11 @@ def tool(call_id, name, start_min, end_min, args=None, agent=None):
     return [s, e]
 
 
-class CacheReportTests(unittest.TestCase):
+def user(at_min):
+    return {"type": "user.message", "timestamp": iso(T0 + at_min * MIN), "data": {}}
+
+
+class ReportTests(unittest.TestCase):
     def setUp(self):
         self.f = Fixture()
         f = self.f
@@ -110,22 +117,35 @@ class CacheReportTests(unittest.TestCase):
         # 102k lost tokens x (5.0 - 0.2) USD/MTok = USD 0.4896 = 48.96 credits
         self.assertAlmostEqual(p["excess"], 48.96, places=2)
 
-    def test_compaction_is_shrank_not_ttl(self):
+    def test_compaction_is_shrank_and_rebuild_is_capped_at_the_current_prompt(self):
         p = self.ps[2]
         self.assertTrue(p["cold"])
         self.assertTrue(p["shrank"])
         self.assertLess(p["gap"], 5)
+        # only the 30k tokens actually sent can have been rebuilt, not the previous 104k
+        self.assertAlmostEqual(p["excess"], 30_000 * (CREDITS["cache_write"] - CREDITS["cache_read"]), places=6)
 
     def test_gap_attributed_to_the_tool_call_that_filled_it(self):
         label, knobs = cr.attribute(self.ps[1], cr.load_events(self.f.state, "s1", {}))
         self.assertEqual(label, "inside one tool call: read_powershell")
         self.assertEqual(knobs, "delay=600")
 
-    def test_user_message_in_gap_is_human_idle(self):
-        self.f.events("s1", [{"type": "user.message", "timestamp": iso(T0 + 5 * MIN), "data": {}}])
+    def test_tool_call_outranks_a_message_that_arrived_while_it_ran(self):
+        self.f.events("s1", tool("t1", "read_powershell", 2.2, 7.9, {"delay": 600}) + [user(5)])
+        label, _ = cr.attribute(self.ps[1], cr.load_events(self.f.state, "s1", {}))
+        self.assertEqual(label, "inside one tool call: read_powershell")
+
+    def test_user_message_in_an_uncovered_gap_is_human_idle(self):
+        self.f.events("s1", [user(5)])
         label, _ = cr.attribute(self.ps[1], cr.load_events(self.f.state, "s1", {}))
         self.assertEqual(label, cr.HUMAN)
         self.assertFalse(cr.controllable(label))
+
+    def test_uncovered_gap_without_a_message_is_unattributed_idle(self):
+        self.f.events("s1", tool("t1", "view", 2.2, 2.3))
+        label, _ = cr.attribute(self.ps[1], cr.load_events(self.f.state, "s1", {}))
+        self.assertEqual(label, cr.IDLE)
+        self.assertTrue(cr.controllable(label))
 
     def test_missing_events_reports_unread_not_a_cause(self):
         label, _ = cr.attribute(self.ps[1], cr.load_events(self.f.state, "no-such-session", {}))
@@ -153,21 +173,78 @@ class CacheReportTests(unittest.TestCase):
         p = list(cr.pairs(calls, cr.rates(calls)))[0]
         self.assertGreater(p["excess"], 0)
 
-    def test_cold_curve_is_non_decreasing_and_sparse_buckets_inherit(self):
-        table = {("m", 0): [100, 2], ("m", 5): [10, 9], ("m", 7): [10, 5], ("m", 10): [2, 2]}
-        curve = cr.cold_curve(table, "m")
-        self.assertEqual(curve[cr.BUCKETS.index(0)], 0.02)
-        self.assertEqual(curve[cr.BUCKETS.index(4)], 0.02)
-        self.assertEqual(curve[cr.BUCKETS.index(5)], 0.9)
-        self.assertEqual(curve[cr.BUCKETS.index(7)], 0.9)
-        self.assertEqual(curve[cr.BUCKETS.index(10)], 0.9)
-
     def test_report_runs_and_states_its_selection(self):
         out = io.StringIO()
         cr.report(self.f.calls(), self.f.state, 5.0, [4.0], 1, out=out)
         text = out.getvalue()
-        self.assertIn("Selection: 4 model calls, 1 sessions", text)
+        self.assertIn("Selection: 4 model calls, 3 same-thread pairs, 1 sessions", text)
         self.assertIn("inside one tool call: read_powershell", text)
+
+
+def fake_pair(gap, lost_frac, shrank=False, model="m"):
+    return {"cur": {"model": model}, "gap": gap, "lost_frac": lost_frac, "shrank": shrank}
+
+
+class CurveTests(unittest.TestCase):
+    def test_partial_loss_counts_by_its_fraction_not_as_a_full_miss(self):
+        ps = [fake_pair(0.5, 0.0)] * 5 + [fake_pair(6, 0.4)] * 5
+        curve = cr.loss_curve(ps, "m")
+        self.assertAlmostEqual(cr.at(curve, 6), 0.4)
+
+    def test_curve_is_non_decreasing_across_sampled_buckets(self):
+        ps = [fake_pair(0.5, 0.02)] * 5 + [fake_pair(5.2, 0.9)] * 5 + [fake_pair(8, 0.5)] * 5
+        curve = cr.loss_curve(ps, "m")
+        self.assertAlmostEqual(cr.at(curve, 5.2), 0.9)
+        self.assertAlmostEqual(cr.at(curve, 8), 0.9)
+
+    def test_unsampled_bucket_is_unknown_not_zero(self):
+        ps = [fake_pair(0.5, 0.02)] * 5 + [fake_pair(12, 1.0)] * 4
+        curve = cr.loss_curve(ps, "m")
+        self.assertIsNone(cr.at(curve, 12))
+        self.assertIsNone(cr.at(curve, 40))
+
+    def test_compacted_pairs_do_not_shape_the_curve(self):
+        ps = [fake_pair(0.5, 0.0)] * 5 + [fake_pair(0.5, 1.0, shrank=True)] * 50
+        self.assertAlmostEqual(cr.at(cr.loss_curve(ps, "m"), 0.5), 0.0)
+
+
+def gap_of(minutes, tokens=100_000):
+    c = {"model": "claude-x", "inp": tokens, "price": dict(CREDITS)}
+    return {"prev": c, "cur": c, "gap": minutes}
+
+
+def five_minute_curve():
+    return [0.02 if lo < 5 else 1.0 for lo in cr.BUCKETS[:-1]]
+
+
+class CheckinTests(unittest.TestCase):
+    M = 100_000 * (CREDITS["cache_write"] - CREDITS["cache_read"])        # 48 credits per rebuild
+    K = (100_000 * CREDITS["cache_read"] + cr.CHECKIN_OUTPUT_TOKENS * CREDITS["output"]
+         + cr.CHECKIN_APPENDED_TOKENS * CREDITS["cache_write"])           # 2.65 credits per check-in
+
+    def test_checking_in_under_the_lifetime_pays_and_over_it_does_not(self):
+        base, (at4, at10) = cr.checkin_net([gap_of(20)], five_minute_curve(), [4, 10], {})
+        self.assertAlmostEqual(base, self.M)
+        self.assertAlmostEqual(at4, self.M - (4 * self.K + 4 * 0.02 * self.M + 0.02 * self.M))
+        self.assertGreater(at4, 0)
+        self.assertAlmostEqual(at10, self.M - (self.K + self.M + self.M))
+        self.assertLess(at10, 0)
+
+    def test_exact_multiple_leaves_a_full_final_interval(self):
+        _, (net,) = cr.checkin_net([gap_of(8)], five_minute_curve(), [4], {})
+        self.assertAlmostEqual(net, self.M - (self.K + 0.02 * self.M + 0.02 * self.M))
+
+    def test_gap_shorter_than_the_interval_needs_no_check_in(self):
+        _, (net,) = cr.checkin_net([gap_of(3)], five_minute_curve(), [4], {})
+        self.assertAlmostEqual(net, 0.0)
+
+    def test_unknown_bucket_makes_the_answer_unknown(self):
+        curve = five_minute_curve()
+        curve[cr.BUCKETS.index(10)] = None
+        base, (at4, at10) = cr.checkin_net([gap_of(20)], curve, [4, 10], {})
+        self.assertIsNotNone(base)
+        self.assertIsNotNone(at4)
+        self.assertIsNone(at10)
 
 
 if __name__ == "__main__":

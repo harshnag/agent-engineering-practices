@@ -12,9 +12,9 @@ story 50129045) claimed that agent workflows running tests for more than five
 minutes let the prompt cache expire, so the next call reprocessed everything as
 uncached input. The commenter said they had written a skill "to better manage
 agents, including a way to keep the caches valid". Another reader asked them to
-share it. **No skill was published in that thread** as of 2026-10-18 02:00 UTC,
-read through the HN Algolia API, so there was nothing to install. This skill is
-written from the mechanism and from measurement instead.
+share it. **That skill was not published in the thread**: read twice through
+the HN Algolia API, last at 02:42 UTC on 2026-10-18, there was no reply from the
+author and no link.
 
 Other tactics named in the thread, and what became of them here:
 
@@ -24,7 +24,26 @@ Other tactics named in the thread, and what became of them here:
 | Stop letting the agent run tests | Not adopted. Tests are the feedback loop; `bounded-iteration` makes them targeted instead |
 | A harness that compacts just before the cache expires | Reported for another harness and not verified here |
 | Script the deterministic steps; call the model only for judgement | Consistent with "make long waits rare"; not measured |
-| A reader's agent found 92% of its cache-write tokens came from rewrites after 5+ minute gaps | Their figure, unverified. Here the comparable share was much smaller; see below |
+| A reader's agent found 92% of its cache-write tokens came from rewrites after 5+ minute gaps | Their figure, unverified, and a different quantity from any reported here |
+
+## Public keep-alive skills, evaluated
+
+Three public skills address the same problem. None is the one the thread
+mentioned, and none fits GitHub Copilot as published. Read on 2026-10-18.
+
+| Skill | What it does | Fit for Copilot |
+|---|---|---|
+| [ARahim3/cachebeat](https://github.com/ARahim3/cachebeat) | A Claude Code `Stop` hook (`asyncRewake`) that sends a tiny heartbeat after N idle minutes, default 50, for Claude Code's one-hour cache | Depends on Claude Code's hook and plugin variables. Its own text says that with the five-minute lifetime "no practical heartbeat helps", which is the lifetime Copilot gives Claude models |
+| [santiquiroz/claude-prompt-cache-keepalive](https://github.com/santiquiroz/claude-prompt-cache-keepalive) | A ladder of background timer jobs whose completion wakes an idle Claude Code session, for its sixty-minute cache | Its hooks are Claude Code's. Its stated limit, "beyond ~20 ticks it is cheaper to let it expire", is the break-even arithmetic in `SKILL.md` |
+| [OnlyTerp/prompt-cache-skills](https://github.com/OnlyTerp/prompt-cache-skills) | Patches to the caching code of open-source harnesses such as Cline, Roo Code, Continue and Aider | Copilot is not one of the harnesses it patches |
+
+The timer idea raises a question these numbers can answer: would a heartbeat
+while the human is away recover part of the 5.8% lost to breaks? For the 67
+human-idle long gaps on claude-opus-5.5, using the curve and check-in cost of
+section 5 below, a four-minute heartbeat would have saved 1,536 credits net if
+it stopped after 6 ticks, 759 after 12 and 127 after 24, and lost 10,711 if it
+never stopped. The best case is about 0.1% of spend, on a wake mechanism nobody
+has tested in Copilot, so `SKILL.md` does not recommend one.
 
 ## Primary sources
 
@@ -58,30 +77,40 @@ Other tactics named in the thread, and what became of them here:
 
 ## Selection
 
-    python scripts/cache_report.py --until 2026-10-18T02:00:00
+From the repository root:
+
+    python skills/token-efficiency/scripts/cache_report.py --until 2026-10-18T02:00:00
 
 - Source: `~/.copilot/session-store.db`, table `assistant_usage_events`, opened
   read-only; tool timelines from `~/.copilot/session-state/<session>/events.jsonl`.
 - Predicate: every row with non-null `input_tokens` and `duration_ms`, created
   before 2026-10-18 02:00 UTC.
-- Result: 39,954 model calls in 167 sessions, 2026-09-07 17:25 to 2026-10-18
-  01:59 UTC. Main agents and sub-agents both included.
+- Result: 39,954 model calls and 39,533 same-thread pairs in 167 sessions,
+  2026-09-07 17:25 to 2026-10-18 01:59 UTC. Main agents and sub-agents both
+  included. A thread is one session, agent and model.
 
 Three facts about the store were established before anything was counted,
 because each one changes every number below:
 
-1. `created_at` marks the end of a call. Of 39,694 consecutive call pairs in the
-   same thread, 131 started before the previous call ended if `created_at` is an
-   end time, and 13,793 if it is a start time. Start is therefore
+1. `created_at` marks the end of a call. Over the 39,533 pairs, 151 would have a
+   call ending before its own duration had elapsed since the previous call
+   ended if `created_at` were an end time, and 13,752 would have a call starting
+   before the previous one finished if it were a start time. Start is therefore
    `created_at − duration_ms`.
 2. `input_tokens` is uncached input + cache read + cache write. The per-call cost
    lines in `token_details_json` add up to it.
 3. A cost line's `costPerBatch` is in billionths of a credit per `batchSize`
    tokens. Summed, the lines give the spend below.
 
+Main-agent calls on claude-opus-5.5 took a median 7 seconds (p90 20, p99 75);
+134 of 8,161 took a minute or more, and 2 took four minutes or more. That is why
+`SKILL.md` gives the wait as 240 seconds after a typical call and less after a
+long one: the lifetime is counted from the start of the call, not its end.
+
 ## Results
 
-The report's output for that selection, unedited:
+The report's output for that selection, unedited except for the explanatory
+lines under each heading:
 
 ```text
 1. Spend by token type (AI credits; 1 credit = USD 0.01)
@@ -115,40 +144,47 @@ The report's output for that selection, unedited:
    grok-4.7               5%/106     0%/4        -        -        -        -     0%/1        -        -        -        -        -
 
 3. Excess credits from cold calls, by cause (long gap = 5+ minutes)
-   same context / short gap        190,545   15.6% of spend
-   same context / long gap         120,390    9.8% of spend
-   shrank / long gap                13,648    1.1% of spend
-   shrank / short gap               11,316    0.9% of spend
+   same context / short gap        188,280   15.4% of spend
+   same context / long gap         119,211    9.7% of spend
+   shrank / long gap                 5,690    0.5% of spend
+   shrank / short gap                3,644    0.3% of spend
 
 4. Long-gap cold calls with an unchanged context, by what filled the gap
-       75,627 credits  n=259  human idle (a user message arrived in the gap)
-       17,348 credits  n=96   inside one tool call: powershell  7m initial_wait=400; 6m initial_wait=400; 6m initial_wait=400
-       13,265 credits  n=49   inside one tool call: read_powershell  10m delay=600; 7m delay=420; 6m delay=600
-       11,793 credits  n=87   agent idle awaiting a notification
-        2,356 credits  n=14   inside one tool call: ask_user
+       67,041 credits  n=222  human idle (a user message arrived in the gap)
+       21,179 credits  n=108  inside one tool call: powershell  7m initial_wait=400; 6m initial_wait=400; 6m initial_wait=400
+       13,492 credits  n=50   inside one tool call: read_powershell  10m delay=600; 7m delay=420; 6m delay=600
+       11,741 credits  n=87   unattributed agent idle (no tool call covered the gap)
+        4,073 credits  n=22   inside one tool call: ask_user
+        1,686 credits  n=16   inside one tool call: task
 
 5. Expected net saving from checking in during agent-controllable long gaps
    model                 gaps  observed  expected   every 4m  every 10m  every 20m  every 25m   break-even
-   claude-opus-5.5        182    33,265    34,466     28,138     -7,465     -2,751     -2,018   24
-   gpt-6-astra            148     6,367    21,170     -8,157     -6,023     -1,565       -673   12
-   gpt-6.1-sol            149     2,268     3,916     -4,387     -1,281       -228         -6   24
-   gpt-5.5                 57       474       786     -3,528       -885       -177        -56   9
-   claude-sonnet-5          1        19         0         -8         -2          0          0   12
-   gpt-5.4-mini             3        14         1        -25         -8         -3         -2   9
+   claude-opus-5.5        203    35,740    35,378     29,385    -10,233     -4,080     -2,895   24
+   gpt-6-astra            163     9,572    18,479    -12,157     -6,056     -1,332       -480   12
+   gpt-6.1-sol            196     2,971     5,008     -5,225     -1,322       -217         -8   24
+   gpt-5.5                 57       473         ?          ?          ?          ?          ?   9
+   claude-sonnet-5          1        19         ?          ?          ?          ?          ?   12
+   gpt-5.4-mini             3        15         ?          ?          ?          ?          ?   9
 ```
 
 The same command with `--intervals 2,3,15,30` gave, for claude-opus-5.5,
-21,078 at two minutes and 25,757 at three, and negative values at 15 and 30. For
-gpt-6-astra and gpt-6.1-sol, all four intervals were negative.
+22,427 at two minutes, 27,049 at three, −5,543 at fifteen and −2,148 at thirty.
+For gpt-6-astra and gpt-6.1-sol, all four were negative.
 
-All 145 cold calls in section 4 that one `powershell` or `read_powershell` call
-filled had a wait setting (`initial_wait` or `delay`) of 300 seconds or more.
+Derived from the same selection:
+
+- Human breaks: 67,041 + 4,073 for `ask_user` = 71,114 credits, 5.8% of spend.
+- Waits the agent chose: `powershell`, `read_powershell`, unattributed idle and
+  `task` together = 48,098 credits, 3.9% of spend.
+- All 158 cold calls in section 4 that one `powershell` or `read_powershell`
+  call filled had a wait setting (`initial_wait` or `delay`) of 300 seconds or
+  more.
 
 ## Cache lifetime by model
 
 | Model family in Copilot | Observed | Documented by the provider |
 |---|---|---|
-| Claude (Opus 5.5) | 0 of 90 cold from 3 to 5 minutes; 48% from 5 to 5.5; 97% or more beyond | Five minutes from the start of the previous request |
+| Claude (Opus 5.5) | 0 of 90 cold from 3 to 5 minutes; 48% from 5 to 5.5; 97 to 100% in every later bucket except 45 to 60 minutes, 6 of 7 | Five minutes from the start of the previous request |
 | GPT-6 (Astra, 6.1 Sol) | 3 to 35% cold from 3 to 30 minutes, broadly rising with the gap; 92% or more beyond 30 | At least 30 minutes after the latest write or reuse |
 | GPT-5.5 | At most 8% cold below 20 minutes; 5 cold of 5 beyond 60; nothing between | Typically around 30 minutes |
 
@@ -163,49 +199,73 @@ They do not generalise on their own. This is one operator, one agent tool and
 six weeks, a mix of interactive and unattended sessions, and models with few
 pairs have no usable curve.
 
-They do not explain short-gap cold calls. Those cost 15.6% of spend, and 75% of
+They do not explain short-gap cold calls. Those cost 15.4% of spend, and 75% of
 that was on one GPT-6 model. In 165 of the 170 Claude cases, 40,000 to 70,000
 tokens were still read from cache (median 52,106) while the rest was rewritten.
 That fits the system prompt and tools staying cached while the history changed,
 through compaction or the agent runtime rewriting history. It was not confirmed.
 
+The shrank rows of section 3 are upper bounds. A compacted prompt shares an
+unknown prefix with the one before it, so the rebuild is capped at the new
+prompt's size rather than measured.
+
 The check-in cost is an estimate. The counterfactual charges each check-in a
 cached read of the previous prompt, 250 output tokens and 300 appended tokens.
 The 250 is the 25th percentile of main-agent output per call, measured at 242 to
 245 tokens across the three largest models: the size of a minimal call, not of a
-measured check-in.
+measured check-in. It also treats intervals as start-to-start and charges the
+same curve at every check-in.
 
-Expected and observed costs agree for one model and not another. The
-counterfactual applies one cold-rate curve per model, pooled across all
-contexts. For claude-opus-5.5 the expected and observed costs of the same gaps
-agree (34,466 and 33,265). For gpt-6-astra they do not (21,170 and 6,367): the
-pooled curve overstates misses for those particular gaps, so checking in on
-that model is worse than the table shows.
+Expected and observed costs agree for one model and not another. Section 5 uses
+one curve per model of the expected fraction of the prompt rebuilt at each gap,
+pooled across all contexts. For claude-opus-5.5 the expected and observed costs
+of the same gaps agree (35,378 and 35,740). For gpt-6-astra they do not (18,479
+and 9,572): the pooled curve overstates rebuilds for those particular gaps, so
+checking in on that model is worse than the table shows.
 
 Nothing here says which model did the work better. The per-call cost of a model
 prices a quality decision and cannot make it.
 
+## How the report was checked
+
+A reviewer in a separate context read the first version and found seven defects
+the author had not: the documented command path did not say which directory it
+ran from; the counterfactual charged every cold call as a full rebuild, so a
+call that reused 49% of its prompt cost the same as one that reused none;
+sparse buckets became measured zeroes; the four-minute rule ignored the
+previous call's own duration; compaction was charged for tokens the new prompt
+no longer contained; a user message outranked the tool call that had actually
+filled a gap; and the commit message claimed a counterfactual test that did not
+exist. Three figures in this file were also wrong. Each defect now has a test,
+and every figure above comes from the corrected script.
+
+Two earlier defects were found by the author while building the report: a zero
+cache-write price had been read as free, and the first counterfactual credited
+check-ins at any interval with preventing misses, which claimed a 25-minute
+check-in saved as much on a five-minute cache as a four-minute one.
+
 ## The report was mutation-tested
 
-Start green: `python scripts/test_cache_report.py` passes eleven tests. Then
-each behaviour was broken in a temporary copy, the copy was checked to contain
-the change, and the unchanged tests were pointed at it with `CACHE_REPORT`:
+Start green: `python skills/token-efficiency/scripts/test_cache_report.py`
+passes twenty tests. Then each behaviour was broken in a temporary copy, the
+copy was checked to differ from the original, and the unchanged tests were
+pointed at it with `CACHE_REPORT`:
 
 | Mutation | Caught by |
 |---|---|
 | Treat `created_at` as the start | `test_created_at_is_end_so_start_subtracts_duration` |
 | Invert the cold threshold | five tests, including `test_warm_call_is_not_cold` |
-| Never mark a call as shrank | `test_compaction_is_shrank_not_ttl` |
+| Never mark a call as shrank | `test_compaction_is_shrank_and_rebuild_is_capped_at_the_current_prompt` |
 | Price a zero cache-write rate as free | `test_zero_cache_write_price_means_rebuild_at_input_price` |
-| Drop the human-idle check | `test_user_message_in_gap_is_human_idle` |
+| Let a user message outrank a covering tool call | `test_tool_call_outranks_a_message_that_arrived_while_it_ran` |
+| Drop the human-idle check | `test_user_message_in_an_uncovered_gap_is_human_idle` |
 | Report a missing timeline as agent idle | `test_missing_events_reports_unread_not_a_cause` |
 | Pool sub-agent tool spans under the main agent | `test_sub_agent_gap_uses_its_own_tool_spans` |
-| Let the cold curve decrease | `test_cold_curve_is_non_decreasing_and_sparse_buckets_inherit` |
 | Measure the gap from the previous call's end | `test_long_gap_miss_is_cold_same_context_with_excess`, `test_warm_call_is_not_cold` |
-
-Two defects were found while building the report, before the tests existed,
-and each now has a test. A zero cache-write price had been read as free, which
-made misses on models without a write charge look like savings. And the first
-counterfactual credited check-ins with preventing misses at any interval, which
-claimed a 25-minute check-in saved as much on a five-minute cache as a
-four-minute one.
+| Charge compaction for the whole previous prompt | `test_compaction_is_shrank_and_rebuild_is_capped_at_the_current_prompt` |
+| Count any cold call as a full rebuild in the curve | `test_partial_loss_counts_by_its_fraction_not_as_a_full_miss`, `test_curve_is_non_decreasing_across_sampled_buckets` |
+| Let the curve decrease | `test_curve_is_non_decreasing_across_sampled_buckets` |
+| Fill a sparse bucket with the value before it | `test_unsampled_bucket_is_unknown_not_zero` |
+| Let compacted pairs shape the curve | `test_compacted_pairs_do_not_shape_the_curve` |
+| Assume a check-in never misses | `test_checking_in_under_the_lifetime_pays_and_over_it_does_not`, `test_exact_multiple_leaves_a_full_final_interval` |
+| Charge the final stretch at the whole gap | the same two |
