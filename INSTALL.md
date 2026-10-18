@@ -5,7 +5,8 @@ Every agent below reads the same open
 per machine and the rules are available everywhere.
 
 **Nothing here runs code at install time.** A skill is Markdown, sometimes with
-scripts you run deliberately: `agent-concurrency` has two, and `unslop` has one.
+scripts you run deliberately: `agent-concurrency` has two, `unslop` has one, and
+`token-efficiency` has one with its tests.
 
 ---
 
@@ -13,7 +14,7 @@ scripts you run deliberately: `agent-concurrency` has two, and `unslop` has one.
 
     gh skill install harshnag/agent-engineering-practices --all --scope user
 
-That places the thirteen skills in `~/.copilot/skills/`, which **GitHub Copilot CLI
+That places the fourteen skills in `~/.copilot/skills/`, which **GitHub Copilot CLI
 and Microsoft Scout both read**. Confirm:
 
     gh skill list
@@ -23,7 +24,7 @@ the command is not found:
 
     gh --version && gh extension upgrade --all
 
-### Install one skill rather than all thirteen
+### Install one skill rather than all fourteen
 
 Recommended for a first look. Start with the shortest and most broadly
 applicable:
@@ -33,7 +34,8 @@ applicable:
 Add more by name at any time: `agent-concurrency`, `agent-handover`,
 `measured-changes`, `external-data-claims`, `verify-in-the-real-thing`,
 `project-agent-instructions`, `durable-project-memory`,
-`resource-safe-tooling`, `coordinating-agents`, `bounded-iteration`, `shipping-changes`, `unslop`.
+`resource-safe-tooling`, `coordinating-agents`, `bounded-iteration`, `shipping-changes`, `unslop`,
+`token-efficiency`.
 
 > **If you later want all of them, add `--force`.** Verified behaviour of
 > `gh` 2.96: `--all` **aborts the whole batch with exit 1** if *any* one skill is
@@ -120,7 +122,7 @@ Installation is not activation, and this is the step most people skip.
 
        ls ~/.copilot/skills/
 
-   Thirteen directories, each containing a `SKILL.md`. Fewer means an install was
+   Fourteen directories, each containing a `SKILL.md`. Fewer means an install was
    refused. See the `--force` note above.
 
 2. Start a fresh agent session. Skills are read at startup.
